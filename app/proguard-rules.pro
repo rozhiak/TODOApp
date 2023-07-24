@@ -1,12 +1,5 @@
 # Add project specific ProGuard rules here.
 
-#Carbon rules
--dontwarn carbon.CarbonResources
--dontwarn carbon.internal**
--dontwarn java.lang.invoke**
--dontwarn android.databinding.**
--keep class android.databinding.** { *; }
-
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.
 #

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/privateTasksFragment">
+
+    <fragment
+        android:id="@+id/privateTasksFragment"
+        android:name="com.rmblack.todoapp.fragments.PrivateTasksFragment"
+        android:label="fragment_private_tasks"
+        tools:layout="@layout/fragment_private_tasks" >
+        <action
+            android:id="@+id/action_privateTasksFragment_to_sharedTasksFragment"
+            app:destination="@id/sharedTasksFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sharedTasksFragment"
+        android:name="com.rmblack.todoapp.fragments.SharedTasksFragment"
+        android:label="fragment_shared_tasks"
+        tools:layout="@layout/fragment_shared_tasks" >
+        <action
+            android:id="@+id/action_sharedTasksFragment_to_privateTasksFragment"
+            app:destination="@id/privateTasksFragment" />
+    </fragment>
+</navigation>

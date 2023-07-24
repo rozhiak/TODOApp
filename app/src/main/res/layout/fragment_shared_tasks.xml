@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SharedTasksFragment">
+    tools:context=".fragments.PrivateTasksFragment"
+    android:id="@+id/shared_refresh_layout"
+    android:orientation="vertical">
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

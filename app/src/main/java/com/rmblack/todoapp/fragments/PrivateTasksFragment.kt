@@ -9,18 +9,20 @@ import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 
 class PrivateTasksFragment : Fragment() {
 
-    private lateinit var binding: FragmentPrivateTasksBinding
+    private var _binding: FragmentPrivateTasksBinding ?= null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val binding
+        get() = checkNotNull(_binding) {
+            "Cannot access binding because it is null. Is the view visible?"
+        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentPrivateTasksBinding.inflate(inflater, container, false)
+        _binding = FragmentPrivateTasksBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -29,5 +31,10 @@ class PrivateTasksFragment : Fragment() {
         binding.apply {
             //Here wire up views.
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

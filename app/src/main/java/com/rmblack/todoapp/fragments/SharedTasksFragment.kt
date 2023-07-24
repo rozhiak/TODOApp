@@ -9,18 +9,19 @@ import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 
 class SharedTasksFragment : Fragment() {
 
-    private lateinit var binding: FragmentSharedTasksBinding
+    private var _binding : FragmentSharedTasksBinding? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val binding
+        get() = checkNotNull(_binding) {
+            "Cannot access binding because it is null. Is the view visible?"
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentSharedTasksBinding.inflate(inflater, container, false)
+        _binding = FragmentSharedTasksBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -29,6 +30,11 @@ class SharedTasksFragment : Fragment() {
         binding.apply {
             //Here wire up views.
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

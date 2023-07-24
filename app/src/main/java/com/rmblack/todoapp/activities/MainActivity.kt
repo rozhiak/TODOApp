@@ -2,8 +2,13 @@ package com.rmblack.todoapp.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
-import com.rmblack.todoapp.fragments.MySampleFabFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -13,14 +18,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        wireUpBottomNav()
+
+
+    }
+
+    private fun wireUpBottomNav() {
         binding.bottomNavigationView.background = null
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
-
-        binding.fab.setOnClickListener {
-            val dialogFrag: MySampleFabFragment = MySampleFabFragment.newInstance()
-            dialogFrag.setParentFab(binding.fab)
-            dialogFrag.show(supportFragmentManager, dialogFrag.tag)
-        }
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        val navController: NavController = navHostFragment?.findNavController() ?: return
+        binding.bottomNavigationView.setupWithNavController(navController)
     }
 }

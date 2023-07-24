@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/private_list"
+        android:id="@+id/privateTasksFragment"
         android:icon="@drawable/ic_checklist_rtl"
         android:title="لیست شخصی" />
 
@@ -10,7 +10,7 @@
         android:title="" />
 
     <item
-        android:id="@+id/shared_list"
+        android:id="@+id/sharedTasksFragment"
         android:icon="@drawable/ic_share"
         android:title="لیست اشتراکی" />
 
