@@ -6,12 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
+import com.rmblack.todoapp.databinding.SharedTasksRvRowBinding
 import com.rmblack.todoapp.models.Task
 
-class PrivateTaskHolder(
-     private val binding: PrivateTasksRvItemBinding
-) :RecyclerView.ViewHolder(binding.root) {
+class SharedTaskHolder(
+    private val binding: SharedTasksRvRowBinding
+) : RecyclerView.ViewHolder(binding.root){
     fun bind(task: Task) {
         binding.apply {
             if (task.detailsVisibility) {
@@ -41,18 +41,19 @@ class PrivateTaskHolder(
             titleTv.text = task.title
             deadLineTv.text = task.deadLine.shortDateString
             descriptionTv.text = task.description
+            composerNameTv.text = task.user.name
         }
     }
 }
 
-class PrivateTaskListAdapter(private val tasks: List<Task>): RecyclerView.Adapter<PrivateTaskHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrivateTaskHolder {
+class SharedTasksAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<SharedTaskHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SharedTaskHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-        return PrivateTaskHolder(binding)
+        val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
+        return SharedTaskHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: PrivateTaskHolder, position: Int) {
+    override fun onBindViewHolder(holder: SharedTaskHolder, position: Int) {
         val task = tasks[position]
         holder.bind(task)
     }

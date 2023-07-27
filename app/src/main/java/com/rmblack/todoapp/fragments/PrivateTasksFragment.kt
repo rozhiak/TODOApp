@@ -15,7 +15,7 @@ class PrivateTasksFragment : Fragment() {
 
     private var _binding: FragmentPrivateTasksBinding ?= null
 
-    private val privateTasksViewModel: PrivateTasksViewModel by viewModels()
+    private val viewModel: PrivateTasksViewModel by viewModels()
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -31,7 +31,7 @@ class PrivateTasksFragment : Fragment() {
         _binding = FragmentPrivateTasksBinding.inflate(inflater, container, false)
 
         binding.privateTasksRv.layoutManager = LinearLayoutManager(context)
-        val adapter = PrivateTaskListAdapter(privateTasksViewModel.tasks)
+        val adapter = PrivateTaskListAdapter(viewModel.tasks)
         binding.privateTasksRv.adapter = adapter
 
         return binding.root

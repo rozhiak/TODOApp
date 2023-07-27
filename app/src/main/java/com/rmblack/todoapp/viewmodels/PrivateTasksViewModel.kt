@@ -25,6 +25,7 @@ class PrivateTasksViewModel: ViewModel() {
             )
             tasks += task
         }
+
         tasks[9].detailsVisibility = true
         tasks[0].detailsVisibility = true
 

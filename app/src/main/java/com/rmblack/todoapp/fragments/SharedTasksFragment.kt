@@ -5,11 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
+import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 
 class SharedTasksFragment : Fragment() {
 
     private var _binding : FragmentSharedTasksBinding? = null
+
+    private val viewModel: SharedTasksViewModel by viewModels()
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -22,6 +28,10 @@ class SharedTasksFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentSharedTasksBinding.inflate(inflater, container, false)
+
+        binding.sharedTasksRv.layoutManager = LinearLayoutManager(context)
+        val adapter = SharedTasksAdapter(viewModel.tasks)
+        binding.sharedTasksRv.adapter = adapter
         return binding.root
     }
 
