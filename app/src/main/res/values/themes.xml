@@ -9,4 +9,13 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorPrimaryDark">#5DD0A3</item>
     </style>
+
+    <style
+        name="UrgentSwitchTheme"
+        parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/urgent_red</item>
+        <item name="colorSwitchThumbNormal">#B9D05D8A</item>
+        <item name="android:colorForeground">#85D05D8A</item>
+    </style>
+
 </resources>

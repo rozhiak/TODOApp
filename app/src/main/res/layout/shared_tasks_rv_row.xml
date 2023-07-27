@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    app:cardCornerRadius="8dp"
+    android:id="@+id/root_card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/done_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/green"
+            android:buttonTint="@color/green"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="6dp"
+            android:layout_height="0dp"
+            android:scaleType="center"
+            android:tint="@color/green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_line" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/iranian_ans"
+            android:text="کار کردن روی پروژه"
+            android:textColor="@color/title__black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/done_check_box"
+            app:layout_constraintEnd_toStartOf="@+id/done_check_box"
+            app:layout_constraintTop_toTopOf="@+id/done_check_box" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="8dp"
+            android:tint="@color/purple"
+            app:layout_constraintBottom_toBottomOf="@+id/composer_name_tv"
+            app:layout_constraintStart_toEndOf="@+id/composer_name_tv"
+            app:layout_constraintTop_toTopOf="@+id/composer_name_tv"
+            app:srcCompat="@drawable/ic_person" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:textColor="@color/purple"
+            android:id="@+id/composer_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="17dp"
+            android:text="علیرضا"
+            app:layout_constraintBottom_toBottomOf="@+id/title_tv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/title_tv" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/dead_line_iv"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            app:srcCompat="@drawable/ic_hourglass"
+            app:layout_constraintEnd_toEndOf="@+id/title_tv"
+            app:layout_constraintTop_toBottomOf="@+id/title_tv" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dead_line_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="۱۴۰۲/۰۵/۲۴"
+            android:textColor="@color/title__black"
+            app:layout_constraintBottom_toBottomOf="@+id/dead_line_iv"
+            app:layout_constraintEnd_toStartOf="@+id/dead_line_iv"
+            app:layout_constraintTop_toTopOf="@+id/dead_line_iv" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:textStyle="bold"
+            android:id="@+id/description_lable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:justificationMode="inter_word"
+            android:text="توضیحات:"
+            android:textColor="@color/title__black"
+            app:layout_constraintEnd_toEndOf="@+id/dead_line_iv"
+            app:layout_constraintTop_toBottomOf="@+id/dead_line_iv" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/description_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:justificationMode="inter_word"
+            android:text="سیم پنکه اتصالی داره که از داخل دکمه باید درست بشه. ضمنا باید توجه داشت که اگر پیچ داخل دکمه به درستی سفت نشه میتونه باعث ایجاد جرقه بشه پس باید به این موضوع دقت کرد."
+            android:textColor="@color/description_black"
+            app:layout_constraintEnd_toEndOf="@+id/description_lable"
+            app:layout_constraintStart_toStartOf="@+id/composer_name_tv"
+            app:layout_constraintTop_toBottomOf="@+id/description_lable" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:textStyle="bold"
+            android:id="@+id/urgent_lable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="ضروری"
+            android:textColor="@color/urgent_red"
+            app:layout_constraintEnd_toEndOf="@+id/description_tv"
+            app:layout_constraintTop_toBottomOf="@+id/description_tv" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:theme="@style/UrgentSwitchTheme"
+            android:id="@+id/urgent_switch_compat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/urgent_lable"
+            app:layout_constraintStart_toStartOf="@+id/description_tv"
+            app:layout_constraintTop_toTopOf="@+id/urgent_lable" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginBottom="8dp"
+            android:id="@+id/edit_card"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/gold"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
+            app:layout_constraintStart_toStartOf="@+id/urgent_switch_compat"
+            app:layout_constraintTop_toBottomOf="@+id/urgent_switch_compat">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/iranian_ans"
+                android:text="ویرایش"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
