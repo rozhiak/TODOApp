@@ -14,7 +14,7 @@ class PrivateTasksViewModel: ViewModel() {
         for (i in 0 until 100) {
             val task = Task(
                 title = "تسک شماره #$i",
-                id = UUID.randomUUID().toString(),
+                id = UUID.randomUUID(),
                 deadLine = PersianCalendar(),
                 description = "توضحات برای #$i",
                 addedTime = PersianCalendar(),
