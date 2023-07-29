@@ -21,6 +21,7 @@ class PrivateTasksViewModel: ViewModel() {
                 isUrgent = i % 7 == 0,
                 user = User("روژیاک", "09939139575", "1234", "1324"),
                 isDone = false,
+                isShared = false,
                 groupId = "1234"
             )
             tasks += task

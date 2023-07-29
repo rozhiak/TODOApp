@@ -21,6 +21,7 @@ class SharedTasksViewModel: ViewModel() {
                 isUrgent = i % 9 == 0,
                 user = User("محمد", "09939139575", "1234", "1324"),
                 isDone = false,
+                isShared = false,
                 groupId = "1234"
             )
             tasks += task

@@ -7,14 +7,15 @@ import java.util.UUID
 
 @Entity
 data class Task(
+    var title: String,
     @PrimaryKey
     val id: UUID,
-    var title: String,
     var description: String,
     val addedTime: PersianCalendar,
     val deadLine: PersianCalendar,
     var isUrgent: Boolean,
     var isDone: Boolean,
+    var isShared: Boolean,
     val user: User,
     val groupId: String) {
 
