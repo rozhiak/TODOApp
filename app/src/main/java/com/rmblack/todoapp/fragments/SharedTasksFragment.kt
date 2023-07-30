@@ -6,10 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class SharedTasksFragment : Fragment() {
 
@@ -26,19 +31,21 @@ class SharedTasksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentSharedTasksBinding.inflate(inflater, container, false)
 
         binding.sharedTasksRv.layoutManager = LinearLayoutManager(context)
-        val adapter = SharedTasksAdapter(viewModel.tasks)
-        binding.sharedTasksRv.adapter = adapter
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
-            //Here wire up views.
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.sharedTasks.collect {
+                    binding.sharedTasksRv.adapter = SharedTasksAdapter(it)
+                }
+            }
         }
     }
 

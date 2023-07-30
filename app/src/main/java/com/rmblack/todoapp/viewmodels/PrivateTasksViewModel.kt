@@ -1,36 +1,27 @@
 package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.aminography.primecalendar.persian.PersianCalendar
+import androidx.lifecycle.viewModelScope
+import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.models.User
-import java.util.UUID
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class PrivateTasksViewModel: ViewModel() {
 
-    val tasks = mutableListOf<Task>()
+    private val taskRepository = TaskRepository.get()
+
+    private val _privateTasks: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
+
+    val privateTasks
+        get() = _privateTasks.asStateFlow()
 
     init {
-        for (i in 0 until 100) {
-            val task = Task(
-                title = "تسک شماره #$i",
-                id = UUID.randomUUID(),
-                deadLine = PersianCalendar(),
-                description = "توضحات برای #$i",
-                addedTime = PersianCalendar(),
-                isUrgent = i % 7 == 0,
-                user = User("روژیاک", "09939139575", "1234", "1324"),
-                isDone = false,
-                isShared = false,
-                groupId = "1234"
-            )
-            tasks += task
+        viewModelScope.launch {
+            taskRepository.getPrivateTasks().collect {
+                _privateTasks.value = it
+            }
         }
-
-        tasks[9].detailsVisibility = true
-        tasks[0].detailsVisibility = true
-
-
     }
-
 }

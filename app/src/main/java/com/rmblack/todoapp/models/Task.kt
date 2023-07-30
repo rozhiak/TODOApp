@@ -19,6 +19,7 @@ data class Task(
     val user: User,
     val groupId: String) {
 
+    @Transient
     var detailsVisibility: Boolean = false
 
 }

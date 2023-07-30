@@ -11,10 +11,11 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:clipToPadding="false"
+        android:paddingBottom="110dp"
+        tools:listitem="@layout/shared_tasks_rv_row"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/shared_tasks_rv"/>
-
-
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

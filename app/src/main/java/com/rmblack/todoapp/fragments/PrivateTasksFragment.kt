@@ -6,10 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
+import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
+import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
+import kotlinx.coroutines.launch
 
 class PrivateTasksFragment : Fragment() {
 
@@ -27,21 +33,24 @@ class PrivateTasksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentPrivateTasksBinding.inflate(inflater, container, false)
 
         binding.privateTasksRv.layoutManager = LinearLayoutManager(context)
-        val adapter = PrivateTaskListAdapter(viewModel.tasks)
-        binding.privateTasksRv.adapter = adapter
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
-            //Here wire up views.
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.privateTasks.collect {
+                    binding.privateTasksRv.adapter = PrivateTaskListAdapter(it)
+                }
+            }
         }
+
     }
 
     override fun onDestroyView() {

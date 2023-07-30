@@ -1,30 +1,32 @@
 package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.aminography.primecalendar.persian.PersianCalendar
+import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.models.User
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class SharedTasksViewModel: ViewModel() {
 
-    val tasks = mutableListOf<Task>()
+    val taskRepository = TaskRepository.get()
+
+    private var _sharedTasks : MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
+
+    val sharedTasks
+        get() = _sharedTasks.asStateFlow()
 
     init {
-        for (i in 0 until 100) {
-            val task = Task(
-                title = "تسک شماره #$i",
-                id = UUID.randomUUID(),
-                deadLine = PersianCalendar(),
-                description = "توضحات برای #$i",
-                addedTime = PersianCalendar(),
-                isUrgent = i % 9 == 0,
-                user = User("محمد", "09939139575", "1234", "1324"),
-                isDone = false,
-                isShared = false,
-                groupId = "1234"
-            )
-            tasks += task
+        viewModelScope.launch {
+            taskRepository.getSharedTasks().collect {
+                _sharedTasks.value = it
+            }
         }
     }
 

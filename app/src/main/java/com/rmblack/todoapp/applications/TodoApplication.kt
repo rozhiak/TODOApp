@@ -42,14 +42,28 @@ class TodoApplication : Application() {
             user = user2,
             groupId = "1234"
         )
+
+        val user3 = User("علی محمدی", "09939139577", "2345", "0987")
+        val task3 = Task(
+            "دیوار",
+            UUID.randomUUID(),
+            "دیوار باید خراب شود",
+            PersianCalendar(),
+            PersianCalendar(),
+            isUrgent = false,
+            isDone = false,
+            isShared = true,
+            user = user3,
+            groupId = "1234"
+        )
         val repo = TaskRepository.get()
 
-//
-//        GlobalScope.launch {
-//            repo.insert(task1)
-//            repo.insert(task2)
-//        }
 
+        GlobalScope.launch {
+            repo.insert(task1)
+            repo.insert(task2)
+            repo.insert(task3)
+        }
 
     }
 }

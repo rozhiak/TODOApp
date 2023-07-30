@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.rmblack.todoapp.database.TaskDatabase
 import com.rmblack.todoapp.models.Task
+import kotlinx.coroutines.flow.Flow
 import java.lang.IllegalStateException
 import java.util.UUID
 
@@ -19,7 +20,13 @@ class TaskRepository private constructor(context: Context) {
         )
         .build()
 
-    fun getTasks(): List<Task> = database.taskDao().getTasks()
+    fun getTasks(): Flow<List<Task>> = database.taskDao().getTasks()
+
+    fun getPrivateTasks(): Flow<List<Task>> = database.taskDao().getPrivateTasks()
+
+    fun getSharedTasks(): Flow<List<Task>> = database.taskDao().getSharedTasks()
+
+
 
     fun getTask(id: UUID): Task = database.taskDao().getTask(id)
 
