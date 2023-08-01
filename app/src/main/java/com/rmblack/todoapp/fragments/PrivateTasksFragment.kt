@@ -9,15 +9,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rmblack.todoapp.adapters.PrivateTaskHolder
 import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
-import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import kotlinx.coroutines.launch
 
-class PrivateTasksFragment : Fragment() {
+class PrivateTasksFragment : Fragment(), PrivateTaskHolder.EditClickListener {
 
     private var _binding: FragmentPrivateTasksBinding ?= null
 
@@ -33,6 +34,7 @@ class PrivateTasksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = FragmentPrivateTasksBinding.inflate(inflater, container, false)
 
         binding.privateTasksRv.layoutManager = LinearLayoutManager(context)
@@ -42,19 +44,27 @@ class PrivateTasksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.privateTasks.collect {
-                    binding.privateTasksRv.adapter = PrivateTaskListAdapter(it)
+                viewModel.privateTasks.collect {tasks ->
+                    binding.privateTasksRv.adapter = createPrivateTasksAdapter(tasks, viewModel)
                 }
             }
         }
+    }
 
+    private fun createPrivateTasksAdapter(tasks: List<Task>, viewModel: PrivateTasksViewModel) : PrivateTaskListAdapter {
+        return PrivateTaskListAdapter(tasks, viewModel, this)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onEditClick(task: Task) {
+        findNavController().navigate(
+            PrivateTasksFragmentDirections.showEditBottomSheetFP()
+        )
     }
 }

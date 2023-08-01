@@ -8,17 +8,85 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.todoapp.databinding.SharedTasksRvRowBinding
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 
 class SharedTaskHolder(
-    private val binding: SharedTasksRvRowBinding
+    private val binding: SharedTasksRvRowBinding,
+    private val viewModel: SharedTasksViewModel
 ) : RecyclerView.ViewHolder(binding.root){
     fun bind(tasks: List<Task>, pos: Int, adapter: SharedTasksAdapter) {
         binding.apply {
+            configUrgentSwitch(tasks, pos)
+            configDoneCheckBox(tasks, pos)
             setDetailVisibility(tasks[pos])
             setUrgentUi(tasks[pos])
+            setDoneUi(tasks, pos)
             setEachTaskClick(tasks, pos, adapter)
             setTaskDetails(tasks[pos])
         }
+    }
+
+    private fun SharedTasksRvRowBinding.configDoneCheckBox(
+        tasks: List<Task>,
+        pos: Int
+    ) {
+        doneCheckBox.setOnCheckedChangeListener { _, b ->
+            viewModel.updateTasks { oldTasks ->
+                val updatedTasks = oldTasks.toMutableList()
+                val tarTask = tasks[pos]
+                val updatedTask = Task(
+                    tarTask.title,
+                    tarTask.id,
+                    tarTask.description,
+                    tarTask.addedTime,
+                    tarTask.deadLine,
+                    tarTask.isUrgent,
+                    b,
+                    tarTask.isShared,
+                    tarTask.user,
+                    tarTask.groupId,
+                    tarTask.detailsVisibility
+                )
+                updatedTasks[pos] = updatedTask
+                updatedTasks
+            }
+            viewModel.updateDoneState(b, tasks[pos].id)
+        }
+    }
+
+    private fun SharedTasksRvRowBinding.configUrgentSwitch(
+        tasks: List<Task>,
+        pos: Int
+    ) {
+        urgentSwitchCompat.setOnCheckedChangeListener { _, b ->
+            viewModel.updateTasks { oldTasks ->
+                val updatedTasks = oldTasks.toMutableList()
+                val tarTask = tasks[pos]
+                val updatedTask = Task(
+                    tarTask.title,
+                    tarTask.id,
+                    tarTask.description,
+                    tarTask.addedTime,
+                    tarTask.deadLine,
+                    b,
+                    tarTask.isDone,
+                    tarTask.isShared,
+                    tarTask.user,
+                    tarTask.groupId,
+                    tarTask.detailsVisibility
+                )
+                updatedTasks[pos] = updatedTask
+                updatedTasks
+            }
+            viewModel.updateUrgentState(b, tasks[pos].id)
+        }
+    }
+
+    private fun SharedTasksRvRowBinding.setDoneUi(
+        tasks: List<Task>,
+        pos: Int
+    ) {
+        doneCheckBox.isChecked = tasks[pos].isDone
     }
 
     private fun SharedTasksRvRowBinding.setEachTaskClick(
@@ -78,11 +146,11 @@ class SharedTaskHolder(
     }
 }
 
-class SharedTasksAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<SharedTaskHolder>() {
+class SharedTasksAdapter(private val tasks: List<Task>, private val viewModel: SharedTasksViewModel) : RecyclerView.Adapter<SharedTaskHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SharedTaskHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
-        return SharedTaskHolder(binding)
+        return SharedTaskHolder(binding, viewModel)
     }
 
     override fun onBindViewHolder(holder: SharedTaskHolder, position: Int) {

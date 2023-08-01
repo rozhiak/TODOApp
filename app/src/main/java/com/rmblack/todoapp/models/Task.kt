@@ -10,14 +10,37 @@ data class Task(
     var title: String,
     @PrimaryKey
     val id: UUID,
-    var description: String,
+    val description: String,
     val addedTime: PersianCalendar,
     val deadLine: PersianCalendar,
-    var isUrgent: Boolean,
-    var isDone: Boolean,
-    var isShared: Boolean,
+    val isUrgent: Boolean,
+    val isDone: Boolean,
+    val isShared: Boolean,
     val user: User,
     val groupId: String) {
+
+    constructor(title: String,
+                id: UUID,
+                description: String,
+                addedTime: PersianCalendar,
+                deadLine: PersianCalendar,
+                isUrgent: Boolean,
+                isDone: Boolean,
+                isShared: Boolean,
+                user: User,
+                groupId: String,
+                detailsVisibility: Boolean) : this(title,
+        id,
+        description,
+        addedTime,
+        deadLine,
+        isUrgent,
+        isDone,
+        isShared,
+        user,
+        groupId) {
+        this.detailsVisibility = detailsVisibility
+    }
 
     @Transient
     var detailsVisibility: Boolean = false

@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_privateTasksFragment_to_sharedTasksFragment"
             app:destination="@id/sharedTasksFragment" />
+        <action
+            android:id="@+id/showEditBottomSheetFP"
+            app:destination="@id/editTaskBottomSheet" />
     </fragment>
 
     <fragment
@@ -23,5 +26,15 @@
         <action
             android:id="@+id/action_sharedTasksFragment_to_privateTasksFragment"
             app:destination="@id/privateTasksFragment" />
+        <action
+            android:id="@+id/showEditBottomSheetFS"
+            app:destination="@id/editTaskBottomSheet" />
     </fragment>
+
+    <dialog
+        tools:layout="@layout/fragment_edit_task_bottom_sheet"
+        android:id="@+id/editTaskBottomSheet"
+        android:name="com.rmblack.todoapp.fragments.EditTaskBottomSheet"
+        android:label="EditTaskBottomSheet" />
+
 </navigation>

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -30,4 +31,17 @@ class SharedTasksViewModel: ViewModel() {
         }
     }
 
+    fun updateTasks(onUpdate: (List<Task>) -> (List<Task>)) {
+        _sharedTasks.update {
+            onUpdate(it)
+        }
+    }
+
+    fun updateUrgentState(isUrgent: Boolean, id: UUID) {
+        taskRepository.updateUrgentState(isUrgent, id)
+    }
+
+    fun updateDoneState(isDone: Boolean, id: UUID) {
+        taskRepository.updateDoneState(isDone, id)
+    }
 }

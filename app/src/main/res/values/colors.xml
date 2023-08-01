@@ -13,7 +13,7 @@
     <color name="urgent_red">#D05D8A</color>
     <color name="gold">#d0a35d</color>
     <color name="purple">#A35DD0</color>
-    <color name="title__black">#CC000000</color>
+    <color name="title_black">#CC000000</color>
     <color name="description_black">#BF000000</color>
 
 </resources>

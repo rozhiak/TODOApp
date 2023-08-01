@@ -4,13 +4,18 @@ import android.content.Context
 import androidx.room.Room
 import com.rmblack.todoapp.database.TaskDatabase
 import com.rmblack.todoapp.models.Task
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
+import java.security.CryptoPrimitive
 import java.util.UUID
 
 private const val DATABASE_NAME ="crime-database"
 
-class TaskRepository private constructor(context: Context) {
+class TaskRepository private constructor(
+    context: Context, private val coroutineScope: CoroutineScope = GlobalScope) {
 
     private val database: TaskDatabase = Room
         .databaseBuilder(
@@ -26,6 +31,17 @@ class TaskRepository private constructor(context: Context) {
 
     fun getSharedTasks(): Flow<List<Task>> = database.taskDao().getSharedTasks()
 
+    fun updateDoneState(isDone: Boolean, id: UUID) {
+        coroutineScope.launch {
+            database.taskDao().updateDoneState(isDone, id)
+        }
+    }
+
+    fun updateUrgentState(isUrgent: Boolean, id: UUID) {
+        coroutineScope.launch {
+            database.taskDao().updateUrgentState(isUrgent, id)
+        }
+    }
 
 
     fun getTask(id: UUID): Task = database.taskDao().getTask(id)

@@ -51,7 +51,7 @@ class TodoApplication : Application() {
             PersianCalendar(),
             PersianCalendar(),
             isUrgent = false,
-            isDone = false,
+            isDone = true,
             isShared = true,
             user = user3,
             groupId = "1234"
@@ -59,11 +59,12 @@ class TodoApplication : Application() {
         val repo = TaskRepository.get()
 
 
-        GlobalScope.launch {
-            repo.insert(task1)
-            repo.insert(task2)
-            repo.insert(task3)
-        }
+//        GlobalScope.launch {
+//            repo.insert(task1)
+//            repo.insert(task2)
+//            repo.insert(task3)
+//        }
+
 
     }
 }

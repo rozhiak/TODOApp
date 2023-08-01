@@ -5,6 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.kapt'
     //serialization
     id 'kotlinx-serialization'
+    //Navigation
+    id 'androidx.navigation.safeargs'
 }
 
 android {

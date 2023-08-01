@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="۱۴۰۲/۰۵/۲۴"
-                android:textColor="@color/title__black"
+                android:textColor="@color/title_black"
                 app:layout_constraintBottom_toBottomOf="@+id/dead_line_iv"
                 app:layout_constraintEnd_toStartOf="@+id/dead_line_iv"
                 app:layout_constraintTop_toTopOf="@+id/dead_line_iv" />
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:justificationMode="inter_word"
                 android:text="توضیحات:"
-                android:textColor="@color/title__black"
+                android:textColor="@color/title_black"
                 app:layout_constraintEnd_toEndOf="@+id/dead_line_iv"
                 app:layout_constraintTop_toBottomOf="@+id/dead_line_iv" />
 

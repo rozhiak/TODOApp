@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
+import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -31,6 +32,7 @@ class SharedTasksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = FragmentSharedTasksBinding.inflate(inflater, container, false)
 
         binding.sharedTasksRv.layoutManager = LinearLayoutManager(context)
@@ -43,11 +45,12 @@ class SharedTasksFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.sharedTasks.collect {
-                    binding.sharedTasksRv.adapter = SharedTasksAdapter(it)
+                    binding.sharedTasksRv.adapter = SharedTasksAdapter(it, viewModel)
                 }
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
