@@ -1,14 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bottom_sheet_background"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:textSize="300dp"
-        android:text="asd"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/collapse_btn"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="24dp"
+        android:tint="@color/green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_down" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/save_btn"
+        android:layout_width="70dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="24dp"
+        android:backgroundTint="@color/green"
+        app:cardCornerRadius="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/collapse_btn">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/iranian_ans"
+            android:text="ذخیره"
+            android:textColor="@color/bottom_sheet_back_color"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:maxLines="3"
+        app:layout_goneMarginBaseline="56dp"
+        app:barrierMargin="56dp"
+        app:layout_goneMarginBottom="50dp"
+        android:textColor="@color/description_black"
+        android:lineSpacingExtra="7dp"
+        android:id="@+id/et_title"
+        android:textDirection="rtl"
+        android:textCursorDrawable="@drawable/cursor_drawable"
+        android:paddingVertical="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColorHint="#74000000"
+        android:background="@drawable/custom_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/iranian_ans"
+        android:hint="عنوان"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/collapse_btn"
+        app:layout_constraintStart_toStartOf="@+id/save_btn"
+        app:layout_constraintTop_toBottomOf="@+id/collapse_btn" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:id="@+id/date_ic"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:tint="@color/green"
+        app:layout_constraintEnd_toEndOf="@+id/et_title"
+        app:layout_constraintTop_toBottomOf="@+id/et_title"
+        app:srcCompat="@drawable/ic_calendar" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_marginTop="3dp"
+        android:textSize="13sp"
+        android:fontFamily="@font/iranian_ans"
+        android:textStyle="bold"
+        android:id="@+id/date_tv"
+        android:layout_marginEnd="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="٢٣ اردیبهشت ١٤٠٢"
+        android:textColor="@color/description_black"
+        app:layout_constraintBottom_toBottomOf="@+id/date_ic"
+        app:layout_constraintEnd_toStartOf="@+id/date_ic"
+        app:layout_constraintTop_toTopOf="@+id/date_ic" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_marginTop="40dp"
+        android:id="@+id/appCompatImageView2"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        app:layout_constraintEnd_toEndOf="@+id/date_ic"
+        app:layout_constraintTop_toBottomOf="@+id/date_ic"
+        app:srcCompat="@drawable/ic_description" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:maxLines="20"
+        android:id="@+id/et_description"
+        android:layout_width="0dp"
+        android:layout_height="600dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="-7dp"
+        android:background="@drawable/custom_edit_text"
+        android:fontFamily="@font/iranian_ans"
+        android:gravity="top"
+        android:hint="توضیحات"
+        android:lineSpacingExtra="7dp"
+        android:paddingVertical="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@color/description_black"
+        android:textColorHint="#74000000"
+        android:textCursorDrawable="@drawable/cursor_drawable"
+        android:textDirection="rtl"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/save_btn"
+        app:layout_constraintTop_toTopOf="@+id/appCompatImageView2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

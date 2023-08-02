@@ -1,3 +1,9 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -75,7 +81,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
     //Serializable
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
-
+    //Date Picker
+    implementation 'com.github.aliab:Persian-Date-Picker-Dialog:1.8.0'
 
 
 

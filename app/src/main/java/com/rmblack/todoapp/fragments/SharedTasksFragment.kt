@@ -9,15 +9,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rmblack.todoapp.adapters.SharedTaskHolder
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class SharedTasksFragment : Fragment() {
+class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
 
     private var _binding : FragmentSharedTasksBinding? = null
 
@@ -44,17 +45,26 @@ class SharedTasksFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.sharedTasks.collect {
-                    binding.sharedTasksRv.adapter = SharedTasksAdapter(it, viewModel)
+                viewModel.sharedTasks.collect {tasks ->
+                    binding.sharedTasksRv.adapter = createSharedTasksAdapter(tasks)
                 }
             }
         }
     }
 
+    private fun createSharedTasksAdapter(tasks: List<Task>) =
+        SharedTasksAdapter(tasks, viewModel, this)
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onEditClick(task: Task) {
+        findNavController().navigate(
+            SharedTasksFragmentDirections.showEditBottomSheetFS()
+        )
     }
 
 }

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.models.Task

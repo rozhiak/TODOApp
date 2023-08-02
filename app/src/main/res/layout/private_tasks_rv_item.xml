@@ -136,6 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textSize="16sp"
                     android:fontFamily="@font/iranian_ans"
                     android:text="ویرایش"
                     android:textColor="#FFFFFF"

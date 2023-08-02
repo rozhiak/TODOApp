@@ -12,8 +12,14 @@ import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 
 class SharedTaskHolder(
     private val binding: SharedTasksRvRowBinding,
-    private val viewModel: SharedTasksViewModel
+    private val viewModel: SharedTasksViewModel,
+    private val editClickListener: EditClickListener
 ) : RecyclerView.ViewHolder(binding.root){
+
+    interface EditClickListener {
+        fun onEditClick(task: Task)
+    }
+
     fun bind(tasks: List<Task>, pos: Int, adapter: SharedTasksAdapter) {
         binding.apply {
             configUrgentSwitch(tasks, pos)
@@ -23,6 +29,16 @@ class SharedTaskHolder(
             setDoneUi(tasks, pos)
             setEachTaskClick(tasks, pos, adapter)
             setTaskDetails(tasks[pos])
+            setEditClick(tasks, pos)
+        }
+    }
+
+    private fun SharedTasksRvRowBinding.setEditClick(
+        tasks: List<Task>,
+        pos: Int
+    ) {
+        editCard.setOnClickListener {
+            editClickListener.onEditClick(tasks[pos])
         }
     }
 
@@ -146,11 +162,14 @@ class SharedTaskHolder(
     }
 }
 
-class SharedTasksAdapter(private val tasks: List<Task>, private val viewModel: SharedTasksViewModel) : RecyclerView.Adapter<SharedTaskHolder>() {
+class SharedTasksAdapter(
+    private val tasks: List<Task>,
+    private val viewModel: SharedTasksViewModel,
+    private val editClickListener: SharedTaskHolder.EditClickListener) : RecyclerView.Adapter<SharedTaskHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SharedTaskHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
-        return SharedTaskHolder(binding, viewModel)
+        return SharedTaskHolder(binding, viewModel, editClickListener)
     }
 
     override fun onBindViewHolder(holder: SharedTaskHolder, position: Int) {
