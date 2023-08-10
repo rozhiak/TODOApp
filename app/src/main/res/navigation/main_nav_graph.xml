@@ -35,6 +35,10 @@
         tools:layout="@layout/fragment_edit_task_bottom_sheet"
         android:id="@+id/editTaskBottomSheet"
         android:name="com.rmblack.todoapp.fragments.EditTaskBottomSheet"
-        android:label="EditTaskBottomSheet" />
+        android:label="EditTaskBottomSheet" >
+        <argument
+            android:name="taskId"
+            app:argType="java.util.UUID" />
+    </dialog>
 
 </navigation>

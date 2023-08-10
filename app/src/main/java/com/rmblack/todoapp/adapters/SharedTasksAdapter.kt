@@ -24,10 +24,10 @@ class SharedTaskHolder(
         binding.apply {
             configUrgentSwitch(tasks, pos)
             configDoneCheckBox(tasks, pos)
-            setDetailVisibility(tasks[pos])
+            setDetailVisibility(viewModel.detailsVisibility[pos])
             setUrgentUi(tasks[pos])
             setDoneUi(tasks, pos)
-            setEachTaskClick(tasks, pos, adapter)
+            setEachTaskClick(pos, adapter)
             setTaskDetails(tasks[pos])
             setEditClick(tasks, pos)
         }
@@ -47,26 +47,7 @@ class SharedTaskHolder(
         pos: Int
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateTasks { oldTasks ->
-                val updatedTasks = oldTasks.toMutableList()
-                val tarTask = tasks[pos]
-                val updatedTask = Task(
-                    tarTask.title,
-                    tarTask.id,
-                    tarTask.description,
-                    tarTask.addedTime,
-                    tarTask.deadLine,
-                    tarTask.isUrgent,
-                    b,
-                    tarTask.isShared,
-                    tarTask.user,
-                    tarTask.groupId,
-                    tarTask.detailsVisibility
-                )
-                updatedTasks[pos] = updatedTask
-                updatedTasks
-            }
-            viewModel.updateDoneState(b, tasks[pos].id)
+            viewModel.updateDoneState(b, tasks[pos].id, pos)
         }
     }
 
@@ -74,27 +55,8 @@ class SharedTaskHolder(
         tasks: List<Task>,
         pos: Int
     ) {
-        urgentSwitchCompat.setOnCheckedChangeListener { _, b ->
-            viewModel.updateTasks { oldTasks ->
-                val updatedTasks = oldTasks.toMutableList()
-                val tarTask = tasks[pos]
-                val updatedTask = Task(
-                    tarTask.title,
-                    tarTask.id,
-                    tarTask.description,
-                    tarTask.addedTime,
-                    tarTask.deadLine,
-                    b,
-                    tarTask.isDone,
-                    tarTask.isShared,
-                    tarTask.user,
-                    tarTask.groupId,
-                    tarTask.detailsVisibility
-                )
-                updatedTasks[pos] = updatedTask
-                updatedTasks
-            }
-            viewModel.updateUrgentState(b, tasks[pos].id)
+        urgentSwitch.setOnCheckedChangeListener { _, b ->
+            viewModel.updateUrgentState(b, tasks[pos].id, pos)
         }
     }
 
@@ -106,20 +68,19 @@ class SharedTaskHolder(
     }
 
     private fun SharedTasksRvRowBinding.setEachTaskClick(
-        tasks: List<Task>,
         pos: Int,
         adapter: SharedTasksAdapter
     ) {
         rootCard.setOnClickListener {
-            if (!tasks[pos].detailsVisibility) {
-                for (i in tasks.indices) {
-                    if (i != pos && tasks[i].detailsVisibility) {
-                        tasks[i].detailsVisibility = !tasks[i].detailsVisibility
+            if (!viewModel.detailsVisibility[pos]) {
+                for (i in viewModel.detailsVisibility.indices) {
+                    if (i != pos && viewModel.detailsVisibility[i]) {
+                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
                         adapter.notifyItemChanged(i)
                     }
                 }
             }
-            tasks[pos].detailsVisibility = !tasks[pos].detailsVisibility
+            viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
             adapter.notifyItemChanged(pos)
         }
     }
@@ -136,27 +97,27 @@ class SharedTaskHolder(
             titleTv.setTextColor(Color.parseColor("#D05D8A"))
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
-            urgentSwitchCompat.isChecked = true
+            urgentSwitch.isChecked = true
         } else {
             titleTv.setTextColor(Color.parseColor("#5DD0A3"))
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
-            urgentSwitchCompat.isChecked = false
+            urgentSwitch.isChecked = false
         }
     }
 
-    private fun SharedTasksRvRowBinding.setDetailVisibility(task: Task) {
-        if (task.detailsVisibility) {
+    private fun SharedTasksRvRowBinding.setDetailVisibility(visibility: Boolean) {
+        if (visibility) {
             descriptionLable.visibility = View.VISIBLE
             descriptionTv.visibility = View.VISIBLE
             urgentLable.visibility = View.VISIBLE
-            urgentSwitchCompat.visibility = View.VISIBLE
+            urgentSwitch.visibility = View.VISIBLE
             editCard.visibility = View.VISIBLE
         } else {
             descriptionLable.visibility = View.GONE
             descriptionTv.visibility = View.GONE
             urgentLable.visibility = View.GONE
-            urgentSwitchCompat.visibility = View.GONE
+            urgentSwitch.visibility = View.GONE
             editCard.visibility = View.GONE
         }
     }

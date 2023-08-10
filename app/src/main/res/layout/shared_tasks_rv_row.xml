@@ -126,18 +126,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:textSize="17sp"
                 android:text="ضروری"
                 android:textColor="@color/urgent_red"
                 app:layout_constraintEnd_toEndOf="@+id/description_tv"
                 app:layout_constraintTop_toBottomOf="@+id/description_tv" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:padding="3dp"
-                android:theme="@style/UrgentSwitchTheme"
-                android:id="@+id/urgent_switch_compat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTintMode="multiply"
+            <com.suke.widget.SwitchButton
+                app:sb_background="@color/white"
+                app:sb_checked_color="@color/urgent_red"
+                android:id="@+id/urgent_switch"
+                android:layout_width="53dp"
+                android:layout_height="33dp"
                 app:layout_constraintBottom_toBottomOf="@+id/urgent_lable"
                 app:layout_constraintStart_toStartOf="@+id/description_tv"
                 app:layout_constraintTop_toTopOf="@+id/urgent_lable" />
@@ -151,8 +151,8 @@
                 app:cardCornerRadius="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
-                app:layout_constraintStart_toStartOf="@+id/urgent_switch_compat"
-                app:layout_constraintTop_toBottomOf="@+id/urgent_switch_compat">
+                app:layout_constraintStart_toStartOf="@+id/urgent_switch"
+                app:layout_constraintTop_toBottomOf="@+id/urgent_switch">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"

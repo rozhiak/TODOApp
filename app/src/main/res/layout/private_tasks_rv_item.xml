@@ -86,17 +86,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/dead_line_iv" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="17dp"
+                android:layout_marginTop="35dp"
                 android:id="@+id/description_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
                 android:justificationMode="inter_word"
                 android:text="سیم پنکه اتصالی داره که از داخل دکمه باید درست بشه. ضمنا باید توجه داشت که اگر پیچ داخل دکمه به درستی سفت نشه میتونه باعث ایجاد جرقه بشه پس باید به این موضوع دقت کرد."
                 android:textColor="@color/description_black"
                 app:layout_constraintEnd_toEndOf="@+id/description_lable"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/description_lable" />
+                app:layout_constraintTop_toBottomOf="@+id/dead_line_tv" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:textStyle="bold"
@@ -104,18 +104,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:textSize="17sp"
                 android:text="ضروری"
                 android:textColor="@color/urgent_red"
                 app:layout_constraintEnd_toEndOf="@+id/description_tv"
                 app:layout_constraintTop_toBottomOf="@+id/description_tv" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:padding="3dp"
-                android:theme="@style/UrgentSwitchTheme"
-                android:id="@+id/urgent_switch_compat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTintMode="multiply"
+            <com.suke.widget.SwitchButton
+                app:sb_background="@color/white"
+                app:sb_checked_color="@color/urgent_red"
+                android:id="@+id/urgent_switch"
+                android:layout_width="53dp"
+                android:layout_height="33dp"
                 app:layout_constraintBottom_toBottomOf="@+id/urgent_lable"
                 app:layout_constraintStart_toStartOf="@+id/description_tv"
                 app:layout_constraintTop_toTopOf="@+id/urgent_lable" />
@@ -129,8 +129,8 @@
                 app:cardCornerRadius="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
-                app:layout_constraintStart_toStartOf="@+id/urgent_switch_compat"
-                app:layout_constraintTop_toBottomOf="@+id/urgent_switch_compat">
+                app:layout_constraintStart_toStartOf="@+id/urgent_switch"
+                app:layout_constraintTop_toBottomOf="@+id/urgent_switch">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"

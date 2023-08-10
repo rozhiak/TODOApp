@@ -63,7 +63,7 @@ class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
 
     override fun onEditClick(task: Task) {
         findNavController().navigate(
-            SharedTasksFragmentDirections.showEditBottomSheetFS()
+            SharedTasksFragmentDirections.showEditBottomSheetFS(task.id)
         )
     }
 

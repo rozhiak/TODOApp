@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.models
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.aminography.primecalendar.persian.PersianCalendar
 import java.util.UUID
@@ -17,32 +18,5 @@ data class Task(
     val isDone: Boolean,
     val isShared: Boolean,
     val user: User,
-    val groupId: String) {
-
-    constructor(title: String,
-                id: UUID,
-                description: String,
-                addedTime: PersianCalendar,
-                deadLine: PersianCalendar,
-                isUrgent: Boolean,
-                isDone: Boolean,
-                isShared: Boolean,
-                user: User,
-                groupId: String,
-                detailsVisibility: Boolean) : this(title,
-        id,
-        description,
-        addedTime,
-        deadLine,
-        isUrgent,
-        isDone,
-        isShared,
-        user,
-        groupId) {
-        this.detailsVisibility = detailsVisibility
-    }
-
-    @Transient
-    var detailsVisibility: Boolean = false
-
-}
+    val groupId: String,
+)

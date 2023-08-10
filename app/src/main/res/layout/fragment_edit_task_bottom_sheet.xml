@@ -83,7 +83,7 @@
         android:textSize="13sp"
         android:fontFamily="@font/iranian_ans"
         android:textStyle="bold"
-        android:id="@+id/date_tv"
+        android:id="@+id/deadline_tv"
         android:layout_marginEnd="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -93,13 +93,36 @@
         app:layout_constraintEnd_toStartOf="@+id/date_ic"
         app:layout_constraintTop_toTopOf="@+id/date_ic" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_marginTop="16dp"
+        android:id="@+id/urgent_lable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ضروری"
+        android:textColor="@color/urgent_red"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/date_ic"
+        app:layout_constraintTop_toBottomOf="@+id/date_ic" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/urgent_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTintMode="multiply"
+        android:padding="3dp"
+        android:theme="@style/UrgentSwitchTheme"
+        app:layout_constraintBottom_toBottomOf="@+id/urgent_lable"
+        app:layout_constraintStart_toStartOf="@+id/save_btn"
+        app:layout_constraintTop_toTopOf="@+id/urgent_lable" />
+
     <androidx.appcompat.widget.AppCompatImageView
-        android:layout_marginTop="40dp"
-        android:id="@+id/appCompatImageView2"
+        android:layout_marginTop="32dp"
+        android:id="@+id/description_iv"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        app:layout_constraintEnd_toEndOf="@+id/date_ic"
-        app:layout_constraintTop_toBottomOf="@+id/date_ic"
+        app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
+        app:layout_constraintTop_toBottomOf="@+id/urgent_lable"
         app:srcCompat="@drawable/ic_description" />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -122,9 +145,9 @@
         android:textCursorDrawable="@drawable/cursor_drawable"
         android:textDirection="rtl"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
+        app:layout_constraintEnd_toStartOf="@+id/description_iv"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/save_btn"
-        app:layout_constraintTop_toTopOf="@+id/appCompatImageView2" />
+        app:layout_constraintTop_toTopOf="@+id/description_iv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

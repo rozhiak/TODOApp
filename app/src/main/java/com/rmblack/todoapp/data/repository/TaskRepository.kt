@@ -5,17 +5,19 @@ import androidx.room.Room
 import com.rmblack.todoapp.database.TaskDatabase
 import com.rmblack.todoapp.models.Task
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
-import java.security.CryptoPrimitive
 import java.util.UUID
 
 private const val DATABASE_NAME ="crime-database"
 
 class TaskRepository private constructor(
-    context: Context, private val coroutineScope: CoroutineScope = GlobalScope) {
+    context: Context,
+    private val coroutineScope: CoroutineScope = GlobalScope) {
 
     private val database: TaskDatabase = Room
         .databaseBuilder(
@@ -27,9 +29,17 @@ class TaskRepository private constructor(
 
     fun getTasks(): Flow<List<Task>> = database.taskDao().getTasks()
 
+    fun getTask(id: UUID) = database.taskDao().getTask(id)
+
     fun getPrivateTasks(): Flow<List<Task>> = database.taskDao().getPrivateTasks()
 
     fun getSharedTasks(): Flow<List<Task>> = database.taskDao().getSharedTasks()
+
+    fun updateTask(task: Task) {
+        coroutineScope.launch {
+            database.taskDao().updateTask(task)
+        }
+    }
 
     fun updateDoneState(isDone: Boolean, id: UUID) {
         coroutineScope.launch {
@@ -38,13 +48,10 @@ class TaskRepository private constructor(
     }
 
     fun updateUrgentState(isUrgent: Boolean, id: UUID) {
-        coroutineScope.launch {
+        coroutineScope.launch() {
             database.taskDao().updateUrgentState(isUrgent, id)
         }
     }
-
-
-    fun getTask(id: UUID): Task = database.taskDao().getTask(id)
 
     fun insert(task: Task) = database.taskDao().insert(task)
 

@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         wireUpBottomNav()
@@ -28,5 +29,12 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         val navController: NavController = navHostFragment?.findNavController() ?: return
         binding.bottomNavigationView.setupWithNavController(navController)
+
+        //work on clearing back stack
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            if (destination.id == R.id.privateTasksFragment) {
+//                navController.popBackStack()
+//            }
+//        }
     }
 }

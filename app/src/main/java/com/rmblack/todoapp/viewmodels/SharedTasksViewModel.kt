@@ -23,10 +23,22 @@ class SharedTasksViewModel: ViewModel() {
     val sharedTasks
         get() = _sharedTasks.asStateFlow()
 
+    private val _detailsVisibility: ArrayList<Boolean> = ArrayList()
+
+    val detailsVisibility: List<Boolean>
+        get() = _detailsVisibility.toList()
+
     init {
         viewModelScope.launch {
             taskRepository.getSharedTasks().collect {
                 _sharedTasks.value = it
+
+                while (_detailsVisibility.size < it.size) {
+                    _detailsVisibility.add(false)
+                }
+                while (_detailsVisibility.size > it.size) {
+                    _detailsVisibility.removeAt(_detailsVisibility.size - 1)
+                }
             }
         }
     }
@@ -37,11 +49,27 @@ class SharedTasksViewModel: ViewModel() {
         }
     }
 
-    fun updateUrgentState(isUrgent: Boolean, id: UUID) {
+    fun updateUrgentState(isUrgent: Boolean, id: UUID, pos: Int) {
+        updateTasks { oldTasks ->
+            val updatedTasks = oldTasks.toMutableList()
+            updatedTasks[pos] = sharedTasks.value[pos].copy(isUrgent = isUrgent)
+            updatedTasks
+        }
+
         taskRepository.updateUrgentState(isUrgent, id)
     }
 
-    fun updateDoneState(isDone: Boolean, id: UUID) {
+    fun updateDoneState(isDone: Boolean, id: UUID, pos: Int) {
+        updateTasks { oldTasks ->
+            val updatedTasks = oldTasks.toMutableList()
+            updatedTasks[pos] = sharedTasks.value[pos].copy(isDone = isDone)
+            updatedTasks
+        }
+
         taskRepository.updateDoneState(isDone, id)
+    }
+
+    fun updateVisibility(index: Int, visibility: Boolean) {
+        if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
     }
 }

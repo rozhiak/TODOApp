@@ -1,15 +1,17 @@
 package com.rmblack.todoapp.adapters
 
+import android.R
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
+import com.suke.widget.SwitchButton
+
 
 class PrivateTaskHolder(
      private val binding: PrivateTasksRvItemBinding,
@@ -17,7 +19,6 @@ class PrivateTaskHolder(
      private val editClickListener: EditClickListener
 ) :RecyclerView.ViewHolder(binding.root) {
 
-    //this should be implemented for Shared fragment too
     interface EditClickListener {
         fun onEditClick(task: Task)
     }
@@ -28,11 +29,11 @@ class PrivateTaskHolder(
         binding.apply {
             configUrgentSwitch(viewModel, tasks, pos)
             configDoneCheckBox(viewModel, tasks, pos)
-            setDetailsVisibility(tasks[pos])
+            setDetailsVisibility(viewModel.detailsVisibility[pos])
             setUrgentUi(tasks[pos])
             setDoneUi(tasks, pos)
-            setEachTaskClick(tasks, pos, adapter)
-            setTaskDetails(tasks, pos)
+            setEachTaskClick(pos, adapter)
+            setTaskDetails(tasks[pos])
             setEditClick(tasks, pos)
         }
     }
@@ -58,26 +59,9 @@ class PrivateTaskHolder(
         tasks: List<Task>,
         pos: Int
     ) {
-        urgentSwitchCompat.setOnCheckedChangeListener { _, b ->
-            viewModel.updateTask { oldTasks ->
-                val updatedTasks = oldTasks.toMutableList()
-                val tarTask = tasks[pos]
-                val updatedTask = Task(
-                    tarTask.title,
-                    tarTask.id,
-                    tarTask.description,
-                    tarTask.addedTime,
-                    tarTask.deadLine,
-                    b,
-                    tarTask.isDone,
-                    tarTask.isShared,
-                    tarTask.user,
-                    tarTask.groupId,
-                    tarTask.detailsVisibility)
-                updatedTasks[pos] = updatedTask
-                updatedTasks
-            }
-            viewModel.updateUrgentState(b, tasks[pos].id)
+
+        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateUrgentState(isChecked, tasks[pos].id, pos)
         }
     }
 
@@ -87,54 +71,35 @@ class PrivateTaskHolder(
         pos: Int
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateTask { oldTasks ->
-                val updatedTasks = oldTasks.toMutableList()
-                val tarTask = tasks[pos]
-                val updatedTask = Task(
-                    tarTask.title,
-                    tarTask.id,
-                    tarTask.description,
-                    tarTask.addedTime,
-                    tarTask.deadLine,
-                    tarTask.isUrgent,
-                    b,
-                    tarTask.isShared,
-                    tarTask.user,
-                    tarTask.groupId,
-                    tarTask.detailsVisibility)
-                updatedTasks[pos] = updatedTask
-                updatedTasks
-            }
-            viewModel.updateDoneState(b, tasks[pos].id)
+            viewModel.updateDoneState(b, tasks[pos].id, pos)
         }
     }
 
     private fun PrivateTasksRvItemBinding.setEachTaskClick(
-        tasks: List<Task>,
         pos: Int,
         adapter: PrivateTaskListAdapter
     ) {
         rootCard.setOnClickListener {
-            if (!tasks[pos].detailsVisibility) {
-                for (i in tasks.indices) {
-                    if (i != pos && tasks[i].detailsVisibility) {
-                        tasks[i].detailsVisibility = !tasks[i].detailsVisibility
+            println(viewModel.detailsVisibility)
+            if (!viewModel.detailsVisibility[pos]) {
+                for (i in viewModel.detailsVisibility.indices) {
+                    if (i != pos && viewModel.detailsVisibility[i]) {
+                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
                         adapter.notifyItemChanged(i)
                     }
                 }
             }
-            tasks[pos].detailsVisibility = !tasks[pos].detailsVisibility
+            viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
             adapter.notifyItemChanged(pos)
         }
     }
 
     private fun PrivateTasksRvItemBinding.setTaskDetails(
-        tasks: List<Task>,
-        pos: Int
+        task: Task
     ) {
-        titleTv.text = tasks[pos].title
-        deadLineTv.text = tasks[pos].deadLine.shortDateString
-        descriptionTv.text = tasks[pos].description
+        titleTv.text = task.title
+        deadLineTv.text = task.deadLine.shortDateString
+        descriptionTv.text = task.description
     }
 
     private fun PrivateTasksRvItemBinding.setUrgentUi(task: Task) {
@@ -142,27 +107,27 @@ class PrivateTaskHolder(
             titleTv.setTextColor(Color.parseColor("#D05D8A"))
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
-            urgentSwitchCompat.isChecked = true
+            urgentSwitch.isChecked = true
         } else {
             titleTv.setTextColor(Color.parseColor("#5DD0A3"))
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
-            urgentSwitchCompat.isChecked = false
+            urgentSwitch.isChecked = false
         }
     }
 
-    private fun PrivateTasksRvItemBinding.setDetailsVisibility(task: Task) {
-        if (task.detailsVisibility) {
+    private fun PrivateTasksRvItemBinding.setDetailsVisibility(visibility: Boolean) {
+        if (visibility) {
             descriptionLable.visibility = View.VISIBLE
             descriptionTv.visibility = View.VISIBLE
             urgentLable.visibility = View.VISIBLE
-            urgentSwitchCompat.visibility = View.VISIBLE
+            urgentSwitch.visibility = View.VISIBLE
             editCard.visibility = View.VISIBLE
         } else {
             descriptionLable.visibility = View.GONE
             descriptionTv.visibility = View.GONE
             urgentLable.visibility = View.GONE
-            urgentSwitchCompat.visibility = View.GONE
+            urgentSwitch.visibility = View.GONE
             editCard.visibility = View.GONE
         }
     }
