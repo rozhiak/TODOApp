@@ -16,5 +16,6 @@
     <color name="title_black">#CC000000</color>
     <color name="description_black">#BF000000</color>
     <color name="bottom_sheet_back_color">#eefaf5</color>
+    <color name="segmented_btn_back_color">#E5F3ED</color>
 
 </resources>

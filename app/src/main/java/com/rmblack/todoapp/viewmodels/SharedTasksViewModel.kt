@@ -36,8 +36,14 @@ class SharedTasksViewModel: ViewModel() {
                 while (_detailsVisibility.size < it.size) {
                     _detailsVisibility.add(false)
                 }
-                while (_detailsVisibility.size > it.size) {
-                    _detailsVisibility.removeAt(_detailsVisibility.size - 1)
+                if(_detailsVisibility.size > it.size) {
+                    _detailsVisibility.removeAt(0)
+                    for (i in _detailsVisibility.indices) {
+                        if (detailsVisibility[i]) {
+                            _detailsVisibility[i] = false
+                            break
+                        }
+                    }
                 }
             }
         }

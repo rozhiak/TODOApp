@@ -105,24 +105,70 @@
         app:layout_constraintEnd_toEndOf="@+id/date_ic"
         app:layout_constraintTop_toBottomOf="@+id/date_ic" />
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.suke.widget.SwitchButton
+        app:sb_background="@color/bottom_sheet_back_color"
+        app:sb_checked_color="@color/urgent_red"
         android:id="@+id/urgent_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTintMode="multiply"
-        android:padding="3dp"
-        android:theme="@style/UrgentSwitchTheme"
         app:layout_constraintBottom_toBottomOf="@+id/urgent_lable"
         app:layout_constraintStart_toStartOf="@+id/save_btn"
         app:layout_constraintTop_toTopOf="@+id/urgent_lable" />
+
+    <com.addisonelliott.segmentedbutton.SegmentedButtonGroup
+        android:id="@+id/segmented_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="32dp"
+        android:background="@color/segmented_btn_back_color"
+        app:borderColor="@color/green"
+        app:borderWidth="0dp"
+        app:divider="@color/bottom_sheet_back_color"
+        app:dividerWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/urgent_lable"
+        app:position="1"
+        app:radius="30dp"
+        app:ripple="false"
+        app:selectedBackground="@color/green"
+        app:selectedButtonRadius="30dp">
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/iranian_ans"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:selectedTextColor="@color/white"
+            app:text="اشتراکی"
+            app:textColor="#81000000" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:textStyle="bold"
+            android:fontFamily="@font/iranian_ans"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:selectedTextColor="@color/white"
+            app:text="خصوصی"
+            app:textColor="#81000000" />
+
+    </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_marginTop="32dp"
         android:id="@+id/description_iv"
         android:layout_width="23dp"
         android:layout_height="23dp"
-        app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
-        app:layout_constraintTop_toBottomOf="@+id/urgent_lable"
+        app:layout_constraintEnd_toEndOf="@+id/segmented_btn"
+        app:layout_constraintTop_toBottomOf="@+id/segmented_btn"
         app:srcCompat="@drawable/ic_description" />
 
     <androidx.appcompat.widget.AppCompatEditText

@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
+import com.addisonelliott.segmentedbutton.SegmentedButtonGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
@@ -56,22 +57,31 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         binding.apply {
             etTitle.doOnTextChanged { text, _, _, _ ->
                 viewModel.updateTask { oldTask ->
-                    val updatedTask = oldTask.copy(title = text.toString())
-                    updatedTask
+                    oldTask.copy(title = text.toString())
                 }
             }
 
             urgentSwitch.setOnCheckedChangeListener { _, b ->
                 viewModel.updateTask { oldTask ->
-                    val updatedTask = oldTask.copy(isUrgent = b)
-                    updatedTask
+                    oldTask.copy(isUrgent = b)
                 }
             }
 
             etDescription.doOnTextChanged { text, _, _, _ ->
                 viewModel.updateTask { oldTask ->
-                    val updatedTask = oldTask.copy(description = text.toString())
-                    updatedTask
+                    oldTask.copy(description = text.toString())
+                }
+            }
+
+            segmentedBtn.setOnPositionChangedListener {pos ->
+                if (pos == 1) {
+                    viewModel.updateTask {oldTask ->
+                        oldTask.copy(isShared = false)
+                    }
+                } else if (pos == 0) {
+                    viewModel.updateTask {oldTask ->
+                        oldTask.copy(isShared = true)
+                    }
                 }
             }
         }
@@ -81,12 +91,17 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.task.collect { task ->
-                    task?.let {
+                    task?.let {task ->
                         binding.apply {
-                            urgentSwitch.isChecked = it.isUrgent
-                            etTitle.setText(it.title)
-                            deadlineTv.text = it.deadLine.longDateString
-                            etDescription.setText(it.description)
+                            urgentSwitch.isChecked = task.isUrgent
+                            etTitle.setText(task.title)
+                            deadlineTv.text = task.deadLine.longDateString
+                            etDescription.setText(task.description)
+                            if (task.isShared) {
+                                segmentedBtn.setPosition(0, false)
+                            } else {
+                                segmentedBtn.setPosition(1, false)
+                            }
                         }
                     }
                 }

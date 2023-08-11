@@ -12,14 +12,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style
-        name="UrgentSwitchTheme"
-        parent="Theme.AppCompat.Light">
-        <item name="colorControlActivated">@color/urgent_red</item>
-        <item name="colorSwitchThumbNormal">#B9D05D8A</item>
-        <item name="android:colorForeground">#85D05D8A</item>
-    </style>
-
     <style name="AppBottomSheetDialogTheme"
         parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>

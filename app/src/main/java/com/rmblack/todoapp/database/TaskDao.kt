@@ -24,14 +24,14 @@ interface TaskDao {
     fun getTask(id: UUID): Task
 
     @Update
-    fun updateTask(task: Task)
+    suspend fun updateTask(task: Task)
 
     @Query("UPDATE task SET isDone=:isDone WHERE id = :id")
-    fun updateDoneState(isDone: Boolean, id: UUID)
+    suspend fun updateDoneState(isDone: Boolean, id: UUID)
 
     @Query("UPDATE task SET isUrgent=:isUrgent WHERE id = :id")
-    fun updateUrgentState(isUrgent: Boolean, id: UUID)
+    suspend fun updateUrgentState(isUrgent: Boolean, id: UUID)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(task: Task)
+    suspend fun insert(task: Task)
 }

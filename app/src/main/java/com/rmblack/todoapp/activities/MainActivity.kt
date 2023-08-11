@@ -8,8 +8,11 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
+import com.rmblack.todoapp.models.Task
+import java.util.UUID
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,12 +32,5 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         val navController: NavController = navHostFragment?.findNavController() ?: return
         binding.bottomNavigationView.setupWithNavController(navController)
-
-        //work on clearing back stack
-//        navController.addOnDestinationChangedListener { _, destination, _ ->
-//            if (destination.id == R.id.privateTasksFragment) {
-//                navController.popBackStack()
-//            }
-//        }
     }
 }

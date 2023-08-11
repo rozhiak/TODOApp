@@ -59,7 +59,6 @@ class PrivateTaskHolder(
         tasks: List<Task>,
         pos: Int
     ) {
-
         urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.updateUrgentState(isChecked, tasks[pos].id, pos)
         }

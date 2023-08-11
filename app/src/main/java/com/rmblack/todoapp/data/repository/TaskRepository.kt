@@ -53,7 +53,7 @@ class TaskRepository private constructor(
         }
     }
 
-    fun insert(task: Task) = database.taskDao().insert(task)
+    suspend fun insert(task: Task) = database.taskDao().insert(task)
 
     companion object {
         private var INSTANCE: TaskRepository? = null
