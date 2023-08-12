@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -48,14 +49,22 @@ class PrivateTasksFragment : Fragment(), PrivateTaskHolder.EditClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.privateTasks.collect {tasks ->
+                    val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
+                    val firstVisibleItem = layoutManager.getChildAt(0)
+                    val pos = layoutManager.findFirstVisibleItemPosition()
+                    val offset = firstVisibleItem?.top ?: 0
+                    val marginTop = firstVisibleItem?.marginTop ?: 0
+
                     binding.privateTasksRv.adapter = createPrivateTasksAdapter(tasks)
+                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
                 }
             }
         }
     }
 
-    private fun createPrivateTasksAdapter(tasks: List<Task>) =
-        PrivateTaskListAdapter(tasks, viewModel, this)
+    private fun createPrivateTasksAdapter(tasks: List<Task>): PrivateTaskListAdapter {
+        return PrivateTaskListAdapter(tasks, viewModel, this)
+    }
 
 
     override fun onDestroyView() {

@@ -60,9 +60,9 @@ class TodoApplication : Application() {
 
 
         GlobalScope.launch {
-            repo.insert(task1)
-            repo.insert(task2)
-            repo.insert(task3)
+            repo.addTask(task1)
+            repo.addTask(task2)
+            repo.addTask(task3)
         }
 
 

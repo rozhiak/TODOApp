@@ -5,9 +5,7 @@ import androidx.room.Room
 import com.rmblack.todoapp.database.TaskDatabase
 import com.rmblack.todoapp.models.Task
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
@@ -53,7 +51,7 @@ class TaskRepository private constructor(
         }
     }
 
-    suspend fun insert(task: Task) = database.taskDao().insert(task)
+    suspend fun addTask(task: Task) = database.taskDao().insert(task)
 
     companion object {
         private var INSTANCE: TaskRepository? = null

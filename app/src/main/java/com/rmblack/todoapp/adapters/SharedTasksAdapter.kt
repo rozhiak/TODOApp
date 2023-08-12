@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.SharedTasksRvRowBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
@@ -30,6 +31,15 @@ class SharedTaskHolder(
             setEachTaskClick(pos, adapter)
             setTaskDetails(tasks[pos])
             setEditClick(tasks, pos)
+            setBackground(pos)
+        }
+    }
+
+    private fun SharedTasksRvRowBinding.setBackground(pos: Int) {
+        if (viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+        } else {
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
         }
     }
 

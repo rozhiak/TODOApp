@@ -11,6 +11,8 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root_constraint"
+        android:background="@color/main_back_color"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

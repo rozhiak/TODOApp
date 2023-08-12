@@ -17,5 +17,7 @@
     <color name="description_black">#BF000000</color>
     <color name="bottom_sheet_back_color">#eefaf5</color>
     <color name="segmented_btn_back_color">#E5F3ED</color>
+    <color name="main_back_color">#19E2FFF3</color>
+    <color name="selected_item_color">#19E2FFF3</color>
 
 </resources>

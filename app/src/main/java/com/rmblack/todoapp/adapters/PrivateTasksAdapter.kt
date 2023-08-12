@@ -1,17 +1,15 @@
 package com.rmblack.todoapp.adapters
 
-import android.R
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
-import com.suke.widget.SwitchButton
-
 
 class PrivateTaskHolder(
      private val binding: PrivateTasksRvItemBinding,
@@ -35,6 +33,15 @@ class PrivateTaskHolder(
             setEachTaskClick(pos, adapter)
             setTaskDetails(tasks[pos])
             setEditClick(tasks, pos)
+            setBackground(pos)
+        }
+    }
+
+    private fun PrivateTasksRvItemBinding.setBackground(pos: Int) {
+        if (viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+        } else {
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
         }
     }
 
@@ -79,7 +86,6 @@ class PrivateTaskHolder(
         adapter: PrivateTaskListAdapter
     ) {
         rootCard.setOnClickListener {
-            println(viewModel.detailsVisibility)
             if (!viewModel.detailsVisibility[pos]) {
                 for (i in viewModel.detailsVisibility.indices) {
                     if (i != pos && viewModel.detailsVisibility[i]) {

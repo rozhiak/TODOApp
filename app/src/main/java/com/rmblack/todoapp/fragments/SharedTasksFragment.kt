@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginTop
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -46,7 +47,14 @@ class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.sharedTasks.collect {tasks ->
+                    val layoutManager = binding.sharedTasksRv.layoutManager as LinearLayoutManager
+                    val firstVisibleItem = layoutManager.getChildAt(0)
+                    val pos = layoutManager.findFirstVisibleItemPosition()
+                    val offset = firstVisibleItem?.top ?: 0
+                    val marginTop = firstVisibleItem?.marginTop ?: 0
+
                     binding.sharedTasksRv.adapter = createSharedTasksAdapter(tasks)
+                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
                 }
             }
         }
