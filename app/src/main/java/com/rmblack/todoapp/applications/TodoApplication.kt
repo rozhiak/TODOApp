@@ -61,7 +61,7 @@ class TodoApplication : Application() {
 
         GlobalScope.launch {
             repo.addTask(task1)
-            repo.addTask(task2)
+//            repo.addTask(task2)
             repo.addTask(task3)
         }
 

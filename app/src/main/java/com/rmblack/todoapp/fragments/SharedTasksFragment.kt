@@ -70,9 +70,11 @@ class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
     }
 
     override fun onEditClick(task: Task) {
-        findNavController().navigate(
-            SharedTasksFragmentDirections.showEditBottomSheetFS(task.id)
-        )
+        val editTaskBottomSheet = EditTaskBottomSheet()
+        val args = Bundle()
+        args.putSerializable("taskId", task.id)
+        editTaskBottomSheet.arguments = args
+        editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }
 
 }

@@ -74,8 +74,10 @@ class PrivateTasksFragment : Fragment(), PrivateTaskHolder.EditClickListener {
     }
 
     override fun onEditClick(task: Task) {
-        findNavController().navigate(
-            PrivateTasksFragmentDirections.showEditBottomSheetFP(task.id)
-        )
+        val editTaskBottomSheet = EditTaskBottomSheet()
+        val args = Bundle()
+        args.putSerializable("taskId", task.id)
+        editTaskBottomSheet.arguments = args
+        editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }
 }
