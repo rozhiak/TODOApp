@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.SharedTasksRvRowBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
@@ -14,23 +13,29 @@ import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 class SharedTaskHolder(
     private val binding: SharedTasksRvRowBinding,
     private val viewModel: SharedTasksViewModel,
-    private val editClickListener: EditClickListener
+    private val editClickListener: EditClickListener,
+    private val recyclerView: RecyclerView
 ) : RecyclerView.ViewHolder(binding.root){
 
     interface EditClickListener {
         fun onEditClick(task: Task)
     }
 
-    fun bind(tasks: List<Task>, pos: Int, adapter: SharedTasksAdapter) {
+    fun bind(
+        tasks: List<Task>,
+        pos: Int,
+        adapter: SharedTasksAdapter
+    ) {
+        val task = tasks[pos]
         binding.apply {
-            configUrgentSwitch(tasks, pos)
-            configDoneCheckBox(tasks, pos)
-            setDetailVisibility(viewModel.detailsVisibility[pos])
-            setUrgentUi(tasks[pos])
-            setDoneUi(tasks, pos)
+            configUrgentSwitch(task, pos)
+            configDoneCheckBox(task, pos)
+            setDetailsVisibility(viewModel.detailsVisibility[pos])
+            setUrgentUi(task)
+            setDoneUi(task)
             setEachTaskClick(pos, adapter)
-            setTaskDetails(tasks[pos])
-            setEditClick(tasks, pos)
+            setTaskDetails(task)
+            setEditClick(task)
             setBackground(pos)
         }
     }
@@ -44,37 +49,35 @@ class SharedTaskHolder(
     }
 
     private fun SharedTasksRvRowBinding.setEditClick(
-        tasks: List<Task>,
-        pos: Int
+        task: Task
     ) {
         editCard.setOnClickListener {
-            editClickListener.onEditClick(tasks[pos])
+            editClickListener.onEditClick(task)
         }
     }
 
     private fun SharedTasksRvRowBinding.configDoneCheckBox(
-        tasks: List<Task>,
+        task: Task,
         pos: Int
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateDoneState(b, tasks[pos].id, pos)
+            viewModel.updateDoneState(b, task.id, pos)
         }
     }
 
     private fun SharedTasksRvRowBinding.configUrgentSwitch(
-        tasks: List<Task>,
+        task: Task,
         pos: Int
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, b ->
-            viewModel.updateUrgentState(b, tasks[pos].id, pos)
+            viewModel.updateUrgentState(b, task.id, pos)
         }
     }
 
     private fun SharedTasksRvRowBinding.setDoneUi(
-        tasks: List<Task>,
-        pos: Int
+        task: Task
     ) {
-        doneCheckBox.isChecked = tasks[pos].isDone
+        doneCheckBox.isChecked = task.isDone
     }
 
     private fun SharedTasksRvRowBinding.setEachTaskClick(
@@ -92,6 +95,9 @@ class SharedTaskHolder(
             }
             viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
             adapter.notifyItemChanged(pos)
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(pos)
+            }
         }
     }
 
@@ -116,7 +122,7 @@ class SharedTaskHolder(
         }
     }
 
-    private fun SharedTasksRvRowBinding.setDetailVisibility(visibility: Boolean) {
+    private fun SharedTasksRvRowBinding.setDetailsVisibility(visibility: Boolean) {
         if (visibility) {
             descriptionLable.visibility = View.VISIBLE
             descriptionTv.visibility = View.VISIBLE
@@ -137,10 +143,18 @@ class SharedTasksAdapter(
     private val tasks: List<Task>,
     private val viewModel: SharedTasksViewModel,
     private val editClickListener: SharedTaskHolder.EditClickListener) : RecyclerView.Adapter<SharedTaskHolder>() {
+
+    private lateinit var recyclerView: RecyclerView
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SharedTaskHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
-        return SharedTaskHolder(binding, viewModel, editClickListener)
+        return SharedTaskHolder(binding, viewModel, editClickListener, recyclerView)
     }
 
     override fun onBindViewHolder(holder: SharedTaskHolder, position: Int) {

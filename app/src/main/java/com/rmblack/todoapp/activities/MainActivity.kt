@@ -4,15 +4,19 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.aminography.primecalendar.persian.PersianCalendar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
+import com.rmblack.todoapp.fragments.PrivateTasksFragment
+import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.models.User
 import com.rmblack.todoapp.viewmodels.MainViewModel
@@ -38,14 +42,29 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.background = null
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-        val navController: NavController = navHostFragment?.findNavController() ?: return
-        binding.bottomNavigationView.setupWithNavController(navController)
+
+        val firstFragment: Fragment = PrivateTasksFragment()
+        val secondFragment: Fragment = SharedTasksFragment()
+        val fm = supportFragmentManager
+
+        fm.beginTransaction().add(R.id.fragment_container, secondFragment, "2").hide(secondFragment).commit()
+        fm.beginTransaction().add(R.id.fragment_container, firstFragment, "1").commit()
+
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.privateTasksFragment -> {
+                    fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
+                }
+                R.id.sharedTasksFragment -> {
+                    fm.beginTransaction().hide(firstFragment).show(secondFragment).commit()
+                }
+            }
+            true
+        }
 
         binding.fab.setOnClickListener {
             showNewTask()
         }
-
     }
 
     private fun showNewTask() {

@@ -14,25 +14,29 @@ import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 class PrivateTaskHolder(
      private val binding: PrivateTasksRvItemBinding,
      private val viewModel: PrivateTasksViewModel,
-     private val editClickListener: EditClickListener
+     private val editClickListener: EditClickListener,
+     private val recyclerView: RecyclerView
 ) :RecyclerView.ViewHolder(binding.root) {
 
     interface EditClickListener {
         fun onEditClick(task: Task)
     }
 
-    fun bind(tasks: List<Task>,
-             pos: Int,
-             adapter: PrivateTaskListAdapter) {
+    fun bind(
+        tasks: List<Task>,
+        pos: Int,
+        adapter: PrivateTaskListAdapter
+    ) {
+        val task = tasks[pos]
         binding.apply {
-            configUrgentSwitch(viewModel, tasks, pos)
-            configDoneCheckBox(viewModel, tasks, pos)
+            configUrgentSwitch(task, pos)
+            configDoneCheckBox(task, pos)
             setDetailsVisibility(viewModel.detailsVisibility[pos])
-            setUrgentUi(tasks[pos])
-            setDoneUi(tasks, pos)
+            setUrgentUi(task)
+            setDoneUi(task)
             setEachTaskClick(pos, adapter)
-            setTaskDetails(tasks[pos])
-            setEditClick(tasks, pos)
+            setTaskDetails(task)
+            setEditClick(task)
             setBackground(pos)
         }
     }
@@ -46,38 +50,34 @@ class PrivateTaskHolder(
     }
 
     private fun PrivateTasksRvItemBinding.setEditClick(
-        tasks: List<Task>,
-        pos: Int
+        task: Task
     ) {
         editCard.setOnClickListener {
-            editClickListener.onEditClick(tasks[pos])
+            editClickListener.onEditClick(task)
         }
     }
 
     private fun PrivateTasksRvItemBinding.setDoneUi(
-        tasks: List<Task>,
-        pos: Int
+        task: Task
     ) {
-        doneCheckBox.isChecked = tasks[pos].isDone
+        doneCheckBox.isChecked = task.isDone
     }
 
     private fun PrivateTasksRvItemBinding.configUrgentSwitch(
-        viewModel: PrivateTasksViewModel,
-        tasks: List<Task>,
+        task: Task,
         pos: Int
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.updateUrgentState(isChecked, tasks[pos].id, pos)
+            viewModel.updateUrgentState(isChecked, task.id, pos)
         }
     }
 
     private fun PrivateTasksRvItemBinding.configDoneCheckBox(
-        viewModel: PrivateTasksViewModel,
-        tasks: List<Task>,
+        task: Task,
         pos: Int
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateDoneState(b, tasks[pos].id, pos)
+            viewModel.updateDoneState(b, task.id, pos)
         }
     }
 
@@ -96,6 +96,9 @@ class PrivateTaskHolder(
             }
             viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
             adapter.notifyItemChanged(pos)
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(pos)
+            }
         }
     }
 
@@ -143,10 +146,18 @@ class PrivateTaskListAdapter(
     private val viewModel: PrivateTasksViewModel,
     private val editClickListener: PrivateTaskHolder.EditClickListener
     ): RecyclerView.Adapter<PrivateTaskHolder>() {
+
+    private lateinit var recyclerView: RecyclerView
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrivateTaskHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-        return PrivateTaskHolder(binding, viewModel, editClickListener)
+        return PrivateTaskHolder(binding, viewModel, editClickListener, recyclerView)
     }
 
     override fun onBindViewHolder(holder: PrivateTaskHolder, position: Int) {

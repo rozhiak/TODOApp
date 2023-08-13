@@ -135,7 +135,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/description_tv" />
 
             <com.suke.widget.SwitchButton
-                app:sb_background="@color/white"
+                app:sb_background="@color/main_back_color"
                 app:sb_checked_color="@color/urgent_red"
                 android:id="@+id/urgent_switch"
                 android:layout_width="53dp"

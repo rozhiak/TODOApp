@@ -10,11 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
-import com.addisonelliott.segmentedbutton.SegmentedButtonGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
-import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import kotlinx.coroutines.launch
@@ -91,13 +89,13 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.task.collect { task ->
-                    task?.let {task ->
+                    task?.let {notNullTask ->
                         binding.apply {
-                            urgentSwitch.isChecked = task.isUrgent
-                            etTitle.setText(task.title)
-                            deadlineTv.text = task.deadLine.longDateString
-                            etDescription.setText(task.description)
-                            if (task.isShared) {
+                            urgentSwitch.isChecked = notNullTask.isUrgent
+                            etTitle.setText(notNullTask.title)
+                            deadlineTv.text = notNullTask.deadLine.longDateString
+                            etDescription.setText(notNullTask.description)
+                            if (notNullTask.isShared) {
                                 segmentedBtn.setPosition(0, false)
                             } else {
                                 segmentedBtn.setPosition(1, false)

@@ -11,9 +11,6 @@
         android:label="fragment_private_tasks"
         tools:layout="@layout/fragment_private_tasks" >
         <action
-            android:id="@+id/action_privateTasksFragment_to_sharedTasksFragment"
-            app:destination="@id/sharedTasksFragment" />
-        <action
             android:id="@+id/showEditBottomSheetFP"
             app:destination="@id/editTaskBottomSheet" />
     </fragment>
@@ -23,9 +20,6 @@
         android:name="com.rmblack.todoapp.fragments.SharedTasksFragment"
         android:label="fragment_shared_tasks"
         tools:layout="@layout/fragment_shared_tasks" >
-        <action
-            android:id="@+id/action_sharedTasksFragment_to_privateTasksFragment"
-            app:destination="@id/privateTasksFragment" />
         <action
             android:id="@+id/showEditBottomSheetFS"
             app:destination="@id/editTaskBottomSheet" />
