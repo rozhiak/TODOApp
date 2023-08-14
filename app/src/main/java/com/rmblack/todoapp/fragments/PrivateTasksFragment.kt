@@ -52,12 +52,18 @@ class PrivateTasksFragment : Fragment(), PrivateTaskHolder.EditClickListener {
                 viewModel.privateTasks.collect {tasks ->
                     val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
-                    val pos = layoutManager.findFirstVisibleItemPosition()
+                    val pos: Int
                     val offset = firstVisibleItem?.top ?: 0
-                    val marginTop = firstVisibleItem?.marginTop ?: 0
+
+                    println(offset)
+                    pos = if (offset < -52) {
+                        layoutManager.findFirstVisibleItemPosition()
+                    } else {
+                        layoutManager.findFirstVisibleItemPosition() + 1
+                    }
 
                     binding.privateTasksRv.adapter = createPrivateTasksAdapter(tasks)
-                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
+                    layoutManager.scrollToPositionWithOffset(pos, offset + 53)
                 }
             }
         }
@@ -76,7 +82,7 @@ class PrivateTasksFragment : Fragment(), PrivateTaskHolder.EditClickListener {
     override fun onEditClick(task: Task) {
         val editTaskBottomSheet = EditTaskBottomSheet()
         val args = Bundle()
-        args.putSerializable("taskId", task.id)
+        args.putString("taskId", task.id.toString())
         editTaskBottomSheet.arguments = args
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }

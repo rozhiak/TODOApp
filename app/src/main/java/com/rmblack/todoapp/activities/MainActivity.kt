@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
             val editTaskBottomSheet = EditTaskBottomSheet()
             val args = Bundle()
-            args.putSerializable("taskId", newTask.id)
+            args.putString("taskId", newTask.id.toString())
             editTaskBottomSheet.arguments = args
             editTaskBottomSheet.show(supportFragmentManager, "TODO tag")
         }

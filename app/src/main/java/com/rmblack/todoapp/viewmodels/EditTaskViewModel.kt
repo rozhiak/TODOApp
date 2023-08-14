@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,10 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class EditTaskViewModel(taskId: UUID): ViewModel() {
+
     private val taskRepository = TaskRepository.get()
+
+    private var save: Boolean = false
 
     private val _task : MutableStateFlow<Task?> = MutableStateFlow(null)
     val task : StateFlow<Task?> = _task.asStateFlow()
@@ -27,7 +31,6 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
             }
             _task.value = task
         }
-
     }
 
     fun updateTask(onUpdate: (Task) -> Task) {
@@ -40,9 +43,16 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        task.value?.let {
-            taskRepository.updateTask(it)
+        Log.d("", "cleared")
+        if (save) {
+            task.value?.let {
+                taskRepository.updateTask(it)
+            }
         }
+    }
+
+    fun save() {
+        save = true
     }
 }
 

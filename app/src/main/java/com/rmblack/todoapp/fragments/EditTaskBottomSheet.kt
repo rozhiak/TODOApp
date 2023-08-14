@@ -9,21 +9,20 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
-    private val args: EditTaskBottomSheetArgs by navArgs()
-
     private val viewModel: EditTaskViewModel by viewModels {
-        EditTaskViewModelFactory(args.taskId)
+        val taskId = arguments?.getString("taskId")
+        EditTaskViewModelFactory(UUID.fromString(taskId))
     }
 
     private var _binding: FragmentEditTaskBottomSheetBinding? = null
@@ -33,7 +32,9 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
+    //
     override fun getTheme(): Int  = R.style.Theme_NoWiredStrapInNavigationBar
+    //
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,15 +50,16 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         setCollapseBtnListener()
         updateUi()
         syncUserInput()
+        setSaveBtnListener()
     }
 
     private fun syncUserInput() {
         binding.apply {
-            etTitle.doOnTextChanged { text, _, _, _ ->
-                viewModel.updateTask { oldTask ->
-                    oldTask.copy(title = text.toString())
-                }
-            }
+//            etTitle.doOnTextChanged { text, _, _, _ ->
+//                viewModel.updateTask { oldTask ->
+//                    oldTask.copy(title = text.toString())
+//                }
+//            }
 
             urgentSwitch.setOnCheckedChangeListener { _, b ->
                 viewModel.updateTask { oldTask ->
@@ -65,11 +67,11 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 }
             }
 
-            etDescription.doOnTextChanged { text, _, _, _ ->
-                viewModel.updateTask { oldTask ->
-                    oldTask.copy(description = text.toString())
-                }
-            }
+//            etDescription.doOnTextChanged { text, _, _, _ ->
+//                viewModel.updateTask { oldTask ->
+//                    oldTask.copy(description = text.toString())
+//                }
+//            }
 
             segmentedBtn.setOnPositionChangedListener {pos ->
                 if (pos == 1) {
@@ -107,9 +109,30 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private fun setSaveBtnListener() {
+        binding.saveBtn.setOnClickListener {
+            viewModel.save()
+            dismiss()
+        }
+    }
+
     private fun setCollapseBtnListener() {
         binding.collapseBtn.setOnClickListener {
             dismiss()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false) {
+            viewModel.updateTask { oldTask ->
+                oldTask.copy(title = binding.etTitle.text.toString())
+            }
+        }
+        if (binding.etDescription.text?.equals(viewModel.task.value?.description) == false) {
+            viewModel.updateTask { oldTask ->
+                oldTask.copy(description = binding.etDescription.text.toString())
+            }
         }
     }
 
