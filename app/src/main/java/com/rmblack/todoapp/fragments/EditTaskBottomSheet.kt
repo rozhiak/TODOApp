@@ -32,9 +32,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
-    //
     override fun getTheme(): Int  = R.style.Theme_NoWiredStrapInNavigationBar
-    //
 
     override fun onCreateView(
         inflater: LayoutInflater,

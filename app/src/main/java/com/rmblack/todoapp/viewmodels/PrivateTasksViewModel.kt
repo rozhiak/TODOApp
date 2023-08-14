@@ -13,9 +13,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.collections.ArrayList
 
-const val CURRENT_INDEX_KEY = "CURRENT_POS_KEY"
-
-class PrivateTasksViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
+class PrivateTasksViewModel(): ViewModel() {
 
     private val taskRepository = TaskRepository.get()
 
@@ -31,13 +29,13 @@ class PrivateTasksViewModel(private val savedStateHandle: SavedStateHandle): Vie
 
     init {
         viewModelScope.launch {
-            taskRepository.getPrivateTasks().collect {
-                _privateTasks.value = it
+            taskRepository.getPrivateTasks().collect {tasks ->
+                _privateTasks.value = tasks.sortedBy { it.deadLine }
 
-                while (_detailsVisibility.size < it.size) {
+                while (_detailsVisibility.size < tasks.size) {
                     _detailsVisibility.add(false)
                 }
-                if(_detailsVisibility.size > it.size) {
+                if(_detailsVisibility.size > tasks.size) {
                     _detailsVisibility.removeAt(0)
                     for (i in _detailsVisibility.indices) {
                         if (detailsVisibility[i]) {

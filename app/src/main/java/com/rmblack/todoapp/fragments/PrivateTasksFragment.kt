@@ -52,11 +52,9 @@ class PrivateTasksFragment : Fragment(), PrivateTaskHolder.EditClickListener {
                 viewModel.privateTasks.collect {tasks ->
                     val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
-                    val pos: Int
                     val offset = firstVisibleItem?.top ?: 0
 
-                    println(offset)
-                    pos = if (offset < -52) {
+                    val pos: Int = if (offset < -52) {
                         layoutManager.findFirstVisibleItemPosition()
                     } else {
                         layoutManager.findFirstVisibleItemPosition() + 1

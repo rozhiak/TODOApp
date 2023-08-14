@@ -1,17 +1,14 @@
 package com.rmblack.todoapp.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.marginTop
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.SharedTaskHolder
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
@@ -50,12 +47,16 @@ class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
                 viewModel.sharedTasks.collect {tasks ->
                     val layoutManager = binding.sharedTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
-                    val pos = layoutManager.findFirstVisibleItemPosition()
                     val offset = firstVisibleItem?.top ?: 0
-                    val marginTop = firstVisibleItem?.marginTop ?: 0
+
+                    val pos: Int = if (offset < -52) {
+                        layoutManager.findFirstVisibleItemPosition()
+                    } else {
+                        layoutManager.findFirstVisibleItemPosition() + 1
+                    }
 
                     binding.sharedTasksRv.adapter = createSharedTasksAdapter(tasks)
-                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
+                    layoutManager.scrollToPositionWithOffset(pos, offset + 53)
                 }
             }
         }

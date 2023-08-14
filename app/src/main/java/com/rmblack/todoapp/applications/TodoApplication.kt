@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.applications
 
 import android.app.Application
+import com.aminography.primecalendar.PrimeCalendar
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
@@ -16,12 +17,14 @@ class TodoApplication : Application() {
 
         //
         val user1 = User("روژیاک محمدی", "09939139575", "1234", "5678")
+        val deadline = PersianCalendar()
+        deadline.set(1402, 11, 16)
         val task1 = Task(
             "نصب نرم افزار",
             UUID.randomUUID(),
             "باید روی کامپیوتر نصب شود.",
             PersianCalendar(),
-            PersianCalendar(),
+            deadline,
             isUrgent = false,
             isDone = false,
             isShared = false,
@@ -60,9 +63,9 @@ class TodoApplication : Application() {
 
 
         GlobalScope.launch {
-            repo.addTask(task1)
+//            repo.addTask(task1)
 //            repo.addTask(task2)
-            repo.addTask(task3)
+//            repo.addTask(task3)
         }
 
 

@@ -16,7 +16,7 @@ import java.util.UUID
 
 class SharedTasksViewModel: ViewModel() {
 
-    val taskRepository = TaskRepository.get()
+    private val taskRepository = TaskRepository.get()
 
     private var _sharedTasks : MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
 
@@ -30,13 +30,13 @@ class SharedTasksViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            taskRepository.getSharedTasks().collect {
-                _sharedTasks.value = it
+            taskRepository.getSharedTasks().collect {tasks ->
+                _sharedTasks.value = tasks.sortedBy { it.deadLine }
 
-                while (_detailsVisibility.size < it.size) {
+                while (_detailsVisibility.size < tasks.size) {
                     _detailsVisibility.add(false)
                 }
-                if(_detailsVisibility.size > it.size) {
+                if(_detailsVisibility.size > tasks.size) {
                     _detailsVisibility.removeAt(0)
                     for (i in _detailsVisibility.indices) {
                         if (detailsVisibility[i]) {
@@ -49,7 +49,7 @@ class SharedTasksViewModel: ViewModel() {
         }
     }
 
-    fun updateTasks(onUpdate: (List<Task>) -> (List<Task>)) {
+    private fun updateTasks(onUpdate: (List<Task>) -> (List<Task>)) {
         _sharedTasks.update {
             onUpdate(it)
         }
