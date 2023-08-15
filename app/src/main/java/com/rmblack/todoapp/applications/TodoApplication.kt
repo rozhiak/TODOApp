@@ -18,7 +18,7 @@ class TodoApplication : Application() {
         //
         val user1 = User("روژیاک محمدی", "09939139575", "1234", "5678")
         val deadline = PersianCalendar()
-        deadline.set(1402, 11, 16)
+        deadline.set(1402, 4, 24)
         val task1 = Task(
             "نصب نرم افزار",
             UUID.randomUUID(),

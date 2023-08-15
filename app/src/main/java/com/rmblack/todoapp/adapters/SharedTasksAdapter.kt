@@ -139,6 +139,10 @@ class SharedTaskHolder(
     }
 }
 
+const val WITH_DATE_LABLE = 0
+
+const val WITHOUT_DATE_LABLE = 1
+
 class SharedTasksAdapter(
     private val tasks: List<Task>,
     private val viewModel: SharedTasksViewModel,
@@ -159,6 +163,10 @@ class SharedTasksAdapter(
 
     override fun onBindViewHolder(holder: SharedTaskHolder, position: Int) {
         holder.bind(tasks, position, this)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
     }
 
     override fun getItemCount() = tasks.size
