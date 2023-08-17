@@ -43,7 +43,6 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("", "cleared")
         if (save) {
             task.value?.let {
                 taskRepository.updateTask(it)

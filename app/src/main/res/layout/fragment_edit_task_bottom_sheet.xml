@@ -70,7 +70,7 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:id="@+id/date_ic"
+        android:id="@+id/calendar_ic"
         android:layout_width="23dp"
         android:layout_height="23dp"
         android:tint="@color/green"
@@ -89,9 +89,9 @@
         android:layout_height="wrap_content"
         android:text="٢٣ اردیبهشت ١٤٠٢"
         android:textColor="@color/description_black"
-        app:layout_constraintBottom_toBottomOf="@+id/date_ic"
-        app:layout_constraintEnd_toStartOf="@+id/date_ic"
-        app:layout_constraintTop_toTopOf="@+id/date_ic" />
+        app:layout_constraintBottom_toBottomOf="@+id/calendar_ic"
+        app:layout_constraintEnd_toStartOf="@+id/calendar_ic"
+        app:layout_constraintTop_toTopOf="@+id/calendar_ic" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_marginTop="16dp"
@@ -102,8 +102,8 @@
         android:textColor="@color/urgent_red"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/date_ic"
-        app:layout_constraintTop_toBottomOf="@+id/date_ic" />
+        app:layout_constraintEnd_toEndOf="@+id/calendar_ic"
+        app:layout_constraintTop_toBottomOf="@+id/calendar_ic" />
 
     <com.suke.widget.SwitchButton
         app:sb_background="@color/bottom_sheet_back_color"

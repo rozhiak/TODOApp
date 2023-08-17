@@ -1,19 +1,28 @@
 package com.rmblack.todoapp.fragments
 
+import android.R.attr.typeface
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doOnTextChanged
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
+import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
+import ir.hamsaa.persiandatepicker.api.PersianPickerDate
+import ir.hamsaa.persiandatepicker.api.PersianPickerListener
+import ir.hamsaa.persiandatepicker.util.PersianCalendarUtils
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -81,6 +90,67 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         oldTask.copy(isShared = true)
                     }
                 }
+            }
+
+            deadlineTv.setOnClickListener {
+
+                val today = PersianCalendar()
+
+                val deadline = viewModel.task.value?.deadLine
+                val year = deadline?.year ?: today.year
+                val month = deadline?.month ?: today.month
+                val day = deadline?.dayOfMonth ?: today.dayOfMonth
+
+
+
+                val picker = PersianDatePickerDialog(requireContext())
+                    .setPositiveButtonString("باشه")
+                    .setNegativeButton("بیخیال")
+                    .setTodayButton("امروز")
+                    .setTodayButtonVisible(true)
+                    .setMinYear(1400)
+                    .setInitDate(year, month, day)
+                    .setActionTextColor(Color.parseColor("#5DD0A3"))
+                    .setTypeFace(Typeface.DEFAULT_BOLD)
+                    .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
+                    .setListener(object : PersianPickerListener {
+                        override fun onDateSelected(persianPickerDate: PersianPickerDate) {
+                            Log.d(
+                                "TAG",
+                                "onDateSelected: " + persianPickerDate.timestamp
+                            ) //675930448000
+                            Log.d(
+                                "TAG",
+                                "onDateSelected: " + persianPickerDate.gregorianDate
+                            ) //Mon Jun 03 10:57:28 GMT+04:30 1991
+                            Log.d(
+                                "TAG",
+                                "onDateSelected: " + persianPickerDate.persianLongDate
+                            ) // دوشنبه  13  خرداد  1370
+                            Log.d(
+                                "TAG",
+                                "onDateSelected: " + persianPickerDate.persianMonthName
+                            ) //خرداد
+                            Log.d(
+                                "TAG",
+                                "onDateSelected: " + PersianCalendarUtils.isPersianLeapYear(
+                                    persianPickerDate.persianYear
+                                )
+                            ) //true
+                            Toast.makeText(
+                                context,
+                                persianPickerDate.persianYear.toString() + "/" + persianPickerDate.persianMonth + "/" + persianPickerDate.persianDay,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        override fun onDismissed() {}
+                    })
+
+                picker.show()
+
+
+
             }
         }
     }
