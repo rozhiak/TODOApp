@@ -1,23 +1,33 @@
 package com.rmblack.todoapp.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
+import com.rmblack.todoapp.adapters.viewholders.WITHOUT_DATE_LABLE
+import com.rmblack.todoapp.adapters.viewholders.WITH_DATE_LABLE
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemWithLableBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
+import com.suke.widget.SwitchButton
 
 class PrivateTaskHolder(
     private val binding: PrivateTasksRvItemBinding,
     private val viewModel: PrivateTasksViewModel,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
-) : TaskHolder(viewModel, editClickListener, recyclerView, binding) {
+) : TaskHolder(
+    editClickListener,
+    recyclerView,
+    binding
+) {
 
     fun bind(
         tasks: List<Task>,
@@ -66,6 +76,34 @@ class PrivateTaskHolder(
             }
         }
     }
+
+    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
+        if (viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+        } else {
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+        }
+    }
+
+    private fun configUrgentSwitch(
+        task: Task,
+        pos: Int,
+        urgentSwitch: SwitchButton
+    ) {
+        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateUrgentState(isChecked, task.id, pos)
+        }
+    }
+
+    private fun configDoneCheckBox(
+        task: Task,
+        pos: Int,
+        doneCheckBox: AppCompatCheckBox
+    ) {
+        doneCheckBox.setOnCheckedChangeListener { _, b ->
+            viewModel.updateDoneState(b, task.id, pos)
+        }
+    }
 }
 
 class PrivateTaskHolderWithLable(
@@ -74,7 +112,6 @@ class PrivateTaskHolderWithLable(
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
 ) : TaskHolder(
-    viewModel,
     editClickListener,
     recyclerView,
     binding
@@ -131,7 +168,36 @@ class PrivateTaskHolderWithLable(
     private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView) {
         remainingDaysTv.text = PersianNum.convert(calculateDateDistance(task.deadLine).toString())
     }
+
+    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
+        if (viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+        } else {
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+        }
+    }
+
+    private fun configUrgentSwitch(
+        task: Task,
+        pos: Int,
+        urgentSwitch: SwitchButton
+    ) {
+        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateUrgentState(isChecked, task.id, pos)
+        }
+    }
+
+    private fun configDoneCheckBox(
+        task: Task,
+        pos: Int,
+        doneCheckBox: AppCompatCheckBox
+    ) {
+        doneCheckBox.setOnCheckedChangeListener { _, b ->
+            viewModel.updateDoneState(b, task.id, pos)
+        }
+    }
 }
+
 
 class PrivateTaskListAdapter(
     private val tasks: List<Task>,

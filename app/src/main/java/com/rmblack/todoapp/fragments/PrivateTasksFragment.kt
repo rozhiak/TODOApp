@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
@@ -44,21 +46,18 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
+         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.privateTasks.collect {tasks ->
+                viewModel.tasks.collect {tasks ->
                     val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
                     val offset = firstVisibleItem?.top ?: 0
-
-                    val pos: Int = if (offset < -52) {
-                        layoutManager.findFirstVisibleItemPosition()
-                    } else {
-                        layoutManager.findFirstVisibleItemPosition() + 1
-                    }
+                    val pos = layoutManager.findFirstVisibleItemPosition()
+                    val marginTop = firstVisibleItem?.marginTop ?: 0
 
                     binding.privateTasksRv.adapter = createPrivateTasksAdapter(tasks)
-                    layoutManager.scrollToPositionWithOffset(pos, offset + 53)
+
+                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
                 }
             }
         }

@@ -18,8 +18,11 @@ import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.suke.widget.SwitchButton
 
+const val WITH_DATE_LABLE = 0
+
+const val WITHOUT_DATE_LABLE = 1
+
 open class TaskHolder(
-    private val viewModel: PrivateTasksViewModel,
     private val editClickListener: EditClickListener,
     val recyclerView: RecyclerView,
     binding: ViewBinding
@@ -27,14 +30,6 @@ open class TaskHolder(
 
     interface EditClickListener {
         fun onEditClick(task: Task)
-    }
-
-    fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
-        if (viewModel.detailsVisibility[pos]) {
-            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
-        } else {
-            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
-        }
     }
 
     fun setEditClick(
@@ -53,27 +48,7 @@ open class TaskHolder(
         doneCheckBox.isChecked = task.isDone
     }
 
-    fun configUrgentSwitch(
-        task: Task,
-        pos: Int,
-        urgentSwitch: SwitchButton
-    ) {
-        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.updateUrgentState(isChecked, task.id, pos)
-        }
-    }
-
-    fun configDoneCheckBox(
-        task: Task,
-        pos: Int,
-        doneCheckBox: AppCompatCheckBox
-    ) {
-        doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateDoneState(b, task.id, pos)
-        }
-    }
-
-    fun setTaskDetails(
+    open fun setTaskDetails(
         task: Task,
         titleTv: AppCompatTextView,
         deadLineTv: AppCompatTextView,
@@ -137,36 +112,5 @@ open class TaskHolder(
 
         return distanceInMillis.toInt() / millisInDay
     }
-
-//    fun bind(
-//        tasks: List<Task>,
-//        pos: Int,
-//        adapter: PrivateTaskListAdapter
-//    ) {
-//        val binding = if (this.binding is PrivateTasksRvItemBinding) {
-//            this.binding as PrivateTasksRvItemBinding
-//        } else {
-//            this.binding as PrivateTasksRvItemWithLableBinding
-//        }
-//        val task = tasks[pos]
-//        binding.apply {
-//            configUrgentSwitch(task, pos, urgentSwitch)
-//            configDoneCheckBox(task, pos, doneCheckBox)
-//            setDetailsVisibility(
-//                viewModel.detailsVisibility[pos],
-//                descriptionLable,
-//                descriptionTv,
-//                urgentLable,
-//                urgentSwitch,
-//                editCard
-//            )
-//            setUrgentUi(task, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
-//            setDoneUi(task, doneCheckBox)
-//            setEachTaskClick(pos, adapter, rootCard)
-//            setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
-//            setEditClick(task, editCard)
-//            setBackground(pos, rootConstraint)
-//        }
-//    }
 
 }

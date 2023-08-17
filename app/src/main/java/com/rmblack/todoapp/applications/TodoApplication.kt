@@ -54,7 +54,7 @@ class TodoApplication : Application() {
             PersianCalendar(),
             PersianCalendar(),
             isUrgent = false,
-            isDone = true,
+            isDone = false,
             isShared = true,
             user = user3,
             groupId = "1234"

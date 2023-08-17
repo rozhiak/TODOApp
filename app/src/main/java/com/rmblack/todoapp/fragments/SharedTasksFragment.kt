@@ -5,19 +5,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginTop
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.rmblack.todoapp.adapters.SharedTaskHolder
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
+import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import kotlinx.coroutines.launch
 
-class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
+class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     private var _binding : FragmentSharedTasksBinding? = null
 
@@ -44,19 +45,16 @@ class SharedTasksFragment : Fragment(), SharedTaskHolder.EditClickListener {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.sharedTasks.collect {tasks ->
+                viewModel.tasks.collect {tasks ->
                     val layoutManager = binding.sharedTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
                     val offset = firstVisibleItem?.top ?: 0
-
-                    val pos: Int = if (offset < -52) {
-                        layoutManager.findFirstVisibleItemPosition()
-                    } else {
-                        layoutManager.findFirstVisibleItemPosition() + 1
-                    }
+                    val pos = layoutManager.findFirstVisibleItemPosition()
+                    val marginTop = firstVisibleItem?.marginTop ?: 0
 
                     binding.sharedTasksRv.adapter = createSharedTasksAdapter(tasks)
-                    layoutManager.scrollToPositionWithOffset(pos, offset + 53)
+
+                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
                 }
             }
         }

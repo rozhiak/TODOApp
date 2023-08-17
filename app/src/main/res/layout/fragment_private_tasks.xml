@@ -13,7 +13,6 @@
     <androidx.recyclerview.widget.RecyclerView
         android:clipToPadding="false"
         android:paddingBottom="110dp"
-        android:paddingTop="55dp"
         tools:listitem="@layout/private_tasks_rv_item"
         android:id="@+id/private_tasks_rv"
         android:layout_width="match_parent"

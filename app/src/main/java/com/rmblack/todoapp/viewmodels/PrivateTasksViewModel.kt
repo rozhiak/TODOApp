@@ -13,24 +13,12 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.collections.ArrayList
 
-class PrivateTasksViewModel(): ViewModel() {
-
-    private val taskRepository = TaskRepository.get()
-
-    private val _privateTasks: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
-
-    val privateTasks: StateFlow<List<Task>>
-        get() = _privateTasks.asStateFlow()
-
-    private val _detailsVisibility: ArrayList<Boolean> = ArrayList()
-
-    val detailsVisibility: List<Boolean>
-        get() = _detailsVisibility.toList()
+class PrivateTasksViewModel(): TasksViewModel() {
 
     init {
         viewModelScope.launch {
             taskRepository.getPrivateTasks().collect {tasks ->
-                _privateTasks.value = tasks.sortedBy { it.deadLine }
+                _tasks.value = tasks.sortedBy { it.deadLine }
 
                 while (_detailsVisibility.size < tasks.size) {
                     _detailsVisibility.add(false)
@@ -48,33 +36,4 @@ class PrivateTasksViewModel(): ViewModel() {
         }
     }
 
-    private fun updateTasks(onUpdate: (List<Task>) -> List<Task>) {
-        _privateTasks.update { oldTasks ->
-            onUpdate(oldTasks)
-        }
-    }
-
-    fun updateUrgentState(isUrgent: Boolean, id: UUID, pos: Int) {
-        taskRepository.updateUrgentState(isUrgent, id)
-
-        updateTasks { oldTasks ->
-            val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = privateTasks.value[pos].copy(isUrgent = isUrgent)
-            updatedTasks
-        }
-    }
-
-    fun updateDoneState(isDone: Boolean, id: UUID, pos: Int) {
-        taskRepository.updateDoneState(isDone, id)
-
-        updateTasks { oldTasks ->
-            val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = privateTasks.value[pos].copy(isDone = isDone)
-            updatedTasks
-        }
-    }
-
-    fun updateVisibility(index: Int, visibility: Boolean) {
-        if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
-    }
 }

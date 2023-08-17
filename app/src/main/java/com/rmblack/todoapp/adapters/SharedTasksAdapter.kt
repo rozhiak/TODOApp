@@ -1,25 +1,33 @@
 package com.rmblack.todoapp.adapters
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.rmblack.todoapp.adapters.viewholders.TaskHolder
+import com.rmblack.todoapp.adapters.viewholders.WITHOUT_DATE_LABLE
+import com.rmblack.todoapp.adapters.viewholders.WITH_DATE_LABLE
+import com.rmblack.todoapp.databinding.SharedTasksRvItemWithLableBinding
 import com.rmblack.todoapp.databinding.SharedTasksRvRowBinding
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
+import com.suke.widget.SwitchButton
 
 class SharedTaskHolder(
     private val binding: SharedTasksRvRowBinding,
     private val viewModel: SharedTasksViewModel,
-    private val editClickListener: EditClickListener,
-    private val recyclerView: RecyclerView
-) : RecyclerView.ViewHolder(binding.root){
-
-    interface EditClickListener {
-        fun onEditClick(task: Task)
-    }
+    editClickListener: EditClickListener,
+    recyclerView: RecyclerView
+) : TaskHolder(
+    editClickListener,
+    recyclerView,
+    binding
+) {
 
     fun bind(
         tasks: List<Task>,
@@ -28,61 +36,30 @@ class SharedTaskHolder(
     ) {
         val task = tasks[pos]
         binding.apply {
-            configUrgentSwitch(task, pos)
-            configDoneCheckBox(task, pos)
-            setDetailsVisibility(viewModel.detailsVisibility[pos])
-            setUrgentUi(task)
-            setDoneUi(task)
-            setEachTaskClick(pos, adapter)
-            setTaskDetails(task)
-            setEditClick(task)
-            setBackground(pos)
+            configUrgentSwitch(task, pos, urgentSwitch)
+            configDoneCheckBox(task, pos, doneCheckBox)
+            setDetailsVisibility(
+                viewModel.detailsVisibility[pos],
+                descriptionLable,
+                descriptionTv,
+                urgentLable,
+                urgentSwitch,
+                editCard
+            )
+            setUrgentUi(task, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
+            setDoneUi(task, doneCheckBox)
+            setEachTaskClick(pos, adapter, rootCard)
+            setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
+            setEditClick(task, editCard)
+            setBackground(pos, rootConstraint)
+            composerNameTv.text = task.user.name
         }
     }
 
-    private fun SharedTasksRvRowBinding.setBackground(pos: Int) {
-        if (viewModel.detailsVisibility[pos]) {
-            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
-        } else {
-            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
-        }
-    }
-
-    private fun SharedTasksRvRowBinding.setEditClick(
-        task: Task
-    ) {
-        editCard.setOnClickListener {
-            editClickListener.onEditClick(task)
-        }
-    }
-
-    private fun SharedTasksRvRowBinding.configDoneCheckBox(
-        task: Task,
-        pos: Int
-    ) {
-        doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateDoneState(b, task.id, pos)
-        }
-    }
-
-    private fun SharedTasksRvRowBinding.configUrgentSwitch(
-        task: Task,
-        pos: Int
-    ) {
-        urgentSwitch.setOnCheckedChangeListener { _, b ->
-            viewModel.updateUrgentState(b, task.id, pos)
-        }
-    }
-
-    private fun SharedTasksRvRowBinding.setDoneUi(
-        task: Task
-    ) {
-        doneCheckBox.isChecked = task.isDone
-    }
-
-    private fun SharedTasksRvRowBinding.setEachTaskClick(
+    private fun setEachTaskClick(
         pos: Int,
-        adapter: SharedTasksAdapter
+        adapter: SharedTasksAdapter,
+        rootCard: CardView
     ) {
         rootCard.setOnClickListener {
             if (!viewModel.detailsVisibility[pos]) {
@@ -101,52 +78,133 @@ class SharedTaskHolder(
         }
     }
 
-    private fun SharedTasksRvRowBinding.setTaskDetails(task: Task) {
-        titleTv.text = task.title
-        deadLineTv.text = task.deadLine.shortDateString
-        descriptionTv.text = task.description
-        composerNameTv.text = task.user.name
-    }
-
-    private fun SharedTasksRvRowBinding.setUrgentUi(task: Task) {
-        if (task.isUrgent) {
-            titleTv.setTextColor(Color.parseColor("#D05D8A"))
-            doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
-            rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
-            urgentSwitch.isChecked = true
+    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
+        if (viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
         } else {
-            titleTv.setTextColor(Color.parseColor("#5DD0A3"))
-            doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
-            rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
-            urgentSwitch.isChecked = false
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
         }
     }
 
-    private fun SharedTasksRvRowBinding.setDetailsVisibility(visibility: Boolean) {
-        if (visibility) {
-            descriptionLable.visibility = View.VISIBLE
-            descriptionTv.visibility = View.VISIBLE
-            urgentLable.visibility = View.VISIBLE
-            urgentSwitch.visibility = View.VISIBLE
-            editCard.visibility = View.VISIBLE
-        } else {
-            descriptionLable.visibility = View.GONE
-            descriptionTv.visibility = View.GONE
-            urgentLable.visibility = View.GONE
-            urgentSwitch.visibility = View.GONE
-            editCard.visibility = View.GONE
+    private fun configUrgentSwitch(
+        task: Task,
+        pos: Int,
+        urgentSwitch: SwitchButton
+    ) {
+        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateUrgentState(isChecked, task.id, pos)
+        }
+    }
+
+    private fun configDoneCheckBox(
+        task: Task,
+        pos: Int,
+        doneCheckBox: AppCompatCheckBox
+    ) {
+        doneCheckBox.setOnCheckedChangeListener { _, b ->
+            viewModel.updateDoneState(b, task.id, pos)
         }
     }
 }
 
-const val WITH_DATE_LABLE = 0
+class SharedTaskHolderWithLable(
+    private val binding: SharedTasksRvItemWithLableBinding,
+    private val viewModel: SharedTasksViewModel,
+    editClickListener: EditClickListener,
+    recyclerView: RecyclerView
+) : TaskHolder(
+    editClickListener,
+    recyclerView,
+    binding
+) {
+    fun bind(
+        tasks: List<Task>,
+        pos: Int,
+        adapter: SharedTasksAdapter
+    ) {
+        val task = tasks[pos]
+        binding.apply {
+            configUrgentSwitch(task, pos, urgentSwitch)
+            configDoneCheckBox(task, pos, doneCheckBox)
+            setDetailsVisibility(
+                viewModel.detailsVisibility[pos],
+                descriptionLable,
+                descriptionTv,
+                urgentLable,
+                urgentSwitch,
+                editCard
+            )
+            setUrgentUi(task, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
+            setDoneUi(task, doneCheckBox)
+            setEachTaskClick(pos, adapter, rootCard)
+            setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
+            setEditClick(task, editCard)
+            setBackground(pos, rootConstraint)
+            setRemainingDays(task, remainingDaysTv)
+            composerNameTv.text = task.user.name
+        }
+    }
 
-const val WITHOUT_DATE_LABLE = 1
+    private fun setEachTaskClick(
+        pos: Int,
+        adapter: SharedTasksAdapter,
+        rootCard: CardView
+    ) {
+        rootCard.setOnClickListener {
+            if (!viewModel.detailsVisibility[pos]) {
+                for (i in viewModel.detailsVisibility.indices) {
+                    if (i != pos && viewModel.detailsVisibility[i]) {
+                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
+                        adapter.notifyItemChanged(i)
+                    }
+                }
+            }
+            viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
+            adapter.notifyItemChanged(pos)
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(pos)
+            }
+        }
+    }
+
+    private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView) {
+        remainingDaysTv.text = PersianNum.convert(calculateDateDistance(task.deadLine).toString())
+    }
+
+    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
+        if (viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+        } else {
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+        }
+    }
+
+    private fun configUrgentSwitch(
+        task: Task,
+        pos: Int,
+        urgentSwitch: SwitchButton
+    ) {
+        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.updateUrgentState(isChecked, task.id, pos)
+        }
+    }
+
+    private fun configDoneCheckBox(
+        task: Task,
+        pos: Int,
+        doneCheckBox: AppCompatCheckBox
+    ) {
+        doneCheckBox.setOnCheckedChangeListener { _, b ->
+            viewModel.updateDoneState(b, task.id, pos)
+        }
+    }
+}
 
 class SharedTasksAdapter(
     private val tasks: List<Task>,
     private val viewModel: SharedTasksViewModel,
-    private val editClickListener: SharedTaskHolder.EditClickListener) : RecyclerView.Adapter<SharedTaskHolder>() {
+    private val editClickListener: TaskHolder.EditClickListener
+) : RecyclerView.Adapter<TaskHolder>() {
 
     private lateinit var recyclerView: RecyclerView
 
@@ -155,18 +213,33 @@ class SharedTasksAdapter(
         this.recyclerView = recyclerView
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SharedTaskHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
-        return SharedTaskHolder(binding, viewModel, editClickListener, recyclerView)
+        return if (viewType == WITH_DATE_LABLE) {
+            val binding = SharedTasksRvItemWithLableBinding.inflate(inflater, parent, false)
+            SharedTaskHolderWithLable(binding, viewModel, editClickListener, recyclerView)
+        } else {
+            val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
+            SharedTaskHolder(binding, viewModel, editClickListener, recyclerView)
+        }
     }
 
-    override fun onBindViewHolder(holder: SharedTaskHolder, position: Int) {
-        holder.bind(tasks, position, this)
+    override fun onBindViewHolder(holder: TaskHolder, position: Int) {
+        if (holder is SharedTaskHolder) {
+            holder.bind(tasks, position, this)
+        } else if (holder is SharedTaskHolderWithLable) {
+            holder.bind(tasks, position, this)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return super.getItemViewType(position)
+        return if (position > 0 && tasks[position].deadLine.date != tasks[position - 1].deadLine.date) {
+            WITH_DATE_LABLE
+        } else if (position == 0) {
+            WITH_DATE_LABLE
+        } else {
+            WITHOUT_DATE_LABLE
+        }
     }
 
     override fun getItemCount() = tasks.size
