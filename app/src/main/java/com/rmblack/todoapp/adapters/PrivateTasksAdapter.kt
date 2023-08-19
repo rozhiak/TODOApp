@@ -2,6 +2,7 @@ package com.rmblack.todoapp.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
@@ -17,6 +18,7 @@ import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.suke.widget.SwitchButton
+import kotlin.math.ceil
 
 class PrivateTaskHolder(
     private val binding: PrivateTasksRvItemBinding,
@@ -139,7 +141,7 @@ class PrivateTaskHolderWithLable(
             setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
             setEditClick(task, editCard)
             setBackground(pos, rootConstraint)
-            setRemainingDays(task, remainingDaysTv)
+            setRemainingDays(task, remainingDaysTv, remainingDaysLable)
         }
     }
 
@@ -165,8 +167,26 @@ class PrivateTaskHolderWithLable(
         }
     }
 
-    private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView) {
-        remainingDaysTv.text = PersianNum.convert(calculateDateDistance(task.deadLine).toString())
+    private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView, remainingDaysLable: AppCompatTextView) {
+        val disInDays = ceil(calculateDateDistance(task.deadLine)).toInt()
+        if (disInDays == 0) {
+            remainingDaysLable.visibility = View.GONE
+            remainingDaysTv.text = "امروز"
+        } else if(disInDays == 1) {
+            remainingDaysLable.visibility = View.GONE
+            remainingDaysTv.text = "فردا"
+        } else if (disInDays == -1) {
+            remainingDaysLable.visibility = View.GONE
+            remainingDaysTv.text = "دیروز"
+        } else if (disInDays > 1) {
+            remainingDaysTv.text = PersianNum.convert(disInDays.toString())
+            remainingDaysLable.visibility = View.VISIBLE
+            remainingDaysLable.text = "روز باقی مانده"
+        } else {
+            remainingDaysTv.text = PersianNum.convert((-1 * disInDays).toString())
+            remainingDaysLable.visibility = View.VISIBLE
+            remainingDaysLable.text = "روز گذشته"
+        }
     }
 
     private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
@@ -239,6 +259,10 @@ class PrivateTaskListAdapter(
         } else {
             WITHOUT_DATE_LABLE
         }
+    }
+
+    fun getTasks(): List<Task> {
+        return tasks
     }
 
     override fun getItemCount() = tasks.size

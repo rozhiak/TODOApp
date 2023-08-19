@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.collections.ArrayList
 
-class PrivateTasksViewModel(): TasksViewModel() {
+class PrivateTasksViewModel: TasksViewModel() {
 
     init {
         viewModelScope.launch {

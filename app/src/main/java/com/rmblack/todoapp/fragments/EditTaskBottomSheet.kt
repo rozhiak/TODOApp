@@ -1,14 +1,10 @@
 package com.rmblack.todoapp.fragments
 
-import android.R.attr.typeface
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +18,7 @@ import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
 import ir.hamsaa.persiandatepicker.api.PersianPickerDate
 import ir.hamsaa.persiandatepicker.api.PersianPickerListener
-import ir.hamsaa.persiandatepicker.util.PersianCalendarUtils
+import ir.hamsaa.persiandatepicker.date.PersianDateImpl
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -62,23 +58,12 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private fun syncUserInput() {
         binding.apply {
-//            etTitle.doOnTextChanged { text, _, _, _ ->
-//                viewModel.updateTask { oldTask ->
-//                    oldTask.copy(title = text.toString())
-//                }
-//            }
 
             urgentSwitch.setOnCheckedChangeListener { _, b ->
                 viewModel.updateTask { oldTask ->
                     oldTask.copy(isUrgent = b)
                 }
             }
-
-//            etDescription.doOnTextChanged { text, _, _, _ ->
-//                viewModel.updateTask { oldTask ->
-//                    oldTask.copy(description = text.toString())
-//                }
-//            }
 
             segmentedBtn.setOnPositionChangedListener {pos ->
                 if (pos == 1) {
@@ -93,66 +78,49 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             deadlineTv.setOnClickListener {
-
-                val today = PersianCalendar()
-
-                val deadline = viewModel.task.value?.deadLine
-                val year = deadline?.year ?: today.year
-                val month = deadline?.month ?: today.month
-                val day = deadline?.dayOfMonth ?: today.dayOfMonth
-
-
-
-                val picker = PersianDatePickerDialog(requireContext())
-                    .setPositiveButtonString("باشه")
-                    .setNegativeButton("بیخیال")
-                    .setTodayButton("امروز")
-                    .setTodayButtonVisible(true)
-                    .setMinYear(1400)
-                    .setInitDate(year, month, day)
-                    .setActionTextColor(Color.parseColor("#5DD0A3"))
-                    .setTypeFace(Typeface.DEFAULT_BOLD)
-                    .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
-                    .setListener(object : PersianPickerListener {
-                        override fun onDateSelected(persianPickerDate: PersianPickerDate) {
-                            Log.d(
-                                "TAG",
-                                "onDateSelected: " + persianPickerDate.timestamp
-                            ) //675930448000
-                            Log.d(
-                                "TAG",
-                                "onDateSelected: " + persianPickerDate.gregorianDate
-                            ) //Mon Jun 03 10:57:28 GMT+04:30 1991
-                            Log.d(
-                                "TAG",
-                                "onDateSelected: " + persianPickerDate.persianLongDate
-                            ) // دوشنبه  13  خرداد  1370
-                            Log.d(
-                                "TAG",
-                                "onDateSelected: " + persianPickerDate.persianMonthName
-                            ) //خرداد
-                            Log.d(
-                                "TAG",
-                                "onDateSelected: " + PersianCalendarUtils.isPersianLeapYear(
-                                    persianPickerDate.persianYear
-                                )
-                            ) //true
-                            Toast.makeText(
-                                context,
-                                persianPickerDate.persianYear.toString() + "/" + persianPickerDate.persianMonth + "/" + persianPickerDate.persianDay,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        override fun onDismissed() {}
-                    })
-
-                picker.show()
-
-
-
+                showDatePicker()
             }
         }
+    }
+
+    private fun showDatePicker() {
+        val today = PersianCalendar()
+        val deadline = viewModel.task.value?.deadLine
+        val year = deadline?.year ?: today.year
+        val month = deadline?.month ?: today.month
+        val day = deadline?.dayOfMonth ?: today.dayOfMonth
+        val persianPickerDate = PersianDateImpl()
+        persianPickerDate.setDate(year, month, day)
+
+
+        val picker = PersianDatePickerDialog(requireContext())
+            .setPositiveButtonString("باشه")
+            .setNegativeButton("بیخیال")
+            .setTodayButton("امروز")
+            .setTodayButtonVisible(true)
+            .setInitDate(persianPickerDate, true)
+            .setActionTextColor(Color.parseColor("#5DD0A3"))
+            .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
+            .setBackgroundColor(Color.parseColor("#eefaf5"))
+            .setPickerBackgroundColor(Color.parseColor("#eefaf5"))
+            .setAllButtonsTextSize(16)
+            .setListener(object : PersianPickerListener {
+                override fun onDateSelected(persianPickerDate: PersianPickerDate) {
+                    viewModel.updateTask {
+                        val newDeadline = PersianCalendar()
+                        newDeadline.year = persianPickerDate.persianYear
+                        newDeadline.month = persianPickerDate.persianMonth - 1
+                        newDeadline.dayOfMonth = persianPickerDate.persianDay
+                        it.copy(deadLine = newDeadline)
+                    }
+                }
+
+                override fun onDismissed() {
+
+                }
+            })
+
+        picker.show()
     }
 
     private fun updateUi() {
@@ -207,6 +175,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    companion object {
+        const val REQUEST_KEY_ID = "REQUEST_KEY_ID"
     }
 
 }

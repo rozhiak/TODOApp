@@ -25,7 +25,7 @@
         android:id="@+id/remaining_days_lable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:text="روز   مـــــــــانـــــــــــده"
         android:textColor="#B2000000"
         android:textSize="15sp"

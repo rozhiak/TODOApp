@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -49,6 +50,27 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
          viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect {tasks ->
+
+
+                    // TODO() This code should be tested
+                    val adapter = binding.privateTasksRv.adapter as (PrivateTaskListAdapter?)
+                    val oldTasks = adapter?.getTasks()
+                    if (tasks.size == oldTasks?.size) {
+                        for (i in tasks.indices) {
+                            if (tasks[i].id != oldTasks[i].id) {
+                                viewModel.updateVisibility(i, viewModel.detailsVisibility[i])
+
+                                adapter.notifyItemChanged(i)
+                                if (viewModel.detailsVisibility[i] == true) {
+                                    binding.privateTasksRv.post {
+                                        binding.privateTasksRv.smoothScrollToPosition(i)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //
+
                     val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
                     val offset = firstVisibleItem?.top ?: 0

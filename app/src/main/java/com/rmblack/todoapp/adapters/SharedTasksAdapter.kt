@@ -2,6 +2,7 @@ package com.rmblack.todoapp.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
@@ -17,6 +18,7 @@ import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import com.suke.widget.SwitchButton
+import kotlin.math.ceil
 
 class SharedTaskHolder(
     private val binding: SharedTasksRvRowBinding,
@@ -140,7 +142,7 @@ class SharedTaskHolderWithLable(
             setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
             setEditClick(task, editCard)
             setBackground(pos, rootConstraint)
-            setRemainingDays(task, remainingDaysTv)
+            setRemainingDays(task, remainingDaysTv, remainingDaysLable)
             composerNameTv.text = task.user.name
         }
     }
@@ -167,8 +169,26 @@ class SharedTaskHolderWithLable(
         }
     }
 
-    private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView) {
-        remainingDaysTv.text = PersianNum.convert(calculateDateDistance(task.deadLine).toString())
+    private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView, remainingDaysLable: AppCompatTextView) {
+        val disInDays = ceil(calculateDateDistance(task.deadLine)).toInt()
+        if (disInDays == 0) {
+            remainingDaysLable.visibility = View.GONE
+            remainingDaysTv.text = "امروز"
+        } else if(disInDays == 1) {
+            remainingDaysLable.visibility = View.GONE
+            remainingDaysTv.text = "فردا"
+        } else if (disInDays == -1) {
+            remainingDaysLable.visibility = View.GONE
+            remainingDaysTv.text = "دیروز"
+        } else if (disInDays > 1) {
+            remainingDaysTv.text = PersianNum.convert(disInDays.toString())
+            remainingDaysLable.visibility = View.VISIBLE
+            remainingDaysLable.text = "روز باقی مانده"
+        } else {
+            remainingDaysTv.text = PersianNum.convert((-1 * disInDays).toString())
+            remainingDaysLable.visibility = View.VISIBLE
+            remainingDaysLable.text = "روز گذشته"
+        }
     }
 
     private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {

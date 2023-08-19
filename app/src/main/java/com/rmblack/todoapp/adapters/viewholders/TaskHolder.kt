@@ -102,15 +102,15 @@ open class TaskHolder(
         }
     }
 
-    fun calculateDateDistance(calendarDate: PersianCalendar) : Int {
+    fun calculateDateDistance(calendarDate: PersianCalendar) : Double {
         val currentDate = PersianCalendar()
         val dateInMillis = calendarDate.timeInMillis
         val currentDateInMillis = currentDate.timeInMillis
 
-        val millisInDay = 1000 * 60 * 60 * 24
+        val millisInDay = 1000.0 * 60.0 * 60.0 * 24.0
         val distanceInMillis = dateInMillis - currentDateInMillis
 
-        return distanceInMillis.toInt() / millisInDay
+        return distanceInMillis / millisInDay
     }
 
 }

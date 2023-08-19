@@ -86,7 +86,6 @@ dependencies {
     //Switch
     implementation 'com.github.zcweng:switch-button:0.0.3@aar'
     //Segmented Button
-    implementation 'com.github.trinnguyen:Android-SegmentView:master-SNAPSHOT'
     implementation 'com.github.addisonelliott:SegmentedButton:3.1.9'
     //Search view
     implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
