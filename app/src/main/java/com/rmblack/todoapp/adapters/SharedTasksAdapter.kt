@@ -172,13 +172,13 @@ class SharedTaskHolderWithLable(
     private fun setRemainingDays(task: Task, remainingDaysTv: AppCompatTextView, remainingDaysLable: AppCompatTextView) {
         val disInDays = ceil(calculateDateDistance(task.deadLine)).toInt()
         if (disInDays == 0) {
-            remainingDaysLable.visibility = View.GONE
+            remainingDaysLable.text = ""
             remainingDaysTv.text = "امروز"
         } else if(disInDays == 1) {
-            remainingDaysLable.visibility = View.GONE
+            remainingDaysLable.text = ""
             remainingDaysTv.text = "فردا"
         } else if (disInDays == -1) {
-            remainingDaysLable.visibility = View.GONE
+            remainingDaysLable.text = ""
             remainingDaysTv.text = "دیروز"
         } else if (disInDays > 1) {
             remainingDaysTv.text = PersianNum.convert(disInDays.toString())
