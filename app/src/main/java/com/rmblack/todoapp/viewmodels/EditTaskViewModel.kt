@@ -19,8 +19,6 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
 
     private val taskRepository = TaskRepository.get()
 
-    private var save: Boolean = false
-
     private val _task : MutableStateFlow<Task?> = MutableStateFlow(null)
     val task : StateFlow<Task?> = _task.asStateFlow()
 
@@ -43,15 +41,9 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        if (save) {
-            task.value?.let {
-                taskRepository.updateTask(it)
-            }
+        task.value?.let {
+            taskRepository.updateTask(it)
         }
-    }
-
-    fun save() {
-        save = true
     }
 }
 

@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
@@ -47,29 +49,32 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        var editedTaskId : UUID? = null
+        setFragmentResultListener(
+            EditTaskBottomSheet.REQUEST_KEY_ID
+        ) { _, bundle ->
+            editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID) as UUID?
+        }
+
          viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect {tasks ->
 
+                    val editedTaskIndex = tasks.indexOfFirst { it.id == editedTaskId }
+                    val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
 
-                    // TODO() This code should be tested
-                    val adapter = binding.privateTasksRv.adapter as (PrivateTaskListAdapter?)
-                    val oldTasks = adapter?.getTasks()
-                    if (tasks.size == oldTasks?.size) {
-                        for (i in tasks.indices) {
-                            if (tasks[i].id != oldTasks[i].id) {
-                                viewModel.updateVisibility(i, viewModel.detailsVisibility[i])
+                    if (oldIndex != editedTaskIndex) {
+                        if (viewModel.detailsVisibility[oldIndex]) {
+                            viewModel.updateVisibility(oldIndex, false)
+                            binding.privateTasksRv.adapter?.notifyItemChanged(oldIndex)
+                        }
 
-                                adapter.notifyItemChanged(i)
-                                if (viewModel.detailsVisibility[i] == true) {
-                                    binding.privateTasksRv.post {
-                                        binding.privateTasksRv.smoothScrollToPosition(i)
-                                    }
-                                }
-                            }
+                        if (!viewModel.detailsVisibility[editedTaskIndex]) {
+                            viewModel.updateVisibility(editedTaskIndex, true)
+                            binding.privateTasksRv.adapter?.notifyItemChanged(editedTaskIndex)
                         }
                     }
-                    //
 
                     val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)

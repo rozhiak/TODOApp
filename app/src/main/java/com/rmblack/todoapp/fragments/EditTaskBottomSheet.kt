@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -53,7 +55,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         setCollapseBtnListener()
         updateUi()
         syncUserInput()
-        setSaveBtnListener()
     }
 
     private fun syncUserInput() {
@@ -78,6 +79,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             deadlineTv.setOnClickListener {
+                saveTitle()
+                saveDescription()
                 showDatePicker()
             }
         }
@@ -87,7 +90,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val today = PersianCalendar()
         val deadline = viewModel.task.value?.deadLine
         val year = deadline?.year ?: today.year
-        val month = deadline?.month ?: today.month
+        var month = deadline?.month ?: today.month
+        month++
         val day = deadline?.dayOfMonth ?: today.dayOfMonth
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
@@ -145,13 +149,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setSaveBtnListener() {
-        binding.saveBtn.setOnClickListener {
-            viewModel.save()
-            dismiss()
-        }
-    }
-
     private fun setCollapseBtnListener() {
         binding.collapseBtn.setOnClickListener {
             dismiss()
@@ -160,11 +157,11 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onPause() {
         super.onPause()
-        if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false) {
-            viewModel.updateTask { oldTask ->
-                oldTask.copy(title = binding.etTitle.text.toString())
-            }
-        }
+        saveTitle()
+        saveDescription()
+    }
+
+    private fun saveDescription() {
         if (binding.etDescription.text?.equals(viewModel.task.value?.description) == false) {
             viewModel.updateTask { oldTask ->
                 oldTask.copy(description = binding.etDescription.text.toString())
@@ -172,13 +169,23 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private fun saveTitle() {
+        if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false) {
+            viewModel.updateTask { oldTask ->
+                oldTask.copy(title = binding.etTitle.text.toString())
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        setFragmentResult(REQUEST_KEY_ID, bundleOf(BUNDLE_KEY_ID to viewModel.task.value?.id))
         _binding = null
     }
 
     companion object {
         const val REQUEST_KEY_ID = "REQUEST_KEY_ID"
+        const val BUNDLE_KEY_ID = "BUNDLE_KEY_ID"
     }
 
 }
