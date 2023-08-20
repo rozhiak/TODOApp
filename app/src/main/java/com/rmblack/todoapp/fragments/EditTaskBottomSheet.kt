@@ -24,7 +24,6 @@ import ir.hamsaa.persiandatepicker.date.PersianDateImpl
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private val viewModel: EditTaskViewModel by viewModels {
@@ -95,7 +94,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val day = deadline?.dayOfMonth ?: today.dayOfMonth
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
-
 
         val picker = PersianDatePickerDialog(requireContext())
             .setPositiveButtonString("باشه")

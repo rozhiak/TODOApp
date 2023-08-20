@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.aminography.primecalendar.common.operators.millisecond
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.adapters.viewholders.WITHOUT_DATE_LABLE
 import com.rmblack.todoapp.adapters.viewholders.WITH_DATE_LABLE
@@ -252,17 +253,17 @@ class PrivateTaskListAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position > 0 && tasks[position].deadLine.date != tasks[position - 1].deadLine.date) {
+        return if (
+            position > 0
+            &&
+            tasks[position].deadLine.shortDateString != tasks[position - 1].deadLine.shortDateString
+        ) {
             WITH_DATE_LABLE
         } else if (position == 0) {
             WITH_DATE_LABLE
         } else {
             WITHOUT_DATE_LABLE
         }
-    }
-
-    fun getTasks(): List<Task> {
-        return tasks
     }
 
     override fun getItemCount() = tasks.size

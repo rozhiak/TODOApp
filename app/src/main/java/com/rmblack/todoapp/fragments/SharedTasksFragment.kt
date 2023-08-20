@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.marginTop
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +18,7 @@ import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
@@ -43,9 +45,34 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        var editedTaskId : UUID? = null
+        setFragmentResultListener(
+            EditTaskBottomSheet.REQUEST_KEY_ID
+        ) { _, bundle ->
+            editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID) as UUID?
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect {tasks ->
+
+                    val editedTaskIndex = tasks.indexOfFirst { it.id == editedTaskId }
+                    val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
+
+                    if (oldIndex != editedTaskIndex && oldIndex != -1 && editedTaskIndex != -1) {
+                        if (viewModel.detailsVisibility[oldIndex]) {
+                            viewModel.updateVisibility(oldIndex, false)
+                            binding.sharedTasksRv.adapter?.notifyItemChanged(oldIndex)
+                        }
+
+                        if (!viewModel.detailsVisibility[editedTaskIndex]) {
+                            viewModel.updateVisibility(editedTaskIndex, true)
+                            binding.sharedTasksRv.adapter?.notifyItemChanged(editedTaskIndex)
+                            binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
+                        }
+                    }
+
                     val layoutManager = binding.sharedTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
                     val offset = firstVisibleItem?.top ?: 0

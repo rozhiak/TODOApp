@@ -64,7 +64,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     val editedTaskIndex = tasks.indexOfFirst { it.id == editedTaskId }
                     val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
 
-                    if (oldIndex != editedTaskIndex) {
+                    if (oldIndex != editedTaskIndex && oldIndex != -1 && editedTaskIndex != -1) {
                         if (viewModel.detailsVisibility[oldIndex]) {
                             viewModel.updateVisibility(oldIndex, false)
                             binding.privateTasksRv.adapter?.notifyItemChanged(oldIndex)
@@ -73,6 +73,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         if (!viewModel.detailsVisibility[editedTaskIndex]) {
                             viewModel.updateVisibility(editedTaskIndex, true)
                             binding.privateTasksRv.adapter?.notifyItemChanged(editedTaskIndex)
+                            binding.privateTasksRv.smoothScrollToPosition(editedTaskIndex)
                         }
                     }
 

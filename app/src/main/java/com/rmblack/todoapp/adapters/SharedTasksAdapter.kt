@@ -253,7 +253,11 @@ class SharedTasksAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position > 0 && tasks[position].deadLine.date != tasks[position - 1].deadLine.date) {
+        return if (
+            position > 0
+            &&
+            tasks[position].deadLine.shortDateString != tasks[position - 1].deadLine.shortDateString
+        ) {
             WITH_DATE_LABLE
         } else if (position == 0) {
             WITH_DATE_LABLE

@@ -76,20 +76,34 @@ class MainActivity : AppCompatActivity() {
                 "123",
                 "456"
             )
-            //
 
-            val newTask = Task(
-                title = "",
-                id = UUID.randomUUID(),
-                description = "",
-                addedTime = PersianCalendar(),
-                deadLine = PersianCalendar(),
-                isUrgent = false,
-                isDone = false,
-                isShared = false,
-                user = user,
-                groupId = "123"
-            )
+            val newTask = if (binding.bottomNavigationView.selectedItemId == R.id.privateTasksFragment) {
+                Task(
+                    title = "",
+                    id = UUID.randomUUID(),
+                    description = "",
+                    addedTime = PersianCalendar(),
+                    deadLine = PersianCalendar(),
+                    isUrgent = false,
+                    isDone = false,
+                    isShared = false,
+                    user = user,
+                    groupId = "123"
+                )
+            } else {
+                Task(
+                    title = "",
+                    id = UUID.randomUUID(),
+                    description = "",
+                    addedTime = PersianCalendar(),
+                    deadLine = PersianCalendar(),
+                    isUrgent = false,
+                    isDone = false,
+                    isShared = true,
+                    user = user,
+                    groupId = "123"
+                )
+            }
 
             viewModel.addTask(newTask)
 
