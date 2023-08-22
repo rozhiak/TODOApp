@@ -9,7 +9,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.models.Task
 import com.suke.widget.SwitchButton
 
@@ -47,11 +46,17 @@ open class TaskHolder(
         task: Task,
         titleTv: AppCompatTextView,
         deadLineTv: AppCompatTextView,
-        descriptionTv: AppCompatTextView
+        descriptionTv: AppCompatTextView,
+        descriptionLable: AppCompatTextView
     ) {
         titleTv.text = task.title
         deadLineTv.text = task.deadLine.shortDateString
-        descriptionTv.text = task.description
+        if (task.description.isNotEmpty() || task.description.isNotBlank()) {
+            descriptionTv.text = task.description
+            descriptionLable.text = "توضیحات"
+        } else {
+            descriptionLable.text = "توضیحات: -"
+        }
     }
 
     fun setUrgentUi(
@@ -80,7 +85,7 @@ open class TaskHolder(
         descriptionTv: AppCompatTextView,
         urgentLable: AppCompatTextView,
         urgentSwitch: SwitchButton,
-        editCard: CardView
+        editCard: CardView,
     ) {
         if (visibility) {
             descriptionLable.visibility = View.VISIBLE

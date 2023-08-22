@@ -13,13 +13,13 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
 import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
-import com.rmblack.todoapp.databinding.SharedTasksRvRowBinding
+import com.rmblack.todoapp.databinding.SharedTasksRvItemBinding
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import com.suke.widget.SwitchButton
 
 class SharedTaskHolder(
-    private val binding: SharedTasksRvRowBinding,
+    private val binding: SharedTasksRvItemBinding,
     private val viewModel: SharedTasksViewModel,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
@@ -37,23 +37,23 @@ class SharedTaskHolder(
         val task = tasks[pos]
         task?.let {
             binding.apply {
-                configUrgentSwitch(task, pos, urgentSwitch)
-                configDoneCheckBox(task, pos, doneCheckBox)
+                configUrgentSwitch(it, pos, urgentSwitch)
+                configDoneCheckBox(it, pos, doneCheckBox)
                 setDetailsVisibility(
                     viewModel.detailsVisibility[pos],
                     descriptionLable,
                     descriptionTv,
                     urgentLable,
                     urgentSwitch,
-                    editCard
+                    editCard,
                 )
-                setUrgentUi(task, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
-                setDoneUi(task, doneCheckBox)
+                setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
+                setDoneUi(it, doneCheckBox)
                 setEachTaskClick(pos, adapter, rootCard)
-                setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
-                setEditClick(task, editCard)
+                setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
+                setEditClick(it, editCard)
                 setBackground(pos, rootConstraint)
-                composerNameTv.text = task.user.name
+                composerNameTv.text = it.user.name
             }
         }
     }
@@ -128,7 +128,7 @@ class SharedTasksAdapter(
             val binding = RemainingDaysLableBinding.inflate(inflater, parent, false)
             RemainingDaysLableHolder(binding)
         } else {
-            val binding = SharedTasksRvRowBinding.inflate(inflater, parent, false)
+            val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
             SharedTaskHolder(binding, viewModel, editClickListener, recyclerView)
         }
     }
@@ -142,7 +142,7 @@ class SharedTasksAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (tasks[position] != null) {
+        return if (position >= 0 && tasks[position] != null) {
             TASK
         } else {
             REMAINING_DAYS_LABLE

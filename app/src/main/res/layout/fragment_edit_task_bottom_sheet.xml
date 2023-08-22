@@ -19,30 +19,31 @@
         app:srcCompat="@drawable/ic_down" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:maxLines="3"
-        app:layout_goneMarginBaseline="56dp"
-        app:barrierMargin="56dp"
-        app:layout_goneMarginBottom="50dp"
-        android:textColor="@color/description_black"
-        android:lineSpacingExtra="7dp"
         android:id="@+id/et_title"
-        android:textDirection="rtl"
-        android:textCursorDrawable="@drawable/cursor_drawable"
-        android:paddingVertical="8dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:textColorHint="#74000000"
-        android:background="@drawable/custom_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/custom_edit_text"
         android:fontFamily="@font/iranian_ans"
         android:hint="عنوان"
+        android:lineSpacingExtra="7dp"
+        android:maxLines="3"
+        android:paddingVertical="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@color/description_black"
+        android:textColorHint="#74000000"
+        android:textCursorDrawable="@drawable/cursor_drawable"
+        android:textDirection="rtl"
         android:textSize="25sp"
         android:textStyle="bold"
+        app:barrierMargin="56dp"
         app:layout_constraintEnd_toEndOf="@+id/collapse_btn"
-        app:layout_constraintStart_toStartOf="@+id/save_btn"
-        app:layout_constraintTop_toBottomOf="@+id/collapse_btn" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/collapse_btn"
+        app:layout_goneMarginBaseline="56dp"
+        app:layout_goneMarginBottom="50dp" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_marginEnd="8dp"
@@ -56,30 +57,32 @@
         app:srcCompat="@drawable/ic_calendar" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:layout_marginTop="3dp"
-        android:textSize="13sp"
-        android:fontFamily="@font/iranian_ans"
-        android:textStyle="bold"
         android:id="@+id/deadline_tv"
-        android:layout_marginEnd="8dp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/iranian_ans"
         android:text="٢٣ اردیبهشت ١٤٠٢"
         android:textColor="@color/description_black"
+        android:textSize="13sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/calendar_ic"
         app:layout_constraintEnd_toStartOf="@+id/calendar_ic"
+        app:layout_constraintStart_toStartOf="@+id/et_title"
         app:layout_constraintTop_toTopOf="@+id/calendar_ic" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:layout_marginTop="16dp"
         android:id="@+id/urgent_lable"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="ضروری"
         android:textColor="@color/urgent_red"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/calendar_ic"
+        app:layout_constraintStart_toEndOf="@+id/urgent_switch"
         app:layout_constraintTop_toBottomOf="@+id/calendar_ic" />
 
     <com.suke.widget.SwitchButton
@@ -149,17 +152,17 @@
         app:srcCompat="@drawable/ic_description" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:maxLines="20"
         android:id="@+id/et_description"
         android:layout_width="0dp"
-        android:layout_height="600dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="-7dp"
+        android:layout_height="420dp"
         android:background="@drawable/custom_edit_text"
+        android:layout_marginBottom="30sp"
         android:fontFamily="@font/iranian_ans"
         android:gravity="top"
         android:hint="توضیحات"
         android:lineSpacingExtra="7dp"
+        android:maxLines="20"
+        android:layout_marginTop="-7dp"
         android:paddingVertical="8dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
@@ -170,7 +173,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/description_iv"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/save_btn"
+        app:layout_constraintStart_toStartOf="@+id/segmented_btn"
         app:layout_constraintTop_toTopOf="@+id/description_iv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -68,21 +68,21 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val deletedTask: Task? = viewModel.tasks.value[viewHolder.absoluteAdapterPosition]
+                val position = viewHolder.absoluteAdapterPosition
+                val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
-                    val position = viewHolder.absoluteAdapterPosition
-                    viewModel.deleteTask(viewModel.tasks.value[viewHolder.absoluteAdapterPosition])
-                    binding.privateTasksRv.adapter?.notifyItemRemoved(viewHolder.absoluteAdapterPosition)
+                    viewModel.deleteTask(viewModel.tasks.value[position])
+                    binding.privateTasksRv.adapter?.notifyItemRemoved(position)
                     Snackbar.make(
                         binding.privateTasksRv,
                         "Deleted " + deletedTask.title,
                         Snackbar.LENGTH_LONG
                     )
-                    .setAction(
-                        "Undo"
-                    ) {
-                        viewModel.insertTask(deletedTask)
-                    }.show()
+                        .setAction(
+                            "Undo"
+                        ) {
+                            viewModel.insertTask(deletedTask)
+                        }.show()
                 }
             }
 

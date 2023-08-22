@@ -19,6 +19,7 @@ import com.rmblack.todoapp.fragments.PrivateTasksFragment
 import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.models.User
+import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -36,6 +37,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         wireUpBottomNav()
+
+        val today = PersianCalendar()
+        binding.dayOfMonth.text = PersianNum.convert(today.dayOfMonth.toString())
+        binding.dayOfWeek.text = today.weekDayName
+        binding.monthOfYear.text = today.monthName
     }
 
     private fun wireUpBottomNav() {

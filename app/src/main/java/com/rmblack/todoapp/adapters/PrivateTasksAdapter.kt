@@ -36,21 +36,21 @@ class PrivateTaskHolder(
         val task = tasks[pos]
         task?.let {
             binding.apply {
-                configUrgentSwitch(task, pos, urgentSwitch)
-                configDoneCheckBox(task, pos, doneCheckBox)
+                configUrgentSwitch(it, pos, urgentSwitch)
+                configDoneCheckBox(it, pos, doneCheckBox)
                 setDetailsVisibility(
                     viewModel.detailsVisibility[pos],
                     descriptionLable,
                     descriptionTv,
                     urgentLable,
                     urgentSwitch,
-                    editCard
+                    editCard,
                 )
-                setUrgentUi(task, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
-                setDoneUi(task, doneCheckBox)
+                setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
+                setDoneUi(it, doneCheckBox)
                 setEachTaskClick(pos, adapter, rootCard)
-                setTaskDetails(task, titleTv, deadLineTv, descriptionTv)
-                setEditClick(task, editCard)
+                setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
+                setEditClick(it, editCard)
                 setBackground(pos, rootConstraint)
             }
         }
@@ -140,7 +140,9 @@ class PrivateTaskListAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (tasks[position] != null) {
+        print("position: ")
+        println(position)
+        return if (position >= 0 && tasks[position] != null) {
             TASK
         } else {
             REMAINING_DAYS_LABLE

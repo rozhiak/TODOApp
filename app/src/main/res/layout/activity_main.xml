@@ -24,34 +24,49 @@
                 android:layout_height="match_parent">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/appCompatTextView2"
+                    android:id="@+id/day_of_week"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_marginBottom="35dp"
                     android:fontFamily="@font/ordibehesht"
                     android:layoutDirection="ltr"
-                    android:layout_marginStart="8dp"
                     android:text="چهارشنبه"
                     android:textColor="#FFFFFF"
+                    android:layout_marginStart="8dp"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/day_of_month"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/appCompatTextView"
+                    app:layout_constraintStart_toEndOf="@id/month_of_year"
+                    android:id="@+id/day_of_month"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:fontFamily="@font/ordibehesht"
                     android:layoutDirection="ltr"
+                    android:text="٢٣"
+                    android:textColor="@color/urgent_red"
+                    android:textSize="25sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/day_of_week"
+                    app:layout_constraintTop_toBottomOf="@+id/day_of_week" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/month_of_year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="٢٣ مـرداد"
+                    android:fontFamily="@font/ordibehesht"
+                    android:layoutDirection="ltr"
+                    android:text="خرداد"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/day_of_month"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2"
-                    app:layout_constraintVertical_bias="0.516" />
+                    app:layout_constraintTop_toTopOf="@+id/day_of_month" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
