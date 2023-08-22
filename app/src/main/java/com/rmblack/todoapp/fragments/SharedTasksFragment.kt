@@ -57,7 +57,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect {tasks ->
 
-                    val editedTaskIndex = tasks.indexOfFirst { it.id == editedTaskId }
+                    val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
                     val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
 
                     if (oldIndex != editedTaskIndex && oldIndex != -1 && editedTaskIndex != -1) {
@@ -87,7 +87,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         }
     }
 
-    private fun createSharedTasksAdapter(tasks: List<Task>) =
+    private fun createSharedTasksAdapter(tasks: List<Task?>) =
         SharedTasksAdapter(tasks, viewModel, this)
 
 

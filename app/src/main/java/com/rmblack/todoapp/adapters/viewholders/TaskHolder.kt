@@ -7,20 +7,15 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.aminography.primecalendar.persian.PersianCalendar
-import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
-import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
-import com.rmblack.todoapp.databinding.PrivateTasksRvItemWithLableBinding
 import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.suke.widget.SwitchButton
 
-const val WITH_DATE_LABLE = 0
+const val TASK = 0
 
-const val WITHOUT_DATE_LABLE = 1
+const val REMAINING_DAYS_LABLE = 1
 
 open class TaskHolder(
     private val editClickListener: EditClickListener,
@@ -100,17 +95,6 @@ open class TaskHolder(
             urgentSwitch.visibility = View.GONE
             editCard.visibility = View.GONE
         }
-    }
-
-    fun calculateDateDistance(calendarDate: PersianCalendar) : Double {
-        val currentDate = PersianCalendar()
-        val dateInMillis = calendarDate.timeInMillis
-        val currentDateInMillis = currentDate.timeInMillis
-
-        val millisInDay = 1000.0 * 60.0 * 60.0 * 24.0
-        val distanceInMillis = dateInMillis - currentDateInMillis
-
-        return distanceInMillis / millisInDay
     }
 
 }

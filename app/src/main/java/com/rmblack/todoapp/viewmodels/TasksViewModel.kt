@@ -1,12 +1,14 @@
 package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 open class TasksViewModel: ViewModel() {
@@ -14,9 +16,9 @@ open class TasksViewModel: ViewModel() {
 
     val taskRepository = TaskRepository.get()
 
-    protected val _tasks: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
+    protected val _tasks: MutableStateFlow<List<Task?>> = MutableStateFlow(emptyList())
 
-    val tasks: StateFlow<List<Task>>
+    val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
 
     protected val _detailsVisibility: ArrayList<Boolean> = ArrayList()
@@ -24,7 +26,7 @@ open class TasksViewModel: ViewModel() {
     val detailsVisibility: List<Boolean>
         get() = _detailsVisibility.toList()
 
-    private fun updateTasks(onUpdate: (List<Task>) -> List<Task>) {
+    private fun updateTasks(onUpdate: (List<Task?>) -> List<Task?>) {
         _tasks.update { oldTasks ->
             onUpdate(oldTasks)
         }
@@ -35,7 +37,7 @@ open class TasksViewModel: ViewModel() {
 
         updateTasks { oldTasks ->
             val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = tasks.value[pos].copy(isUrgent = isUrgent)
+            updatedTasks[pos] = tasks.value[pos]?.copy(isUrgent = isUrgent)
             updatedTasks
         }
     }
@@ -45,13 +47,25 @@ open class TasksViewModel: ViewModel() {
 
         updateTasks { oldTasks ->
             val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = tasks.value[pos].copy(isDone = isDone)
+            updatedTasks[pos] = tasks.value[pos]?.copy(isDone = isDone)
             updatedTasks
         }
     }
 
     fun updateVisibility(index: Int, visibility: Boolean) {
         if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
+    }
+
+    fun deleteTask(task: Task?) {
+        viewModelScope.launch {
+            taskRepository.deleteTask(task)
+        }
+    }
+
+    fun insertTask(task: Task) {
+        viewModelScope.launch {
+            taskRepository.addTask(task)
+        }
     }
 
 }
