@@ -21,6 +21,7 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -71,16 +72,9 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 if (deletedTask != null) {
                     viewModel.deleteTask(viewModel.tasks.value[position])
                     binding.sharedTasksRv.adapter?.notifyItemRemoved(position)
-                    Snackbar.make(
-                        binding.sharedTasksRv,
-                        "Deleted " + deletedTask.title,
-                        Snackbar.LENGTH_LONG
-                    )
-                        .setAction(
-                            "Undo"
-                        ) {
-                            viewModel.insertTask(deletedTask)
-                        }.show()
+                    Utilities.makeDeleteSnackBar(requireActivity(), binding.sharedTasksRv) {
+                        viewModel.insertTask(deletedTask)
+                    }
                 }
             }
 

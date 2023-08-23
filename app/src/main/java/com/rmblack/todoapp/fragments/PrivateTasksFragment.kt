@@ -76,30 +76,9 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     viewModel.deleteTask(viewModel.tasks.value[position])
                     binding.privateTasksRv.adapter?.notifyItemRemoved(position)
 
-
                     Utilities.makeDeleteSnackBar(requireActivity(), binding.privateTasksRv) {
                         viewModel.insertTask(deletedTask)
                     }
-
-//
-//                    val snackBar = Snackbar.make(
-//                        binding.privateRefreshLayout,
-//                        "Deleted " + deletedTask.title,
-//                        Snackbar.LENGTH_LONG
-//                    ).setAction("بازگشت") {
-//                            viewModel.insertTask(deletedTask)
-//                    }
-//
-//                    val snackBarLayout = snackBar.view
-//                    val lp = LinearLayout.LayoutParams(
-//                        LinearLayout.LayoutParams.MATCH_PARENT,
-//                        LinearLayout.LayoutParams.WRAP_CONTENT
-//                    )
-//
-//                    lp.setMargins(20, 1600, 20, 0)
-//                    snackBarLayout.layoutParams = lp
-//                    snackBar.show()
-
 
                 }
             }

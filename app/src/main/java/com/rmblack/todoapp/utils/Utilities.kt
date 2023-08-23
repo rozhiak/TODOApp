@@ -47,7 +47,7 @@ class Utilities {
             child: View,
             dependency: View
         ): Boolean {
-            return dependency is Snackbar.SnackbarLayout
+            return dependency is SnackbarLayout
         }
 
         override fun onDependentViewChanged(
