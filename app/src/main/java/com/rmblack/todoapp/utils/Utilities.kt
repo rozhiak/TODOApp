@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.behavior.SwipeDismissBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
@@ -23,7 +24,7 @@ class Utilities {
                 activity.layoutInflater.inflate(R.layout.snack_bar, null)
             snackBar.view.setBackgroundColor(Color.TRANSPARENT)
             val snackBarLayout = snackBar.view as SnackbarLayout
-            snackBarLayout.setPadding(0, 0, 0, 300)
+            snackBarLayout.setPadding(0, 0, 0, 0)
             val undo: AppCompatImageView = customSnackView.findViewById(R.id.undo)
             undo.setOnClickListener {
                 onUndo()
@@ -34,6 +35,8 @@ class Utilities {
                 setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY)
             }
             snackBar.behavior = behavior
+            val fab = activity.findViewById<FloatingActionButton>(R.id.fab)
+            snackBar.anchorView = fab
             snackBar.show()
         }
 

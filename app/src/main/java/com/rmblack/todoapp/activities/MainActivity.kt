@@ -1,17 +1,13 @@
 package com.rmblack.todoapp.activities
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
 import com.aminography.primecalendar.persian.PersianCalendar
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
@@ -33,11 +29,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
+
+        when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> window.navigationBarColor = ContextCompat.getColor(this, R.color.dark_bottom_navigation)
+            Configuration.UI_MODE_NIGHT_NO -> window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
+        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        wireUpBottomNav()
 
+        wireUpBottomNav()
+        showToday()
+    }
+
+    private fun showToday() {
         val today = PersianCalendar()
         binding.dayOfMonth.text = PersianNum.convert(today.dayOfMonth.toString())
         binding.dayOfWeek.text = today.weekDayName
