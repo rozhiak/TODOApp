@@ -30,7 +30,6 @@
                     android:layout_marginBottom="35dp"
                     android:fontFamily="@font/ordibehesht"
                     android:layoutDirection="ltr"
-                    android:text="چهارشنبه"
                     android:textColor="#FFFFFF"
                     android:layout_marginStart="8dp"
                     android:textSize="20sp"
@@ -47,7 +46,6 @@
                     android:layout_marginStart="8dp"
                     android:fontFamily="@font/ordibehesht"
                     android:layoutDirection="ltr"
-                    android:text="٢٣"
                     android:textColor="@color/urgent_red"
                     android:textSize="25sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -61,7 +59,6 @@
                     android:layout_marginStart="8dp"
                     android:fontFamily="@font/ordibehesht"
                     android:layoutDirection="ltr"
-                    android:text="خرداد"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="@id/day_of_month"
@@ -112,6 +109,8 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
+            android:layout_gravity="bottom|center_horizontal"
+            app:layout_behavior=".utils.Utilities$MoveUpwardBehavior"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="36dp"

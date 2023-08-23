@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -21,6 +22,7 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -73,16 +75,32 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 if (deletedTask != null) {
                     viewModel.deleteTask(viewModel.tasks.value[position])
                     binding.privateTasksRv.adapter?.notifyItemRemoved(position)
-                    Snackbar.make(
-                        binding.privateTasksRv,
-                        "Deleted " + deletedTask.title,
-                        Snackbar.LENGTH_LONG
-                    )
-                        .setAction(
-                            "Undo"
-                        ) {
-                            viewModel.insertTask(deletedTask)
-                        }.show()
+
+
+                    Utilities.makeDeleteSnackBar(requireActivity(), binding.privateTasksRv) {
+                        viewModel.insertTask(deletedTask)
+                    }
+
+//
+//                    val snackBar = Snackbar.make(
+//                        binding.privateRefreshLayout,
+//                        "Deleted " + deletedTask.title,
+//                        Snackbar.LENGTH_LONG
+//                    ).setAction("بازگشت") {
+//                            viewModel.insertTask(deletedTask)
+//                    }
+//
+//                    val snackBarLayout = snackBar.view
+//                    val lp = LinearLayout.LayoutParams(
+//                        LinearLayout.LayoutParams.MATCH_PARENT,
+//                        LinearLayout.LayoutParams.WRAP_CONTENT
+//                    )
+//
+//                    lp.setMargins(20, 1600, 20, 0)
+//                    snackBarLayout.layoutParams = lp
+//                    snackBar.show()
+
+
                 }
             }
 
