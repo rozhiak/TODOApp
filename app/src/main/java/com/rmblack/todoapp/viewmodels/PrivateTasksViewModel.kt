@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.collections.ArrayList
 class PrivateTasksViewModel: TasksViewModel() {
-
     init {
         viewModelScope.launch {
             taskRepository.getPrivateTasks().collect {tasks ->
@@ -30,22 +29,13 @@ class PrivateTasksViewModel: TasksViewModel() {
                         tasksWithDatePositionNull.add(sortedTasks[i])
                     }
                 }
-                _tasks.value = tasksWithDatePositionNull.toList()
 
                 while (_detailsVisibility.size < tasksWithDatePositionNull.size) {
                     _detailsVisibility.add(false)
                 }
-                if(_detailsVisibility.size > tasksWithDatePositionNull.size) {
-                    _detailsVisibility.removeAt(0)
-                    for (i in _detailsVisibility.indices) {
-                        if (detailsVisibility[i]) {
-                            _detailsVisibility[i] = false
-                            break
-                        }
-                    }
-                }
+
+                _tasks.value = tasksWithDatePositionNull.toList()
             }
         }
-
     }
 }

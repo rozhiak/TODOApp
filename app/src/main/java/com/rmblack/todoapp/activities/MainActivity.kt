@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                     isDone = false,
                     isShared = false,
                     user = user,
-                    groupId = "123"
+                    groupId = "123",
                 )
             } else {
                 Task(
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                     isDone = false,
                     isShared = true,
                     user = user,
-                    groupId = "123"
+                    groupId = "123",
                 )
             }
 

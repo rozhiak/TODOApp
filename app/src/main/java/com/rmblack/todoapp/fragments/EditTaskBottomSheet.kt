@@ -177,13 +177,19 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        setFragmentResult(REQUEST_KEY_ID, bundleOf(BUNDLE_KEY_ID to viewModel.task.value?.id))
+        setFragmentResult(REQUEST_KEY_ID_PRIVATE, bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id))
+        setFragmentResult(REQUEST_KEY_ID_SHARED, bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id))
         _binding = null
     }
 
     companion object {
-        const val REQUEST_KEY_ID = "REQUEST_KEY_ID"
-        const val BUNDLE_KEY_ID = "BUNDLE_KEY_ID"
+        const val REQUEST_KEY_ID_PRIVATE = "REQUEST_KEY_ID_PRIVATE"
+
+        const val BUNDLE_KEY_ID_PRIVATE = "BUNDLE_KEY_ID_PRIVATE"
+
+        const val REQUEST_KEY_ID_SHARED = "REQUEST_KEY_ID_SHARED"
+
+        const val BUNDLE_KEY_ID_SHARED = "BUNDLE_KEY_ID_PRIVATE_SHARED"
     }
 
 }

@@ -29,7 +29,7 @@ class TodoApplication : Application() {
             isDone = false,
             isShared = false,
             user = user1,
-            groupId = "1234"
+            groupId = "1234",
         )
 
         val user2 = User("علی صالحی", "09939139576", "2345", "0987")
@@ -43,7 +43,7 @@ class TodoApplication : Application() {
             isDone = false,
             isShared = false,
             user = user2,
-            groupId = "1234"
+            groupId = "1234",
         )
 
         val user3 = User("علی محمدی", "09939139577", "2345", "0987")
@@ -57,7 +57,7 @@ class TodoApplication : Application() {
             isDone = false,
             isShared = true,
             user = user3,
-            groupId = "1234"
+            groupId = "1234",
         )
         val repo = TaskRepository.get()
 

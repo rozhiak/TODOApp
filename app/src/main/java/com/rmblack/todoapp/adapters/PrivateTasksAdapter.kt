@@ -140,8 +140,6 @@ class PrivateTaskListAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        print("position: ")
-        println(position)
         return if (position >= 0 && tasks[position] != null) {
             TASK
         } else {

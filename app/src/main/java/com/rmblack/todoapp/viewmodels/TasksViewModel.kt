@@ -56,7 +56,18 @@ open class TasksViewModel: ViewModel() {
         if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
     }
 
-    fun deleteTask(task: Task?) {
+    fun deleteTask(task: Task?, position: Int) {
+        _detailsVisibility.removeAt(position)
+        if (position + 1 < tasks.value.size) {
+            if (tasks.value[position - 1] == null && tasks.value[position + 1] == null) {
+                _detailsVisibility.removeAt(position - 1)
+            }
+        } else {
+            if (tasks.value[position - 1] == null) {
+                _detailsVisibility.removeAt(position - 1)
+            }
+        }
+
         viewModelScope.launch {
             taskRepository.deleteTask(task)
         }

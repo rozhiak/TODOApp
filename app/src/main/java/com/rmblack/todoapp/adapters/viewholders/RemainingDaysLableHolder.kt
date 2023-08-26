@@ -15,7 +15,6 @@ class RemainingDaysLableHolder(
     fun bind(deadline: PersianCalendar) {
         binding.apply {
             val disInDays = kotlin.math.ceil(calculateDateDistance(deadline)).toInt()
-            println(disInDays)
             if (disInDays == 0) {
                 remainingDaysLable.text = ""
                 remainingDaysTv.text = "امروز"

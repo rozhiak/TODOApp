@@ -21,22 +21,13 @@ class SharedTasksViewModel: TasksViewModel() {
                         tasksWithDatePositionNull.add(sortedTasks[i])
                     }
                 }
-                _tasks.value = tasksWithDatePositionNull.toList()
 
                 while (_detailsVisibility.size < tasksWithDatePositionNull.size) {
                     _detailsVisibility.add(false)
                 }
-                if(_detailsVisibility.size > tasksWithDatePositionNull.size) {
-                    _detailsVisibility.removeAt(0)
-                    for (i in _detailsVisibility.indices) {
-                        if (detailsVisibility[i]) {
-                            _detailsVisibility[i] = false
-                            break
-                        }
-                    }
-                }
+
+                _tasks.value = tasksWithDatePositionNull.toList()
             }
         }
     }
-
 }

@@ -52,6 +52,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerview()
+
         setUpSweepToDelete()
     }
 
@@ -70,7 +71,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 val position = viewHolder.absoluteAdapterPosition
                 val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
-                    viewModel.deleteTask(viewModel.tasks.value[position])
+                    viewModel.deleteTask(viewModel.tasks.value[position], position)
                     binding.sharedTasksRv.adapter?.notifyItemRemoved(position)
                     Utilities.makeDeleteSnackBar(requireActivity(), binding.sharedTasksRv) {
                         viewModel.insertTask(deletedTask)
@@ -127,29 +128,28 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     private fun setUpRecyclerview() {
         var editedTaskId: UUID? = null
+
         setFragmentResultListener(
-            EditTaskBottomSheet.REQUEST_KEY_ID
+            EditTaskBottomSheet.REQUEST_KEY_ID_SHARED
         ) { _, bundle ->
-            editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID) as UUID?
+            editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID_SHARED) as UUID?
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
-
-                    val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
-                    val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
-
-                    if (oldIndex != editedTaskIndex && oldIndex != -1 && editedTaskIndex != -1) {
-                        if (viewModel.detailsVisibility[oldIndex]) {
-                            viewModel.updateVisibility(oldIndex, false)
-                            binding.sharedTasksRv.adapter?.notifyItemChanged(oldIndex)
-                        }
-
-                        if (!viewModel.detailsVisibility[editedTaskIndex]) {
-                            viewModel.updateVisibility(editedTaskIndex, true)
-                            binding.sharedTasksRv.adapter?.notifyItemChanged(editedTaskIndex)
-                            binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
+                    if (editedTaskId != null) {
+                        val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
+                        val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
+                        if (oldIndex != editedTaskIndex) {
+                            if (oldIndex != -1) viewModel.updateVisibility(oldIndex, false)
+                            if (editedTaskIndex != -1) {
+                                viewModel.updateVisibility(editedTaskIndex, true)
+                                binding.sharedTasksRv.post {
+                                    binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
+                                }
+                            }
+                            editedTaskId = null
                         }
                     }
 

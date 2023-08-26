@@ -51,10 +51,11 @@ open class TaskHolder(
     ) {
         titleTv.text = task.title
         deadLineTv.text = task.deadLine.shortDateString
-        if (task.description.isNotEmpty() || task.description.isNotBlank()) {
+        if (task.description != "") {
             descriptionTv.text = task.description
-            descriptionLable.text = "توضیحات"
+            descriptionLable.text = "توضیحات:"
         } else {
+            descriptionTv.text = ""
             descriptionLable.text = "توضیحات: -"
         }
     }

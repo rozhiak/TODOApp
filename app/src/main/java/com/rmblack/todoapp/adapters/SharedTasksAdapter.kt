@@ -65,7 +65,7 @@ class SharedTaskHolder(
     ) {
         rootCard.setOnClickListener {
             if (!viewModel.detailsVisibility[pos]) {
-                for (i in viewModel.detailsVisibility.indices) {
+                for (i in viewModel.tasks.value.indices) {
                     if (i != pos && viewModel.detailsVisibility[i]) {
                         viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
                         adapter.notifyItemChanged(i)
