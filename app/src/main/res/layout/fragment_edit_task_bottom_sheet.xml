@@ -19,11 +19,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_down" />
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/save_btn"
+        android:layout_width="70dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="24dp"
+        android:backgroundTint="@color/green"
+        app:cardCornerRadius="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/collapse_btn">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/iranian_ans"
+            android:text="ذخیره"
+            android:textColor="@color/bottom_sheet_back_color"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/et_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="28dp"
         android:layout_marginStart="24dp"
         android:background="@drawable/custom_edit_text"
         android:fontFamily="@font/iranian_ans"

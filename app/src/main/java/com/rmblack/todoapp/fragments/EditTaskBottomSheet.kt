@@ -1,10 +1,13 @@
 package com.rmblack.todoapp.fragments
 
+import android.app.Dialog
 import android.graphics.Color
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -12,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.aminography.primecalendar.persian.PersianCalendar
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
@@ -148,6 +152,9 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setCollapseBtnListener() {
+        binding.saveBtn.setOnClickListener {
+            dismiss()
+        }
         binding.collapseBtn.setOnClickListener {
             dismiss()
         }
