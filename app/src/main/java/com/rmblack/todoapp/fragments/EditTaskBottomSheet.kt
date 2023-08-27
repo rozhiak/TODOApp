@@ -1,21 +1,20 @@
 package com.rmblack.todoapp.fragments
 
-import android.app.Dialog
 import android.graphics.Color
-import android.graphics.Rect
 import android.os.Bundle
+import android.text.Editable
+import android.text.Selection
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.aminography.primecalendar.persian.PersianCalendar
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
@@ -27,6 +26,7 @@ import ir.hamsaa.persiandatepicker.api.PersianPickerListener
 import ir.hamsaa.persiandatepicker.date.PersianDateImpl
 import kotlinx.coroutines.launch
 import java.util.UUID
+
 
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
@@ -42,7 +42,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
-    override fun getTheme(): Int  = R.style.Theme_NoWiredStrapInNavigationBar
+    override fun getTheme(): Int = R.style.Theme_NoWiredStrapInNavigationBar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,19 +65,34 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
             urgentSwitch.setOnCheckedChangeListener { _, b ->
                 viewModel.updateTask { oldTask ->
-                    oldTask.copy(isUrgent = b)
+                    oldTask.copy(
+                        isUrgent = b,
+                        title = binding.etTitle.text.toString(),
+                        description = binding.etDescription.text.toString()
+                    )
                 }
+                resetCursorsPosition()
             }
 
-            segmentedBtn.setOnPositionChangedListener {pos ->
+            segmentedBtn.setOnPositionChangedListener { pos ->
                 if (pos == 1) {
-                    viewModel.updateTask {oldTask ->
-                        oldTask.copy(isShared = false)
+                    viewModel.updateTask { oldTask ->
+                        oldTask.copy(
+                            isShared = false,
+                            title = binding.etTitle.text.toString(),
+                            description = binding.etDescription.text.toString()
+                        )
                     }
+                    resetCursorsPosition()
                 } else if (pos == 0) {
-                    viewModel.updateTask {oldTask ->
-                        oldTask.copy(isShared = true)
+                    viewModel.updateTask { oldTask ->
+                        oldTask.copy(
+                            isShared = true,
+                            title = binding.etTitle.text.toString(),
+                            description = binding.etDescription.text.toString()
+                        )
                     }
+                    resetCursorsPosition()
                 }
             }
 
@@ -85,8 +100,17 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 saveTitle()
                 saveDescription()
                 showDatePicker()
+                resetCursorsPosition()
             }
         }
+    }
+
+    private fun resetCursorsPosition() {
+        val etTitle: Editable? = binding.etTitle.text
+        Selection.setSelection(etTitle, binding.etTitle.text?.length ?: 0)
+
+        val etDec: Editable? = binding.etDescription.text
+        Selection.setSelection(etDec, binding.etDescription.text?.length ?: 0)
     }
 
     private fun showDatePicker() {
@@ -133,7 +157,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.task.collect { task ->
-                    task?.let {notNullTask ->
+                    task?.let { notNullTask ->
                         binding.apply {
                             urgentSwitch.isChecked = notNullTask.isUrgent
                             etTitle.setText(notNullTask.title)
@@ -184,8 +208,14 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        setFragmentResult(REQUEST_KEY_ID_PRIVATE, bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id))
-        setFragmentResult(REQUEST_KEY_ID_SHARED, bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id))
+        setFragmentResult(
+            REQUEST_KEY_ID_PRIVATE,
+            bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)
+        )
+        setFragmentResult(
+            REQUEST_KEY_ID_SHARED,
+            bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
+        )
         _binding = null
     }
 
