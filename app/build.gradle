@@ -89,6 +89,10 @@ dependencies {
     implementation 'com.github.addisonelliott:SegmentedButton:3.1.9'
     //Search view
     implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
+    //Verification code edit text
+    implementation 'com.github.jakode2020:VerifyCodeEditText:1.2.0'
+
+
 
 
 

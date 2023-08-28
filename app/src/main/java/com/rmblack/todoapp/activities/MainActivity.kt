@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.activities
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -29,17 +30,35 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        checkLoginState()
 
-        when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_YES -> window.navigationBarColor = ContextCompat.getColor(this, R.color.dark_bottom_navigation)
-            Configuration.UI_MODE_NIGHT_NO -> window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
-            Configuration.UI_MODE_NIGHT_UNDEFINED -> window.navigationBarColor = ContextCompat.getColor(this, R.color.white)
-        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setUpUI()
         wireUpBottomNav()
         showToday()
+    }
+
+    private fun checkLoginState() {
+        val loggedIn = false
+        if (!loggedIn) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun setUpUI() {
+        when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> window.navigationBarColor =
+                ContextCompat.getColor(this, R.color.dark_bottom_navigation)
+
+            Configuration.UI_MODE_NIGHT_NO -> window.navigationBarColor =
+                ContextCompat.getColor(this, R.color.white)
+
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> window.navigationBarColor =
+                ContextCompat.getColor(this, R.color.white)
+        }
     }
 
     private fun showToday() {
