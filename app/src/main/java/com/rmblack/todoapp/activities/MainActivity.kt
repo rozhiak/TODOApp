@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkLoginState() {
         val loggedIn = false
         if (!loggedIn) {
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, StarterActivity::class.java)
             startActivity(intent)
         }
     }

@@ -30,9 +30,9 @@ import java.util.UUID
 
 class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
-    private var _binding: FragmentPrivateTasksBinding ?= null
-
     private val viewModel: PrivateTasksViewModel by viewModels()
+
+    private var _binding: FragmentPrivateTasksBinding? = null
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -176,7 +176,6 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
     private fun createPrivateTasksAdapter(tasks: List<Task?>): PrivateTaskListAdapter {
         return PrivateTaskListAdapter(tasks, viewModel, this)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,35 +1,49 @@
-package com.rmblack.todoapp.activities
+package com.rmblack.todoapp.fragments
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.ScrollView
+import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
-import com.rmblack.todoapp.databinding.ActivityLoginBinding
+import com.rmblack.todoapp.databinding.FragmentLoginBinding
 
+class LoginFragment : Fragment() {
 
-class LoginActivity : AppCompatActivity() {
+    private var _binding : FragmentLoginBinding? = null
 
-    private lateinit var binding: ActivityLoginBinding
+    private val binding
+        get() = checkNotNull(_binding) {
+            "Binding is null, is the view visible?"
+        }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setUpBottomICAnim()
         setUpClickListeners()
-
     }
 
     private fun setUpBottomICAnim() {
-        val vibrateAnimation = AnimationUtils.loadAnimation(this, R.anim.vibrate_animation)
+        val vibrateAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.vibrate_animation)
 
         vibrateAnimation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {}
@@ -47,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setUpClickListeners() {
-        binding.confirmCard.setOnClickListener {
+        binding.continueCard.setOnClickListener {
 
             val oa = ObjectAnimator.ofFloat(binding.phoneField, "translationY", -230F).apply {
                 duration = 500
@@ -67,6 +81,25 @@ class LoginActivity : AppCompatActivity() {
             })
 
             oa.start()
+
+//            findNavController().navigate(
+//                LoginFragmentDirections.verifyPhoneNumber()
+//            )
         }
+
+        binding.icBottom.setOnClickListener {
+            binding.rootScroll.post {
+                binding.rootScroll.post { binding.rootScroll.fullScroll(ScrollView.FOCUS_DOWN) }
+            }
+            binding.icBottom.visibility = View.GONE
+        }
+
+
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }
