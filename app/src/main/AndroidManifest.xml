@@ -14,6 +14,7 @@
         android:theme="@style/Theme.Fab_Bottom_app_bar"
         tools:targetApi="31">
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".activities.LoginActivity"
             android:exported="false" />
         <activity

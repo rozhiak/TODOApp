@@ -19,5 +19,6 @@
     <color name="segmented_btn_back_color">#E5F3ED</color>
     <color name="main_back_color">#19E2FFF3</color>
     <color name="dark_bottom_navigation">#2d2d2d</color>
+    <color name="grey">#666666</color>
 
 </resources>
