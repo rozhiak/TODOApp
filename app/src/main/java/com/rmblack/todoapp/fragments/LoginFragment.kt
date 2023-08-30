@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ScrollView
-import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
 
@@ -24,6 +23,8 @@ class LoginFragment : Fragment() {
         get() = checkNotNull(_binding) {
             "Binding is null, is the view visible?"
         }
+
+    val handler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,22 +38,30 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setUpBottomICAnim()
         setUpClickListeners()
+        hideBottomICByScroll()
+    }
+
+    private fun hideBottomICByScroll() {
+        binding.rootScroll.setOnScrollChangeListener { _, _, _, _, i4 ->
+            if (i4 > 350) {
+                hideBottomIC()
+            }
+        }
     }
 
     private fun setUpBottomICAnim() {
         val vibrateAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.vibrate_animation)
 
         vibrateAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation) {}
-
-            override fun onAnimationEnd(animation: Animation) {
-                Handler(Looper.getMainLooper()).postDelayed({
+            override fun onAnimationStart(animation: Animation) {
+                handler.postDelayed({
                     binding.icBottom.startAnimation(vibrateAnimation)
                 }, 1500)
             }
+
+            override fun onAnimationEnd(animation: Animation) {}
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
@@ -60,27 +69,30 @@ class LoginFragment : Fragment() {
         binding.icBottom.startAnimation(vibrateAnimation)
     }
 
+    private fun hideBottomIC() {
+        binding.icBottom.visibility = View.GONE
+        handler.removeCallbacksAndMessages(null)
+    }
+
     private fun setUpClickListeners() {
         binding.continueCard.setOnClickListener {
-
             val oa = ObjectAnimator.ofFloat(binding.phoneField, "translationY", -230F).apply {
                 duration = 500
-                start()
             }
-
             oa.addListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(p0: Animator) {}
 
                 override fun onAnimationEnd(p0: Animator) {
-                    binding.nameField.visibility = View.VISIBLE }
+                    binding.nameField.visibility = View.VISIBLE
+                }
 
                 override fun onAnimationCancel(p0: Animator) {}
 
                 override fun onAnimationRepeat(p0: Animator) {}
 
             })
-
             oa.start()
+
 
 //            findNavController().navigate(
 //                LoginFragmentDirections.verifyPhoneNumber()
@@ -91,9 +103,8 @@ class LoginFragment : Fragment() {
             binding.rootScroll.post {
                 binding.rootScroll.post { binding.rootScroll.fullScroll(ScrollView.FOCUS_DOWN) }
             }
-            binding.icBottom.visibility = View.GONE
+            hideBottomIC()
         }
-
 
     }
 
