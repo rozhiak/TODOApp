@@ -51,7 +51,14 @@ class TaskRepository private constructor(
         }
     }
 
-    suspend fun deleteTask(task: Task?) = database.taskDao().delete(task)
+//    suspend fun deleteTask(task: Task?) = database.taskDao().delete(task)
+
+    fun deleteTask(task: Task?) {
+        coroutineScope.launch {
+            database.taskDao().delete(task)
+        }
+    }
+
 
     suspend fun addTask(task: Task) = database.taskDao().insert(task)
 

@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ScrollView
+import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
 
@@ -94,9 +95,9 @@ class LoginFragment : Fragment() {
             oa.start()
 
 
-//            findNavController().navigate(
-//                LoginFragmentDirections.verifyPhoneNumber()
-//            )
+            findNavController().navigate(
+                LoginFragmentDirections.verifyPhoneNumber()
+            )
         }
 
         binding.icBottom.setOnClickListener {

@@ -38,14 +38,16 @@ class PrivateTaskHolder(
             binding.apply {
                 configUrgentSwitch(it, pos, urgentSwitch)
                 configDoneCheckBox(it, pos, doneCheckBox)
-                setDetailsVisibility(
-                    viewModel.detailsVisibility[pos],
-                    descriptionLable,
-                    descriptionTv,
-                    urgentLable,
-                    urgentSwitch,
-                    editCard,
-                )
+                if (pos in viewModel.detailsVisibility.indices) {
+                    setDetailsVisibility(
+                        viewModel.detailsVisibility[pos],
+                        descriptionLable,
+                        descriptionTv,
+                        urgentLable,
+                        urgentSwitch,
+                        editCard,
+                    )
+                }
                 setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
                 setDoneUi(it, doneCheckBox)
                 setEachTaskClick(pos, adapter, rootCard)
@@ -62,7 +64,7 @@ class PrivateTaskHolder(
         rootCard: CardView
     ) {
         rootCard.setOnClickListener {
-            if (!viewModel.detailsVisibility[pos]) {
+            if (pos in viewModel.detailsVisibility.indices && !viewModel.detailsVisibility[pos]) {
                 for (i in viewModel.detailsVisibility.indices) {
                     if (i != pos && viewModel.detailsVisibility[i]) {
                         viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
@@ -70,7 +72,9 @@ class PrivateTaskHolder(
                     }
                 }
             }
-            viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
+            if (pos in viewModel.detailsVisibility.indices) {
+                viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
+            }
             adapter.notifyItemChanged(pos)
             recyclerView.post {
                 recyclerView.smoothScrollToPosition(pos)
@@ -79,7 +83,7 @@ class PrivateTaskHolder(
     }
 
     private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
-        if (viewModel.detailsVisibility[pos]) {
+        if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
             rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
         } else {
             rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))

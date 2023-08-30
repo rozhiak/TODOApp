@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-open class TasksViewModel: ViewModel() {
+open class TasksViewModel : ViewModel() {
 
 
     val taskRepository = TaskRepository.get()
@@ -56,27 +56,44 @@ open class TasksViewModel: ViewModel() {
         if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
     }
 
+    fun insertVisibility(pos: Int, b: Boolean) {
+        _detailsVisibility.add(pos, b)
+    }
+
+    fun deleteVisibility(pos: Int) {
+        _detailsVisibility.removeAt(pos)
+    }
+
     fun deleteTask(task: Task?, position: Int) {
         _detailsVisibility.removeAt(position)
+//        println(position)
         if (position + 1 < tasks.value.size) {
             if (tasks.value[position - 1] == null && tasks.value[position + 1] == null) {
                 _detailsVisibility.removeAt(position - 1)
+//                println(position - 1)
+
             }
         } else {
             if (tasks.value[position - 1] == null) {
                 _detailsVisibility.removeAt(position - 1)
+//                println(position - 1)
+
             }
         }
 
         viewModelScope.launch {
             taskRepository.deleteTask(task)
         }
+
+
     }
 
     fun insertTask(task: Task) {
         viewModelScope.launch {
             taskRepository.addTask(task)
         }
+
+
     }
 
 }

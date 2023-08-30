@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -16,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
@@ -55,10 +53,10 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerview()
-        setUpSweepToDelete()
+        setUpSwipeToDelete()
     }
 
-    private fun setUpSweepToDelete() {
+    private fun setUpSwipeToDelete() {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
             override fun onMove(
@@ -71,15 +69,21 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
+                var visibility = viewModel.detailsVisibility[position]
                 val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
                     viewModel.deleteTask(viewModel.tasks.value[position], position)
                     binding.privateTasksRv.adapter?.notifyItemRemoved(position)
-
                     Utilities.makeDeleteSnackBar(requireActivity(), binding.privateTasksRv) {
+                        for (b in viewModel.detailsVisibility) {
+                            if (b) {
+                                visibility = false
+                                break
+                            }
+                        }
+                        viewModel.insertVisibility(position, visibility)
                         viewModel.insertTask(deletedTask)
                     }
-
                 }
             }
 
@@ -148,7 +152,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
                         val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
                         if (oldIndex != editedTaskIndex) {
-                            if (oldIndex != -1) viewModel.updateVisibility(oldIndex, false)
+                            if (oldIndex != -1 && editedTaskIndex != -1) viewModel.updateVisibility(oldIndex, false)
                             if (editedTaskIndex != -1) {
                                 viewModel.updateVisibility(editedTaskIndex, true)
                                 binding.privateTasksRv.post {

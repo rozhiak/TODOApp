@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -97,8 +96,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             deadlineTv.setOnClickListener {
-                saveTitle()
-                saveDescription()
+                saveTitleAndDescription()
                 showDatePicker()
                 resetCursorsPosition()
             }
@@ -186,28 +184,23 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onPause() {
         super.onPause()
-        saveTitle()
-        saveDescription()
+        saveTitleAndDescription()
     }
 
-    private fun saveDescription() {
-        if (binding.etDescription.text?.equals(viewModel.task.value?.description) == false) {
+    private fun saveTitleAndDescription() {
+        if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false ||
+            binding.etDescription.text?.equals(viewModel.task.value?.description) == false) {
             viewModel.updateTask { oldTask ->
-                oldTask.copy(description = binding.etDescription.text.toString())
-            }
-        }
-    }
-
-    private fun saveTitle() {
-        if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false) {
-            viewModel.updateTask { oldTask ->
-                oldTask.copy(title = binding.etTitle.text.toString())
+                oldTask.copy(title = binding.etTitle.text.toString(),
+                             description = binding.etDescription.text.toString())
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if (viewModel.task.value?.title?.isEmpty() == true || viewModel.task.value?.title?.isBlank() == true) {
+        }
         setFragmentResult(
             REQUEST_KEY_ID_PRIVATE,
             bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)

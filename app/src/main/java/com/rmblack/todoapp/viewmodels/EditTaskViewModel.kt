@@ -42,8 +42,13 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
     override fun onCleared() {
         super.onCleared()
         task.value?.let {
-            taskRepository.updateTask(it)
+            if (it.title.isEmpty() || it.title.isBlank()) {
+                taskRepository.deleteTask(task.value)
+            } else {
+                taskRepository.updateTask(it)
+            }
         }
+
     }
 }
 
