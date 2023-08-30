@@ -148,10 +148,15 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
-                    if (editedTaskId != null) {
+                    if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
+                        val movedTaskIndex = viewModel.detailsVisibility.indexOfFirst { it }
+                        viewModel.deleteVisibility(movedTaskIndex)
+                    } else if (editedTaskId != null) {
                         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
                         val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
                         if (oldIndex != editedTaskIndex) {
+                            println("private size of details visibility: " + viewModel.detailsVisibility.size)
+                            println("private size of tasks: " + viewModel.tasks.value.size)
                             if (oldIndex != -1 && editedTaskIndex != -1) viewModel.updateVisibility(oldIndex, false)
                             if (editedTaskIndex != -1) {
                                 viewModel.updateVisibility(editedTaskIndex, true)

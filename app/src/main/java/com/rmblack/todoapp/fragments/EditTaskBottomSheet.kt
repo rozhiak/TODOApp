@@ -199,8 +199,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (viewModel.task.value?.title?.isEmpty() == true || viewModel.task.value?.title?.isBlank() == true) {
-        }
         setFragmentResult(
             REQUEST_KEY_ID_PRIVATE,
             bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)

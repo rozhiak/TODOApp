@@ -48,7 +48,6 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
                 taskRepository.updateTask(it)
             }
         }
-
     }
 }
 

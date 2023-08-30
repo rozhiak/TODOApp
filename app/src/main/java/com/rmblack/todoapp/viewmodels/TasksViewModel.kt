@@ -66,18 +66,13 @@ open class TasksViewModel : ViewModel() {
 
     fun deleteTask(task: Task?, position: Int) {
         _detailsVisibility.removeAt(position)
-//        println(position)
         if (position + 1 < tasks.value.size) {
             if (tasks.value[position - 1] == null && tasks.value[position + 1] == null) {
                 _detailsVisibility.removeAt(position - 1)
-//                println(position - 1)
-
             }
         } else {
             if (tasks.value[position - 1] == null) {
                 _detailsVisibility.removeAt(position - 1)
-//                println(position - 1)
-
             }
         }
 
@@ -92,8 +87,6 @@ open class TasksViewModel : ViewModel() {
         viewModelScope.launch {
             taskRepository.addTask(task)
         }
-
-
     }
 
 }
