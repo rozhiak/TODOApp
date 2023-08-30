@@ -80,8 +80,9 @@
         app:srcCompat="@drawable/ic_calendar" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:paddingVertical="8dp"
         android:id="@+id/deadline_tv"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="8dp"
@@ -90,9 +91,9 @@
         android:textColor="@color/description_black"
         android:textSize="13sp"
         android:textStyle="bold"
+        android:paddingHorizontal="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/calendar_ic"
         app:layout_constraintEnd_toStartOf="@+id/calendar_ic"
-        app:layout_constraintStart_toStartOf="@+id/et_title"
         app:layout_constraintTop_toTopOf="@+id/calendar_ic" />
 
     <androidx.appcompat.widget.AppCompatTextView
