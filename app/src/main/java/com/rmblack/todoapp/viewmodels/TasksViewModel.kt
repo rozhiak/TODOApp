@@ -57,11 +57,14 @@ open class TasksViewModel : ViewModel() {
     }
 
     fun insertVisibility(pos: Int, b: Boolean) {
+        while (pos > _detailsVisibility.size) {
+            _detailsVisibility.add(false)
+        }
         _detailsVisibility.add(pos, b)
     }
 
     fun deleteVisibility(pos: Int) {
-        _detailsVisibility.removeAt(pos)
+        if (pos in detailsVisibility.indices) _detailsVisibility.removeAt(pos)
     }
 
     fun deleteTask(task: Task?, position: Int) {
@@ -79,8 +82,6 @@ open class TasksViewModel : ViewModel() {
         viewModelScope.launch {
             taskRepository.deleteTask(task)
         }
-
-
     }
 
     fun insertTask(task: Task) {

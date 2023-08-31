@@ -79,8 +79,9 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                                 break
                             }
                         }
-                        viewModel.insertVisibility(position, visibility)
                         viewModel.insertTask(deletedTask)
+                        viewModel.insertVisibility(position, visibility)
+
                     }
                 }
             }
@@ -145,24 +146,17 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
-                        val movedTaskIndex = viewModel.detailsVisibility.indexOfFirst { it }
-                        viewModel.deleteVisibility(movedTaskIndex)
+                        setUpForTaskMoving()
                     } else if (editedTaskId != null) {
-                        val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
-                        val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
-                        if (oldIndex != editedTaskIndex) {
-                            println("shared size of details visibility: " + viewModel.detailsVisibility.size)
-                            println("shared size of tasks: " + viewModel.tasks.value.size)
-                            if (oldIndex != -1 && editedTaskIndex != -1) viewModel.updateVisibility(oldIndex, false)
-                            if (editedTaskIndex != -1) {
-                                viewModel.updateVisibility(editedTaskIndex, true)
-                                binding.sharedTasksRv.post {
-                                    binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
-                                }
-                            }
-                            editedTaskId = null
-                        }
+                        setUpForNewOrEditTask(tasks, editedTaskId)
+                        editedTaskId = null
                     }
+                    setUpForDeleteTask()
+
+                    for (t in viewModel.tasks.value) {
+                        println(t?.title)
+                    }
+                    println(viewModel.detailsVisibility)
 
                     val layoutManager = binding.sharedTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
@@ -176,6 +170,35 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 }
             }
         }
+    }
+
+    private fun setUpForDeleteTask() {
+        while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
+            val firstFalseIndex = viewModel.detailsVisibility.indexOfFirst { !it }
+            viewModel.deleteVisibility(firstFalseIndex)
+        }
+    }
+
+    private fun setUpForNewOrEditTask(
+        tasks: List<Task?>,
+        editedTaskId: UUID?
+    ) {
+        val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
+        val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
+        if (oldIndex != editedTaskIndex) {
+            if (oldIndex != -1 && editedTaskIndex != -1) viewModel.updateVisibility(oldIndex, false)
+            if (editedTaskIndex != -1) {
+                viewModel.updateVisibility(editedTaskIndex, true)
+                binding.sharedTasksRv.post {
+                    binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
+                }
+            }
+        }
+    }
+
+    private fun setUpForTaskMoving() {
+        val movedTaskIndex = viewModel.detailsVisibility.indexOfFirst { it }
+        viewModel.deleteVisibility(movedTaskIndex)
     }
 
     private fun createSharedTasksAdapter(tasks: List<Task?>) =

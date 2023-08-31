@@ -62,6 +62,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     private fun syncUserInput() {
         binding.apply {
 
+
+
             urgentSwitch.setOnCheckedChangeListener { _, b ->
                 viewModel.updateTask { oldTask ->
                     oldTask.copy(
@@ -207,7 +209,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             REQUEST_KEY_ID_SHARED,
             bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
         )
-        _binding = null
     }
 
     companion object {

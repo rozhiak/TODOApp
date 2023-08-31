@@ -14,7 +14,7 @@ class RemainingDaysLableHolder(
 ): RecyclerView.ViewHolder(binding.root) {
     fun bind(deadline: PersianCalendar) {
         binding.apply {
-            val disInDays = kotlin.math.ceil(calculateDateDistance(deadline)).toInt()
+            val disInDays = kotlin.math.floor(calculateDateDistance(deadline)).toInt()
             if (disInDays == 0) {
                 remainingDaysLable.text = ""
                 remainingDaysTv.text = "امروز"
@@ -36,6 +36,18 @@ class RemainingDaysLableHolder(
 
     private fun calculateDateDistance(calendarDate: PersianCalendar) : Double {
         val currentDate = PersianCalendar()
+        val targetDate = PersianCalendar()
+
+        targetDate.timeInMillis = calendarDate.timeInMillis
+
+        currentDate.hourOfDay = 0
+        targetDate.hourOfDay = 0
+        currentDate.minute = 0
+        targetDate.minute = 0
+        currentDate.second = 0
+        targetDate.second = 0
+        currentDate.millisecond = 0
+        targetDate.millisecond = 0
 
         val dateInMillis = calendarDate.timeInMillis
         val currentDateInMillis = currentDate.timeInMillis
@@ -46,6 +58,4 @@ class RemainingDaysLableHolder(
         return distanceInMillis / millisInDay
     }
 
-    companion object {
-    }
 }
