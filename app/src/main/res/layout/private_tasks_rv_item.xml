@@ -125,27 +125,38 @@
                 android:layout_width="0dp"
                 android:layout_height="35dp"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/gold"
+                android:layout_marginStart="16dp"
+                android:backgroundTint="@color/green"
                 app:cardCornerRadius="15dp"
+                app:cardElevation="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
-                app:layout_constraintStart_toStartOf="@+id/urgent_switch"
+                app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
                 app:layout_constraintTop_toBottomOf="@+id/urgent_switch">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textSize="16sp"
                     android:fontFamily="@font/iranian_ans"
                     android:text="ویرایش"
                     android:textColor="#FFFFFF"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
             </androidx.cardview.widget.CardView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/appCompatImageView2"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="@color/urgent_red"
+                app:layout_constraintBottom_toBottomOf="@+id/edit_card"
+                app:layout_constraintStart_toStartOf="@+id/urgent_switch"
+                app:layout_constraintTop_toTopOf="@+id/edit_card"
+                app:srcCompat="@drawable/ic_delete" />
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

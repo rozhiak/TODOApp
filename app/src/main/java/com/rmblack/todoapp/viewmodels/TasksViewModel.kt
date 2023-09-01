@@ -57,6 +57,8 @@ open class TasksViewModel : ViewModel() {
     }
 
     fun insertVisibility(pos: Int, b: Boolean) {
+        //If there had been a date lable before deleted task, the visibility for lable
+        // is deleted so it is needed to add false to reach to the desired size
         while (pos > _detailsVisibility.size) {
             _detailsVisibility.add(false)
         }
@@ -68,6 +70,7 @@ open class TasksViewModel : ViewModel() {
     }
 
     fun deleteTask(task: Task?, position: Int) {
+        //Extra deletion is for date labels
         _detailsVisibility.removeAt(position)
         if (position + 1 < tasks.value.size) {
             if (tasks.value[position - 1] == null && tasks.value[position + 1] == null) {

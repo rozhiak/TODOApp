@@ -151,12 +151,16 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         setUpForNewOrEditTask(tasks, editedTaskId)
                         editedTaskId = null
                     }
-                    setUpForDeleteTask()
-
-                    for (t in viewModel.tasks.value) {
-                        println(t?.title)
+                    while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
+                        setUpIfLabeledTaskMoved()
                     }
-                    println(viewModel.detailsVisibility)
+
+//                    println("=================================")
+//                    for (t in viewModel.tasks.value) {
+//                        println(t?.title)
+//                    }
+//                    println(viewModel.detailsVisibility)
+//                    println("=================================")
 
                     val layoutManager = binding.sharedTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
@@ -172,11 +176,11 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         }
     }
 
-    private fun setUpForDeleteTask() {
-        while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
-            val firstFalseIndex = viewModel.detailsVisibility.indexOfFirst { !it }
-            viewModel.deleteVisibility(firstFalseIndex)
-        }
+    //If a task is moved which had has a label, visibility
+    // for the label above the task should be deleted.
+    private fun setUpIfLabeledTaskMoved() {
+        val firstFalseIndex = viewModel.detailsVisibility.indexOfFirst { !it }
+        viewModel.deleteVisibility(firstFalseIndex)
     }
 
     private fun setUpForNewOrEditTask(

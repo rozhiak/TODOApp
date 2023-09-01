@@ -155,13 +155,15 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         editedTaskId = null
                     }
                     while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
-                        setUpForDeleteTask()
+                        setUpIfLabeledTaskMoved()
                     }
 
-                    for (t in viewModel.tasks.value) {
-                        println(t?.title)
-                    }
-                    println(viewModel.detailsVisibility)
+//                    println("=================================")
+//                    for (t in viewModel.tasks.value) {
+//                        println(t?.title)
+//                    }
+//                    println(viewModel.detailsVisibility)
+//                    println("=================================")
 
                     val layoutManager = binding.privateTasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)
@@ -177,7 +179,9 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         }
     }
 
-    private fun setUpForDeleteTask() {
+    //If a task is moved which had has a label, visibility
+    // for the label above the task should be deleted.
+    private fun setUpIfLabeledTaskMoved() {
         val firstFalseIndex = viewModel.detailsVisibility.indexOfFirst { !it }
         viewModel.deleteVisibility(firstFalseIndex)
     }

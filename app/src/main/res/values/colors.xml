@@ -11,7 +11,6 @@
     <!-- my colors -->
     <color name="green">#5DD0A3</color>
     <color name="urgent_red">#D05D8A</color>
-    <color name="gold">#d0a35d</color>
     <color name="purple">#A35DD0</color>
     <color name="title_black">#CC000000</color>
     <color name="description_black">#BF000000</color>
@@ -21,5 +20,6 @@
     <color name="selected_item_color">#19E2FFF3</color>
     <color name="dark_bottom_navigation">#2d2d2d</color>
     <color name="grey">#666666</color>
+    <color name="edit_card_green">#D2009F71</color>
 
 </resources>

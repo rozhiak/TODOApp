@@ -143,11 +143,12 @@
                 app:layout_constraintTop_toTopOf="@+id/urgent_lable" />
 
             <androidx.cardview.widget.CardView
+                app:cardElevation="0dp"
                 android:id="@+id/edit_card"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/gold"
+                android:backgroundTint="@color/green"
                 app:cardCornerRadius="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/urgent_lable"
