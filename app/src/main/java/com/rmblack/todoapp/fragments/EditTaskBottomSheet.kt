@@ -2,6 +2,7 @@ package com.rmblack.todoapp.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.Selection
 import android.view.LayoutInflater
@@ -17,12 +18,16 @@ import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
 import ir.hamsaa.persiandatepicker.api.PersianPickerDate
 import ir.hamsaa.persiandatepicker.api.PersianPickerListener
 import ir.hamsaa.persiandatepicker.date.PersianDateImpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -177,8 +182,24 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private fun setCollapseBtnListener() {
         binding.saveBtn.setOnClickListener {
-            dismiss()
+            if (binding.etTitle.text?.isBlank() == true || binding.etTitle.text?.isEmpty() == true) {
+
+                binding.etTitle.setHintTextColor(Color.parseColor("#D05D8A"))
+                binding.etTitle.hint = "عنوان را تایپ کنید"
+
+                val scope = CoroutineScope(Dispatchers.Main)
+                scope.launch {
+                    delay(1300)
+                    binding.etTitle.hint = "عنوان"
+                    binding.etTitle.setHintTextColor(Color.parseColor("#74000000"))
+
+                }
+
+            } else {
+                dismiss()
+            }
         }
+
         binding.collapseBtn.setOnClickListener {
             dismiss()
         }
@@ -201,14 +222,16 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        setFragmentResult(
-            REQUEST_KEY_ID_PRIVATE,
-            bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)
-        )
-        setFragmentResult(
-            REQUEST_KEY_ID_SHARED,
-            bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
-        )
+        if (binding.etTitle.text?.isNotBlank() == true || binding.etTitle.text?.isNotEmpty() == true) {
+            setFragmentResult(
+                REQUEST_KEY_ID_PRIVATE,
+                bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)
+            )
+            setFragmentResult(
+                REQUEST_KEY_ID_SHARED,
+                bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
+            )
+        }
     }
 
     companion object {

@@ -152,8 +152,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
                         setUpForNewOrEditTask(tasks, editedTaskId)
-                        editedTaskId = null
                     }
+                    editedTaskId = null
                     while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
                         setUpIfLabeledTaskMoved()
                     }
@@ -209,7 +209,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     private fun createPrivateTasksAdapter(tasks: List<Task?>): PrivateTaskListAdapter {
-        return PrivateTaskListAdapter(tasks, viewModel, this)
+        return PrivateTaskListAdapter(viewModel, this, requireActivity())
     }
 
     override fun onDestroyView() {

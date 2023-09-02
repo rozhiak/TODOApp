@@ -21,11 +21,14 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
     private val _task : MutableStateFlow<Task?> = MutableStateFlow(null)
     val task : StateFlow<Task?> = _task.asStateFlow()
 
+    private lateinit var primaryTitle: String
+
     init {
         viewModelScope.launch {
             val task = withContext(Dispatchers.IO) {
                 taskRepository.getTask(taskId)
             }
+            primaryTitle = task.title
             _task.value = task
         }
     }
@@ -41,7 +44,9 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
     override fun onCleared() {
         super.onCleared()
         task.value?.let {
-            if (it.title.isEmpty() || it.title.isBlank()) {
+            if ((it.title.isEmpty() || it.title.isBlank()) && primaryTitle.isNotBlank()) {
+                //Do nothing
+            } else if (it.title.isEmpty() || it.title.isBlank()) {
                 taskRepository.deleteTask(task.value)
             } else {
                 taskRepository.updateTask(it)

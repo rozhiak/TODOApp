@@ -1,9 +1,11 @@
 package com.rmblack.todoapp.adapters
 
+import android.app.Activity
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -15,12 +17,15 @@ import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.databinding.SharedTasksRvItemBinding
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
+import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 
 class SharedTaskHolder(
     private val binding: SharedTasksRvItemBinding,
     private val viewModel: SharedTasksViewModel,
+    private val activity: Activity,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
 ) : TaskHolder(
@@ -28,7 +33,6 @@ class SharedTaskHolder(
     recyclerView,
     binding
 ) {
-
     fun bind(
         tasks: List<Task?>,
         pos: Int,
@@ -47,6 +51,7 @@ class SharedTaskHolder(
                         urgentLable,
                         urgentSwitch,
                         editCard,
+                        deleteBtn
                     )
                 }
                 setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
@@ -55,7 +60,33 @@ class SharedTaskHolder(
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
                 setBackground(pos, rootConstraint)
+                setUpDelete(pos, it, adapter, deleteBtn, viewModel, activity)
                 composerNameTv.text = it.user.name
+            }
+        }
+    }
+
+    private fun setUpDelete(
+        pos: Int,
+        task: Task,
+        adapter: SharedTasksAdapter,
+        deleteBtn: AppCompatImageView,
+        viewModel: TasksViewModel,
+        activity: Activity
+    ) {
+        deleteBtn.setOnClickListener { _ ->
+            var visibility = viewModel.detailsVisibility[pos]
+            viewModel.deleteTask(task, pos)
+            adapter.notifyItemRemoved(pos)
+            Utilities.makeDeleteSnackBar(activity, recyclerView) {
+                for (b in viewModel.detailsVisibility) {
+                    if (b) {
+                        visibility = false
+                        break
+                    }
+                }
+                viewModel.insertTask(task)
+                viewModel.insertVisibility(pos, visibility)
             }
         }
     }
@@ -114,9 +145,9 @@ class SharedTaskHolder(
 }
 
 class SharedTasksAdapter(
-    private val tasks: List<Task?>,
     private val viewModel: SharedTasksViewModel,
-    private val editClickListener: TaskHolder.EditClickListener
+    private val editClickListener: TaskHolder.EditClickListener,
+    private val activity: Activity
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     private lateinit var recyclerView: RecyclerView
@@ -133,25 +164,25 @@ class SharedTasksAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
-            SharedTaskHolder(binding, viewModel, editClickListener, recyclerView)
+            SharedTaskHolder(binding, viewModel, activity, editClickListener, recyclerView)
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (holder is SharedTaskHolder) {
-            holder.bind(tasks, position, this)
-        } else if (holder is RemainingDaysLableHolder && position + 1 < tasks.size) {
-            tasks[position+1]?.let { holder.bind(it.deadLine) }
+            holder.bind(viewModel.tasks.value, position, this)
+        } else if (holder is RemainingDaysLableHolder && position + 1 < viewModel.tasks.value.size) {
+            viewModel.tasks.value[position+1]?.let { holder.bind(it.deadLine) }
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position >= 0 && tasks[position] != null) {
+        return if (position >= 0 && viewModel.tasks.value[position] != null) {
             TASK
         } else {
             REMAINING_DAYS_LABLE
         }
     }
 
-    override fun getItemCount() = tasks.size
+    override fun getItemCount() = viewModel.tasks.value.size
 }

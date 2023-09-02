@@ -21,7 +21,7 @@ class Utilities {
         fun makeDeleteSnackBar(activity: Activity, container: View, onUndo: () -> Unit) {
             val snackBar = Snackbar.make(container, "", Snackbar.LENGTH_LONG)
             val customSnackView: View =
-                activity.layoutInflater.inflate(R.layout.snack_bar, null)
+                activity.layoutInflater.inflate(R.layout.delete_snack, null)
             snackBar.view.setBackgroundColor(Color.TRANSPARENT)
             val snackBarLayout = snackBar.view as SnackbarLayout
             snackBarLayout.setPadding(0, 0, 0, 0)

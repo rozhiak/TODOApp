@@ -149,8 +149,8 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
                         setUpForNewOrEditTask(tasks, editedTaskId)
-                        editedTaskId = null
                     }
+                    editedTaskId = null
                     while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
                         setUpIfLabeledTaskMoved()
                     }
@@ -206,7 +206,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     private fun createSharedTasksAdapter(tasks: List<Task?>) =
-        SharedTasksAdapter(tasks, viewModel, this)
+        SharedTasksAdapter(viewModel, this, requireActivity())
 
 
     override fun onDestroyView() {
