@@ -30,6 +30,12 @@ open class TaskHolder(
         fun onEditClick(task: Task)
     }
 
+    fun setClickOnUrgentLable(urgentLable: AppCompatTextView, urgentSwitch: SwitchButton) {
+        urgentLable.setOnClickListener {
+            urgentSwitch.toggle()
+        }
+    }
+
     fun setEditClick(
         task: Task,
         editCard: CardView

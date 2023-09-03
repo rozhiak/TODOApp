@@ -148,6 +148,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
+                    setUpNoTaskIconAndText(tasks)
+
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
@@ -176,6 +178,16 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
                 }
             }
+        }
+    }
+
+    private fun setUpNoTaskIconAndText(tasks: List<Task?>) {
+        if (tasks.isNotEmpty()) {
+            binding.ivNoTask.visibility = View.GONE
+            binding.tvNoTask.visibility = View.GONE
+        } else {
+            binding.ivNoTask.visibility = View.VISIBLE
+            binding.tvNoTask.visibility = View.VISIBLE
         }
     }
 

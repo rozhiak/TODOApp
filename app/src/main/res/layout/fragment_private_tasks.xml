@@ -10,12 +10,46 @@
     android:id="@+id/private_refresh_layout"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:clipToPadding="false"
-        android:paddingBottom="110dp"
-        tools:listitem="@layout/private_tasks_rv_item"
-        android:id="@+id/private_tasks_rv"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:clipToPadding="false"
+            android:paddingBottom="110dp"
+            tools:listitem="@layout/private_tasks_rv_item"
+            android:id="@+id/private_tasks_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layoutDirection="ltr"
+            android:id="@+id/iv_no_task"
+            android:layout_width="170dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginBottom="100dp"
+            android:tint="#8ED6BA"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_no_task" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_no_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/iranian_ans"
+            android:layout_marginTop="16dp"
+            android:text="تسکی برای انجام نداری!"
+            android:textColor="#54C197"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_no_task" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

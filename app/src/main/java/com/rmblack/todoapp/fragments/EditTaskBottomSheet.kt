@@ -66,9 +66,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private fun syncUserInput() {
         binding.apply {
-
-
-
             urgentSwitch.setOnCheckedChangeListener { _, b ->
                 viewModel.updateTask { oldTask ->
                     oldTask.copy(
@@ -106,6 +103,16 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 saveTitleAndDescription()
                 showDatePicker()
                 resetCursorsPosition()
+            }
+
+            calendarIc.setOnClickListener {
+                saveTitleAndDescription()
+                showDatePicker()
+                resetCursorsPosition()
+            }
+
+            urgentLable.setOnClickListener {
+                urgentSwitch.toggle()
             }
         }
     }
