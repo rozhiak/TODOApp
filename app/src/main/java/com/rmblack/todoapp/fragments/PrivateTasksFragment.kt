@@ -148,8 +148,6 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
-                    setUpNoTaskIconAndText(tasks)
-
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
@@ -176,6 +174,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     binding.privateTasksRv.adapter = createPrivateTasksAdapter(tasks)
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
+
+                    setUpNoTaskIconAndText(tasks)
                 }
             }
         }

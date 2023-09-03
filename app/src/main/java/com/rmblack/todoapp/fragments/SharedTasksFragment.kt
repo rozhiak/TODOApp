@@ -145,8 +145,6 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
-                    setUpNoTaskIconAndText(tasks)
-
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
@@ -173,6 +171,8 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     binding.sharedTasksRv.adapter = createSharedTasksAdapter(tasks)
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
+
+                    setUpNoTaskIconAndText(tasks)
                 }
             }
         }
