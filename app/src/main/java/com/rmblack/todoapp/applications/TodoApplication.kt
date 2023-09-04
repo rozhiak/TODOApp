@@ -1,14 +1,18 @@
 package com.rmblack.todoapp.applications
 
 import android.app.Application
-import com.aminography.primecalendar.PrimeCalendar
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.models.TaskState
 import com.rmblack.todoapp.models.User
+import com.rmblack.todoapp.webservice.ApiService
+import com.rmblack.todoapp.webservice.repository.ApiRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class TodoApplication : Application() {
@@ -75,6 +79,34 @@ class TodoApplication : Application() {
 //            repo.addTask(task3)
         }
 
+        newTaskTest()
+    }
+
+    //This is for testing
+    //Response models should be implemented (for success and failure)
+    fun newTaskTest() {
+        val retrofitService = ApiService.getInstance()
+        val repo = ApiRepository(retrofitService)
+
+        CoroutineScope(Dispatchers.IO ).launch {
+            val response = repo.addNewTask(
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
+                "عنوان",
+                "12/12/12",
+                "توضیح",
+                "13/13/13",
+                "false",
+                "false",
+                "false"
+            )
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    println("RESPONSE  " + response.body())
+                } else {
+                    println("FAILURE  " + response.errorBody())
+                }
+            }
+        }
 
     }
 }
