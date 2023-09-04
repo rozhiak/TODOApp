@@ -91,13 +91,9 @@ dependencies {
     implementation 'com.github.Ferfalk:SimpleSearchView:0.2.0'
     //Verification code edit text
     implementation 'com.github.jakode2020:VerifyCodeEditText:1.2.0'
-
-
-
-
-
-
-
+    //Web Service
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 }
 
 

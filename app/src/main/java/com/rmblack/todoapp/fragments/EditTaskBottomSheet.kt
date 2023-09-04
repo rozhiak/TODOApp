@@ -18,6 +18,7 @@ import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
+import com.rmblack.todoapp.models.TaskState
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
@@ -71,7 +72,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     oldTask.copy(
                         isUrgent = b,
                         title = binding.etTitle.text.toString(),
-                        description = binding.etDescription.text.toString()
+                        description = binding.etDescription.text.toString(),
+                        state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                     )
                 }
                 resetCursorsPosition()
@@ -83,7 +85,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         oldTask.copy(
                             isShared = false,
                             title = binding.etTitle.text.toString(),
-                            description = binding.etDescription.text.toString()
+                            description = binding.etDescription.text.toString(),
+                            state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                         )
                     }
                     resetCursorsPosition()
@@ -92,7 +95,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         oldTask.copy(
                             isShared = true,
                             title = binding.etTitle.text.toString(),
-                            description = binding.etDescription.text.toString()
+                            description = binding.etDescription.text.toString(),
+                            state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                         )
                     }
                     resetCursorsPosition()
@@ -153,7 +157,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         newDeadline.year = persianPickerDate.persianYear
                         newDeadline.month = persianPickerDate.persianMonth - 1
                         newDeadline.dayOfMonth = persianPickerDate.persianDay
-                        it.copy(deadLine = newDeadline)
+                        it.copy(
+                            deadLine = newDeadline,
+                            state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
+                        )
                     }
                 }
 
@@ -221,8 +228,11 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false ||
             binding.etDescription.text?.equals(viewModel.task.value?.description) == false) {
             viewModel.updateTask { oldTask ->
-                oldTask.copy(title = binding.etTitle.text.toString(),
-                             description = binding.etDescription.text.toString())
+                oldTask.copy(
+                    title = binding.etTitle.text.toString(),
+                    description = binding.etDescription.text.toString(),
+                    state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
+                )
             }
         }
     }

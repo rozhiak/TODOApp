@@ -5,6 +5,7 @@ import com.aminography.primecalendar.PrimeCalendar
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.TaskState
 import com.rmblack.todoapp.models.User
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,6 +31,8 @@ class TodoApplication : Application() {
             isShared = false,
             user = user1,
             groupId = "1234",
+            TaskState.NEW
+
         )
 
         val user2 = User("علی صالحی", "09939139576", "2345", "0987")
@@ -44,6 +47,8 @@ class TodoApplication : Application() {
             isShared = false,
             user = user2,
             groupId = "1234",
+            TaskState.NEW
+
         )
 
         val user3 = User("علی محمدی", "09939139577", "2345", "0987")
@@ -58,6 +63,8 @@ class TodoApplication : Application() {
             isShared = true,
             user = user3,
             groupId = "1234",
+            TaskState.NEW
+
         )
         val repo = TaskRepository.get()
 

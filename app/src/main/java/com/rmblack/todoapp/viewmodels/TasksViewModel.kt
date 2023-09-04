@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.TaskState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,6 +49,16 @@ open class TasksViewModel : ViewModel() {
         updateTasks { oldTasks ->
             val updatedTasks = oldTasks.toMutableList()
             updatedTasks[pos] = tasks.value[pos]?.copy(isDone = isDone)
+            updatedTasks
+        }
+    }
+
+    fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
+        taskRepository.updateTaskState(state, id)
+
+        updateTasks {oldTasks ->
+            val updatedTasks = oldTasks.toMutableList()
+            updatedTasks[pos] = tasks.value[pos]?.copy(state = state)
             updatedTasks
         }
     }

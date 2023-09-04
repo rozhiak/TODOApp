@@ -2,8 +2,9 @@ package com.rmblack.todoapp.data.repository
 
 import android.content.Context
 import androidx.room.Room
-import com.rmblack.todoapp.database.TaskDatabase
+import com.rmblack.todoapp.data.database.TaskDatabase
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.TaskState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -51,14 +52,17 @@ class TaskRepository private constructor(
         }
     }
 
-//    suspend fun deleteTask(task: Task?) = database.taskDao().delete(task)
+    fun updateTaskState(state: TaskState, id: UUID) {
+        coroutineScope.launch {
+            database.taskDao().updateTaskState(state, id)
+        }
+    }
 
     fun deleteTask(task: Task?) {
         coroutineScope.launch {
             database.taskDao().delete(task)
         }
     }
-
 
     suspend fun addTask(task: Task) = database.taskDao().insert(task)
 

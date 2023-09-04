@@ -1,4 +1,4 @@
-package com.rmblack.todoapp.database
+package com.rmblack.todoapp.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.TaskState
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -27,11 +28,14 @@ interface TaskDao {
     @Update
     suspend fun updateTask(task: Task)
 
-    @Query("UPDATE task SET isDone=:isDone WHERE id = :id")
+    @Query("UPDATE task SET isDone = :isDone WHERE id = :id")
     suspend fun updateDoneState(isDone: Boolean, id: UUID)
 
-    @Query("UPDATE task SET isUrgent=:isUrgent WHERE id = :id")
+    @Query("UPDATE task SET isUrgent = :isUrgent WHERE id = :id")
     suspend fun updateUrgentState(isUrgent: Boolean, id: UUID)
+
+    @Query("UPDATE task SET state = :state WHERE id = :id")
+    suspend fun updateTaskState(state: TaskState, id: UUID)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: Task)

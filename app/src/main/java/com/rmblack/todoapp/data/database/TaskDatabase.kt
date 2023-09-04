@@ -1,4 +1,4 @@
-package com.rmblack.todoapp.database
+package com.rmblack.todoapp.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -1,7 +1,6 @@
 package com.rmblack.todoapp.models
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.aminography.primecalendar.persian.PersianCalendar
 import java.util.UUID
@@ -19,4 +18,11 @@ data class Task(
     val isShared: Boolean,
     val user: User,
     val groupId: String,
+    val state: TaskState = TaskState.SAVED
 )
+
+enum class TaskState {
+    NEW,
+    CHANGED,
+    SAVED
+}
