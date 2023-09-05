@@ -64,6 +64,12 @@ class TaskRepository private constructor(
         }
     }
 
+    fun updateServerID(id: UUID, serverID: String) {
+        coroutineScope.launch {
+            database.taskDao().updateServerID(id, serverID)
+        }
+    }
+
     suspend fun addTask(task: Task) = database.taskDao().insert(task)
 
     companion object {

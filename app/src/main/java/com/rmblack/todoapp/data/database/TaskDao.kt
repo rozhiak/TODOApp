@@ -37,6 +37,9 @@ interface TaskDao {
     @Query("UPDATE task SET state = :state WHERE id = :id")
     suspend fun updateTaskState(state: TaskState, id: UUID)
 
+    @Query("UPDATE task SET serverID = :serverID WHERE id = :id")
+    suspend fun updateServerID(id: UUID, serverID: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: Task)
 

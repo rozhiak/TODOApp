@@ -22,6 +22,7 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
@@ -217,6 +218,9 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 viewModel.updateVisibility(editedTaskIndex, true)
                 binding.sharedTasksRv.post {
                     binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
+                }
+                tasks[editedTaskIndex]?.let {newTask ->
+                    if (newTask.state == TaskState.NEW)viewModel.addTaskToServer(newTask, editedTaskIndex)
                 }
             }
         }

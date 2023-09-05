@@ -21,6 +21,7 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
@@ -141,8 +142,6 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         }).attachToRecyclerView(binding.privateTasksRv)
     }
 
-
-
     private fun setUpRecyclerview() {
         var editedTaskId: UUID? = null
 
@@ -217,6 +216,11 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 viewModel.updateVisibility(editedTaskIndex, true)
                 binding.privateTasksRv.post {
                     binding.privateTasksRv.smoothScrollToPosition(editedTaskIndex)
+                }
+                tasks[editedTaskIndex]?.let {newTask ->
+                    if (newTask.state == TaskState.NEW) {
+                        viewModel.addTaskToServer(newTask, editedTaskIndex)
+                    }
                 }
             }
         }

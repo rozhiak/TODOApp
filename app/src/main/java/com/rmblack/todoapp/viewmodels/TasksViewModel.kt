@@ -3,10 +3,13 @@ package com.rmblack.todoapp.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.models.server.ServerTask
+import com.rmblack.todoapp.models.server.failure.ErrorDetail
+import com.rmblack.todoapp.models.server.failure.FailureResponse
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -72,12 +75,22 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
         }
     }
 
-    fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
+    private fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
         taskRepository.updateTaskState(state, id)
 
         updateTasks { oldTasks ->
             val updatedTasks = oldTasks.toMutableList()
             updatedTasks[pos] = tasks.value[pos]?.copy(state = state)
+            updatedTasks
+        }
+    }
+
+    private fun updateServerID(id: UUID, serverID: String, pos: Int) {
+        taskRepository.updateServerID(id, serverID)
+
+        updateTasks { oldTasks ->
+            val updatedTasks = oldTasks.toMutableList()
+            updatedTasks[pos] = tasks.value[pos]?.copy(serverID = serverID)
             updatedTasks
         }
     }
@@ -123,10 +136,10 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
         }
     }
 
-    fun addTaskToServer(task: Task) {
+    fun addTaskToServer(task: Task, pos: Int) {
         //user token should be used here
         val newTask = ServerTask(
-            "",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6InN0cmluZyJ9.Y7IkXBADVKecpY56t-XG2CnzicQaYbPF1YuL2-gh8Nw",
             task.title,
             task.addedTime.timeInMillis.toString(),
             task.description,
@@ -141,8 +154,15 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     loading.value = false
+                    updateTaskState(TaskState.SAVED, task.id, pos)
+                    response.body()?.data?.id?.let { updateServerID(task.id, it, pos) }
                 } else {
-                    onError("Error : ${response.message()} ")
+                    val errorResponse: FailureResponse? = try {
+                        Gson().fromJson(response.errorBody()?.string(), FailureResponse::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    onError("Error : ${errorResponse?.detail} ")
                 }
             }
         }
