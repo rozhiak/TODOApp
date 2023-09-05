@@ -220,7 +220,9 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
                 }
                 tasks[editedTaskIndex]?.let {newTask ->
-                    if (newTask.state == TaskState.NEW)viewModel.addTaskToServer(newTask, editedTaskIndex)
+                    if (newTask.state == TaskState.NEW) {
+                        viewModel.addTaskToServer(newTask, editedTaskIndex)
+                    }
                 }
             }
         }

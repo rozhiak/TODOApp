@@ -72,6 +72,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
+                binding.privateRefreshLayout.isEnabled = false
                 return false
             }
 

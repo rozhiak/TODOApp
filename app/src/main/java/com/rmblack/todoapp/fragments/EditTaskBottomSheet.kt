@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -7,6 +8,7 @@ import android.text.Selection
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -199,14 +201,16 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 binding.etTitle.setHintTextColor(Color.parseColor("#D05D8A"))
                 binding.etTitle.hint = "عنوان را تایپ کنید"
 
+                binding.etTitle.requestFocus()
+                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.showSoftInput(binding.etTitle, InputMethodManager.SHOW_IMPLICIT)
+
                 val scope = CoroutineScope(Dispatchers.Main)
                 scope.launch {
                     delay(1300)
                     binding.etTitle.hint = "عنوان"
                     binding.etTitle.setHintTextColor(Color.parseColor("#74000000"))
-
                 }
-
             } else {
                 dismiss()
             }

@@ -15,6 +15,7 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:nestedScrollingEnabled="true"
             android:clipToPadding="false"
             android:paddingBottom="110dp"
             tools:listitem="@layout/shared_tasks_rv_item"

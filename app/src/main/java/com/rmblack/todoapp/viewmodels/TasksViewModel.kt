@@ -139,7 +139,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
     fun addTaskToServer(task: Task, pos: Int) {
         //user token should be used here
         val newTask = ServerTask(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6InN0cmluZyJ9.Y7IkXBADVKecpY56t-XG2CnzicQaYbPF1YuL2-gh8Nw",
+            "",
             task.title,
             task.addedTime.timeInMillis.toString(),
             task.description,
