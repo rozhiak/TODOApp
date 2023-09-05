@@ -2,12 +2,8 @@ package com.rmblack.todoapp.adapters.viewholders
 
 import androidx.recyclerview.widget.RecyclerView
 import com.aminography.primecalendar.persian.PersianCalendar
-import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
-import com.rmblack.todoapp.models.Task
 import com.rmblack.todoapp.utils.PersianNum
-import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
-import java.lang.Math.ceil
 
 class RemainingDaysLableHolder(
     private val binding: RemainingDaysLableBinding,

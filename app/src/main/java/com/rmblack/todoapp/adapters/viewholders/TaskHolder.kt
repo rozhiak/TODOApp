@@ -1,6 +1,5 @@
 package com.rmblack.todoapp.adapters.viewholders
 
-import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.View
@@ -10,10 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
-import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.TasksViewModel
+import com.rmblack.todoapp.models.local.Task
 import com.suke.widget.SwitchButton
 
 const val TASK = 0

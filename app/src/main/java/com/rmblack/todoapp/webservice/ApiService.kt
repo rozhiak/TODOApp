@@ -1,32 +1,26 @@
 package com.rmblack.todoapp.webservice
 
+import com.rmblack.todoapp.models.server.ServerTask
+import com.rmblack.todoapp.models.server.success.AddTaskResponse
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 
 interface ApiService {
+
     @GET("tasks/get/{token}")
     suspend fun getAllTasks(@Path("token") token: String) : Response<AllTasksResponse>
 
-    @FormUrlEncoded
+    @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/new/")
-    suspend fun newTask(
-        @Field("token") token: String?,
-        @Field("title") title: String?,
-        @Field("added_time") addedTime: String?,
-        @Field("description") description: String?,
-        @Field("deadline") deadline: String?,
-        @Field("is_urgent") isUrgent: String?,
-        @Field("is_done") isDone: String?,
-        @Field("is_shared") isShared: String?,
-    ) : Response<String>
+    suspend fun newTask(@Body task: ServerTask) : Response<AddTaskResponse>
 
     companion object {
         var apiService: ApiService? = null

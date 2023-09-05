@@ -10,6 +10,8 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,9 +21,13 @@ import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
-import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.viewmodels.MainViewModel
+import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
+import com.rmblack.todoapp.webservice.ApiService
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -29,7 +35,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     private var _binding : FragmentSharedTasksBinding? = null
 
-    private val viewModel: SharedTasksViewModel by viewModels()
+    private lateinit var viewModel: SharedTasksViewModel
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -44,6 +50,10 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         _binding = FragmentSharedTasksBinding.inflate(inflater, container, false)
 
         binding.sharedTasksRv.layoutManager = LinearLayoutManager(context)
+
+        val apiService = ApiService.getInstance()
+        val apiRepository = ApiRepository(apiService)
+        viewModel = ViewModelProvider(this, SharedFragmentViewModelFactory(apiRepository)).get(SharedTasksViewModel::class.java)
 
         return binding.root
     }
@@ -234,4 +244,14 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }
 
+
+    class SharedFragmentViewModelFactory constructor(private val repository: ApiRepository): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
+                SharedTasksViewModel(this.repository) as T
+            } else {
+                throw IllegalArgumentException("ViewModel Not Found")
+            }
+        }
+    }
 }

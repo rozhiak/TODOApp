@@ -1,19 +1,26 @@
 package com.rmblack.todoapp.viewmodels
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
-import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.models.TaskState
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.local.TaskState
+import com.rmblack.todoapp.models.server.ServerTask
+import com.rmblack.todoapp.webservice.repository.ApiRepository
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
-open class TasksViewModel : ViewModel() {
-
+open class TasksViewModel constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
     val taskRepository = TaskRepository.get()
 
@@ -26,6 +33,18 @@ open class TasksViewModel : ViewModel() {
 
     val detailsVisibility: List<Boolean>
         get() = _detailsVisibility.toList()
+
+    //Server properties
+    var job: Job? = null
+
+    private val errorMessage = MutableLiveData<String>()
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        onError("Exception handled: ${throwable.localizedMessage}")
+    }
+
+    private val loading = MutableLiveData<Boolean>()
+    //End of server properties
 
     private fun updateTasks(onUpdate: (List<Task?>) -> List<Task?>) {
         _tasks.update { oldTasks ->
@@ -56,7 +75,7 @@ open class TasksViewModel : ViewModel() {
     fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
         taskRepository.updateTaskState(state, id)
 
-        updateTasks {oldTasks ->
+        updateTasks { oldTasks ->
             val updatedTasks = oldTasks.toMutableList()
             updatedTasks[pos] = tasks.value[pos]?.copy(state = state)
             updatedTasks
@@ -102,6 +121,41 @@ open class TasksViewModel : ViewModel() {
         viewModelScope.launch {
             taskRepository.addTask(task)
         }
+    }
+
+    fun addTaskToServer(task: Task) {
+        //user token should be used here
+        val newTask = ServerTask(
+            "",
+            task.title,
+            task.addedTime.timeInMillis.toString(),
+            task.description,
+            task.deadLine.timeInMillis.toString(),
+            task.isUrgent,
+            task.isDone,
+            task.isDone
+        )
+
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiRepository.addNewTask(newTask)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    loading.value = false
+                } else {
+                    onError("Error : ${response.message()} ")
+                }
+            }
+        }
+    }
+
+    private fun onError(message: String) {
+        errorMessage.value = message
+        loading.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        job?.cancel()
     }
 
 }

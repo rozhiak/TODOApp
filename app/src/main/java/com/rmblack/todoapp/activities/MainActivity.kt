@@ -7,6 +7,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.R
@@ -14,11 +16,12 @@ import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.fragments.PrivateTasksFragment
 import com.rmblack.todoapp.fragments.SharedTasksFragment
-import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.models.TaskState
-import com.rmblack.todoapp.models.User
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.local.TaskState
+import com.rmblack.todoapp.models.local.User
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.MainViewModel
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.util.UUID
 

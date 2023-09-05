@@ -3,8 +3,8 @@ package com.rmblack.todoapp.data.repository
 import android.content.Context
 import androidx.room.Room
 import com.rmblack.todoapp.data.database.TaskDatabase
-import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.models.TaskState
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.local.TaskState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow

@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,17 +20,19 @@ import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
-import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.models.TaskState
+import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
+import com.rmblack.todoapp.webservice.ApiService
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 
 class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
-    private val viewModel: PrivateTasksViewModel by viewModels()
+    private lateinit var viewModel: PrivateTasksViewModel
 
     private var _binding: FragmentPrivateTasksBinding? = null
 
@@ -37,7 +40,6 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
         }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +49,10 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         _binding = FragmentPrivateTasksBinding.inflate(inflater, container, false)
 
         binding.privateTasksRv.layoutManager = LinearLayoutManager(context)
+
+        val apiService = ApiService.getInstance()
+        val apiRepository = ApiRepository(apiService)
+        viewModel = ViewModelProvider(this, PrivateFragmentViewModelFactory(apiRepository)).get(PrivateTasksViewModel::class.java)
 
         return binding.root
     }
@@ -236,5 +242,15 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         args.putString("taskId", task.id.toString())
         editTaskBottomSheet.arguments = args
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
+    }
+
+    class PrivateFragmentViewModelFactory constructor(private val repository: ApiRepository): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return if (modelClass.isAssignableFrom(PrivateTasksViewModel::class.java)) {
+                PrivateTasksViewModel(this.repository) as T
+            } else {
+                throw IllegalArgumentException("ViewModel Not Found")
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.rmblack.todoapp.models
+package com.rmblack.todoapp.models.local
 
 import kotlinx.serialization.Serializable
 

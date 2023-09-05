@@ -3,7 +3,7 @@ package com.rmblack.todoapp.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.local.Task
 
 @Database(entities = [Task::class], version = 1, exportSchema = false)
 @TypeConverters(TaskTypeConverters::class)

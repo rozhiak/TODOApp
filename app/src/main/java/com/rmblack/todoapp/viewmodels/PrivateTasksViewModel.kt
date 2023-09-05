@@ -1,18 +1,11 @@
 package com.rmblack.todoapp.viewmodels
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rmblack.todoapp.data.repository.TaskRepository
-import com.rmblack.todoapp.models.Task
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
-import java.util.UUID
-import kotlin.collections.ArrayList
-class PrivateTasksViewModel: TasksViewModel() {
+
+class PrivateTasksViewModel(apiRepository: ApiRepository): TasksViewModel(apiRepository) {
     init {
         viewModelScope.launch {
             taskRepository.getPrivateTasks().collect {tasks ->

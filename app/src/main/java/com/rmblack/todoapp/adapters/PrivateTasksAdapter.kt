@@ -16,7 +16,7 @@ import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
 import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
-import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.viewmodels.TasksViewModel

@@ -1,9 +1,10 @@
 package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.viewModelScope
-import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
-class SharedTasksViewModel: TasksViewModel() {
+class SharedTasksViewModel(apiRepository: ApiRepository): TasksViewModel(apiRepository) {
 
     init {
         viewModelScope.launch {

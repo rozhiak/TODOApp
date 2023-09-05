@@ -2,7 +2,6 @@ package com.rmblack.todoapp.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.Selection
 import android.view.LayoutInflater
@@ -18,8 +17,7 @@ import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
-import com.rmblack.todoapp.models.TaskState
-import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog

@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.rmblack.todoapp.models.Task
-import com.rmblack.todoapp.models.TaskState
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.local.TaskState
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 

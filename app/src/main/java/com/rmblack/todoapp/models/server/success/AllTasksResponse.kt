@@ -1,6 +1,6 @@
 package com.rmblack.todoapp.models.server.success
 
-import com.rmblack.todoapp.models.Task
+import com.rmblack.todoapp.models.local.Task
 
 data class AllTasksResponse(
     val message: String,
