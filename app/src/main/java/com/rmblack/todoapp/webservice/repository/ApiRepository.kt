@@ -1,10 +1,13 @@
 package com.rmblack.todoapp.webservice.repository
 
-import com.rmblack.todoapp.models.server.ServerTask
+import com.rmblack.todoapp.models.server.requests.AddTaskRequest
+import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.webservice.ApiService
 
 class ApiRepository constructor(private val retrofitService: ApiService) {
     suspend fun getAllTasks(token: String) = retrofitService.getAllTasks(token)
 
-    suspend fun addNewTask(task: ServerTask) = retrofitService.newTask(task)
+    suspend fun addNewTask(body: AddTaskRequest) = retrofitService.newTask(body)
+
+    suspend fun deleteTask(body: DeleteTaskRequest) = retrofitService.deleteTask(body)
 }

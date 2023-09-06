@@ -141,13 +141,14 @@ class MainActivity : AppCompatActivity() {
                 )
             }
 
-            viewModel.addTask(newTask)
-
             val editTaskBottomSheet = EditTaskBottomSheet()
             val args = Bundle()
             args.putString("taskId", newTask.id.toString())
+            args.putBoolean("isNewTask", true)
             editTaskBottomSheet.arguments = args
             editTaskBottomSheet.show(supportFragmentManager, "TODO tag")
+
+            viewModel.addTask(newTask)
         }
     }
 }

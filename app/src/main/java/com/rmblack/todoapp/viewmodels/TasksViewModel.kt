@@ -3,13 +3,11 @@ package com.rmblack.todoapp.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.local.TaskState
-import com.rmblack.todoapp.models.server.ServerTask
-import com.rmblack.todoapp.models.server.failure.ErrorDetail
-import com.rmblack.todoapp.models.server.failure.FailureResponse
+import com.rmblack.todoapp.models.server.requests.AddTaskRequest
+import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -38,12 +36,12 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
         get() = _detailsVisibility.toList()
 
     //Server properties
-    var job: Job? = null
+    private var addJob: Job? = null
 
-    private val errorMessage = MutableLiveData<String>()
+    private var deleteJob : Job? = null
 
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        onError("Exception handled: ${throwable.localizedMessage}")
+    private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
+        onError()
     }
 
     private val loading = MutableLiveData<Boolean>()
@@ -138,44 +136,59 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
 
     fun addTaskToServer(task: Task, pos: Int) {
         //user token should be used here
-        val newTask = ServerTask(
-            "",
+        val addRequest = AddTaskRequest(
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6InN0cmluZyJ9.Y7IkXBADVKecpY56t-XG2CnzicQaYbPF1YuL2-gh8Nw",
             task.title,
             task.addedTime.timeInMillis.toString(),
             task.description,
             task.deadLine.timeInMillis.toString(),
             task.isUrgent,
             task.isDone,
-            task.isDone
+            task.isShared
         )
 
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiRepository.addNewTask(newTask)
+        addJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiRepository.addNewTask(addRequest)
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     loading.value = false
                     updateTaskState(TaskState.SAVED, task.id, pos)
                     response.body()?.data?.id?.let { updateServerID(task.id, it, pos) }
                 } else {
-                    val errorResponse: FailureResponse? = try {
-                        Gson().fromJson(response.errorBody()?.string(), FailureResponse::class.java)
-                    } catch (e: Exception) {
-                        null
+                    onError()
+                    if (response.code() == 403) {
+                        //invalid token
                     }
-                    onError("Error : ${errorResponse?.detail} ")
                 }
             }
         }
     }
 
-    private fun onError(message: String) {
-        errorMessage.value = message
-        loading.value = false
+    fun deleteTaskFromServer(serverID: String) {
+        val deleteRequest = DeleteTaskRequest(
+            "",
+            serverID
+        )
+        deleteJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiRepository.deleteTask(deleteRequest)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    loading.value = false
+                } else {
+
+                }
+            }
+        }
+    }
+
+    private fun onError() {
+//        loading.value = false
     }
 
     override fun onCleared() {
         super.onCleared()
-        job?.cancel()
+        addJob?.cancel()
+        deleteJob?.cancel()
     }
 
 }

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.marginTop
 import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +16,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
@@ -24,8 +25,6 @@ import com.rmblack.todoapp.databinding.FragmentSharedTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.MainViewModel
-import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import com.rmblack.todoapp.webservice.ApiService
 import com.rmblack.todoapp.webservice.repository.ApiRepository
@@ -83,7 +82,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 if (deletedTask != null) {
                     viewModel.deleteTask(viewModel.tasks.value[position], position)
                     binding.sharedTasksRv.adapter?.notifyItemRemoved(position)
-                    Utilities.makeDeleteSnackBar(requireActivity(), binding.sharedTasksRv) {
+                    val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.sharedTasksRv) {
                         for (b in viewModel.detailsVisibility) {
                             if (b) {
                                 visibility = false
@@ -92,8 +91,18 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         }
                         viewModel.insertTask(deletedTask)
                         viewModel.insertVisibility(position, visibility)
-
+                        binding.sharedTasksRv.post {
+                            binding.sharedTasksRv.smoothScrollToPosition(position)
+                        }
                     }
+                    snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
+                                //delete from server here
+                            }
+                        }
+                    })
                 }
             }
 
@@ -147,10 +156,18 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
     private fun setUpRecyclerview() {
         var editedTaskId: UUID? = null
 
+        var isNewTask: Boolean? = null
+
         setFragmentResultListener(
             EditTaskBottomSheet.REQUEST_KEY_ID_SHARED
         ) { _, bundle ->
             editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID_SHARED) as UUID?
+        }
+
+        setFragmentResultListener(
+            EditTaskBottomSheet.REQUEST_KEY_IS_NEW_SHARED
+        ) { _, bundle ->
+            isNewTask = bundle.getBoolean(EditTaskBottomSheet.BUNDLE_KEY_IS_NEW_SHARED)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -159,9 +176,10 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
-                        setUpForNewOrEditTask(tasks, editedTaskId)
+                        setUpForNewOrEditTask(tasks, editedTaskId, isNewTask)
                     }
                     editedTaskId = null
+                    isNewTask = null
                     while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
                         setUpIfLabeledTaskMoved()
                     }
@@ -179,7 +197,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     val pos = layoutManager.findFirstVisibleItemPosition()
                     val marginTop = firstVisibleItem?.marginTop ?: 0
 
-                    binding.sharedTasksRv.adapter = createSharedTasksAdapter(tasks)
+                    binding.sharedTasksRv.adapter = createSharedTasksAdapter()
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
@@ -208,7 +226,8 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     private fun setUpForNewOrEditTask(
         tasks: List<Task?>,
-        editedTaskId: UUID?
+        editedTaskId: UUID?,
+        isNewTask: Boolean?
     ) {
         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
         val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
@@ -219,13 +238,17 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 binding.sharedTasksRv.post {
                     binding.sharedTasksRv.smoothScrollToPosition(editedTaskIndex)
                 }
-                tasks[editedTaskIndex]?.let {newTask ->
-                    if (newTask.state == TaskState.NEW) {
-                        viewModel.addTaskToServer(newTask, editedTaskIndex)
-                    }
-                }
             }
         }
+        if (isNewTask != null && editedTaskIndex != -1) {
+            if (isNewTask) {
+                //Add new task to server
+                tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it, editedTaskIndex) }
+            } else {
+                //Edit task in server
+            }
+        }
+
     }
 
     private fun setUpForTaskMoving() {
@@ -233,7 +256,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         viewModel.deleteVisibility(movedTaskIndex)
     }
 
-    private fun createSharedTasksAdapter(tasks: List<Task?>) =
+    private fun createSharedTasksAdapter() =
         SharedTasksAdapter(viewModel, this, requireActivity())
 
 
@@ -246,6 +269,7 @@ class SharedTasksFragment : Fragment(), TaskHolder.EditClickListener {
         val editTaskBottomSheet = EditTaskBottomSheet()
         val args = Bundle()
         args.putString("taskId", task.id.toString())
+        args.putBoolean("isNewTask", false)
         editTaskBottomSheet.arguments = args
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }

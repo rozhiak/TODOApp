@@ -18,7 +18,7 @@ class Utilities {
 
     companion object {
 
-        fun makeDeleteSnackBar(activity: Activity, container: View, onUndo: () -> Unit) {
+        fun makeDeleteSnackBar(activity: Activity, container: View, onUndo: () -> Unit): Snackbar {
             val snackBar = Snackbar.make(container, "", Snackbar.LENGTH_LONG)
             val customSnackView: View =
                 activity.layoutInflater.inflate(R.layout.delete_snack, null)
@@ -38,6 +38,7 @@ class Utilities {
             val fab = activity.findViewById<FloatingActionButton>(R.id.fab)
             snackBar.anchorView = fab
             snackBar.show()
+            return snackBar
         }
 
     }

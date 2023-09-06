@@ -10,6 +10,8 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
@@ -75,11 +77,11 @@ class SharedTaskHolder(
         viewModel: TasksViewModel,
         activity: Activity
     ) {
-        deleteBtn.setOnClickListener { _ ->
+        deleteBtn.setOnClickListener {
             var visibility = viewModel.detailsVisibility[pos]
             viewModel.deleteTask(task, pos)
             adapter.notifyItemRemoved(pos)
-            Utilities.makeDeleteSnackBar(activity, recyclerView) {
+            val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
                 for (b in viewModel.detailsVisibility) {
                     if (b) {
                         visibility = false
@@ -88,7 +90,18 @@ class SharedTaskHolder(
                 }
                 viewModel.insertTask(task)
                 viewModel.insertVisibility(pos, visibility)
+                recyclerView.post {
+                    recyclerView.smoothScrollToPosition(pos)
+                }
             }
+            snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
+                        //delete from server here
+                    }
+                }
+            })
         }
     }
 

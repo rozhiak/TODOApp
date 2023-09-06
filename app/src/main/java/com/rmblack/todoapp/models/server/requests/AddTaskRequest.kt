@@ -1,6 +1,6 @@
-package com.rmblack.todoapp.models.server
+package com.rmblack.todoapp.models.server.requests
 
-data class ServerTask(
+data class AddTaskRequest(
     val token: String,
     val title: String,
     val added_time: String,

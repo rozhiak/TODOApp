@@ -1,11 +1,11 @@
 package com.rmblack.todoapp.models.server.success
 
-data class AddTaskResponse(
+data class TaskResponse(
     val message: String,
-    val data: TaskResponse
+    val data: Body
 )
 
-data class TaskResponse(
+data class Body(
     val title: String,
     val id: String,
     val added_time: String,

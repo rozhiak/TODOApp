@@ -250,6 +250,16 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 REQUEST_KEY_ID_SHARED,
                 bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
             )
+
+            val isNew = arguments?.getBoolean("isNewTask")
+            setFragmentResult(
+                REQUEST_KEY_IS_NEW_PRIVATE,
+                bundleOf(BUNDLE_KEY_IS_NEW_PRIVATE to isNew)
+            )
+            setFragmentResult(
+                REQUEST_KEY_IS_NEW_SHARED,
+                bundleOf(BUNDLE_KEY_IS_NEW_SHARED to isNew)
+            )
         }
     }
 
@@ -261,6 +271,14 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         const val REQUEST_KEY_ID_SHARED = "REQUEST_KEY_ID_SHARED"
 
         const val BUNDLE_KEY_ID_SHARED = "BUNDLE_KEY_ID_PRIVATE_SHARED"
+
+        const val REQUEST_KEY_IS_NEW_PRIVATE = "REQUEST_KEY_IS_NEW_PRIVATE"
+
+        const val REQUEST_KEY_IS_NEW_SHARED = "REQUEST_KEY_IS_NEW_SHARED"
+
+        const val BUNDLE_KEY_IS_NEW_PRIVATE = "BUNDLE_KEY_IS_NEW_PRIVATE"
+
+        const val BUNDLE_KEY_IS_NEW_SHARED = "BUNDLE_KEY_IS_NEW_SHARED"
     }
 
 }

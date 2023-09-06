@@ -16,6 +16,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
@@ -23,12 +25,12 @@ import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.webservice.ApiService
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.security.auth.callback.Callback
 
 
 class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
@@ -36,6 +38,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
     private lateinit var viewModel: PrivateTasksViewModel
 
     private var _binding: FragmentPrivateTasksBinding? = null
+
+    private var isOnEdit : Boolean = false
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -82,7 +86,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 if (deletedTask != null) {
                     viewModel.deleteTask(viewModel.tasks.value[position], position)
                     binding.privateTasksRv.adapter?.notifyItemRemoved(position)
-                    Utilities.makeDeleteSnackBar(requireActivity(), binding.privateTasksRv) {
+                    val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.privateTasksRv) {
                         for (b in viewModel.detailsVisibility) {
                             if (b) {
                                 visibility = false
@@ -91,7 +95,18 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                         }
                         viewModel.insertTask(deletedTask)
                         viewModel.insertVisibility(position, visibility)
+                        binding.privateTasksRv.post {
+                            binding.privateTasksRv.smoothScrollToPosition(position)
+                        }
                     }
+                    snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
+                                //delete from server here
+                            }
+                        }
+                    })
                 }
             }
 
@@ -145,10 +160,21 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
     private fun setUpRecyclerview() {
         var editedTaskId: UUID? = null
 
+        var isNewTask: Boolean? = null
+
         setFragmentResultListener(
             EditTaskBottomSheet.REQUEST_KEY_ID_PRIVATE
         ) { _, bundle ->
             editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID_PRIVATE) as UUID?
+
+            println("editedTaskId")
+
+        }
+
+        setFragmentResultListener(
+            EditTaskBottomSheet.REQUEST_KEY_IS_NEW_PRIVATE
+        ) { _, bundle ->
+            isNewTask = bundle.getBoolean(EditTaskBottomSheet.BUNDLE_KEY_IS_NEW_PRIVATE)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -157,9 +183,10 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
-                        setUpForNewOrEditTask(tasks, editedTaskId)
+                        setUpForNewOrEditTask(tasks, editedTaskId, isNewTask)
                     }
                     editedTaskId = null
+                    isNewTask = null
                     while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
                         setUpIfLabeledTaskMoved()
                     }
@@ -177,7 +204,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                     val pos = layoutManager.findFirstVisibleItemPosition()
                     val marginTop = firstVisibleItem?.marginTop ?: 0
 
-                    binding.privateTasksRv.adapter = createPrivateTasksAdapter(tasks)
+                    binding.privateTasksRv.adapter = createPrivateTasksAdapter()
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
@@ -206,7 +233,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     private fun setUpForNewOrEditTask(
         tasks: List<Task?>,
-        editedTaskId: UUID?
+        editedTaskId: UUID?,
+        isNewTask: Boolean?
     ) {
         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
         val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
@@ -217,11 +245,14 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 binding.privateTasksRv.post {
                     binding.privateTasksRv.smoothScrollToPosition(editedTaskIndex)
                 }
-                tasks[editedTaskIndex]?.let {newTask ->
-                    if (newTask.state == TaskState.NEW) {
-                        viewModel.addTaskToServer(newTask, editedTaskIndex)
-                    }
-                }
+            }
+        }
+        if (isNewTask != null && editedTaskIndex != -1) {
+            if (isNewTask) {
+                //Add new task to server
+                tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it, editedTaskIndex) }
+            } else {
+                //Edit task in server
             }
         }
     }
@@ -231,7 +262,7 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         viewModel.deleteVisibility(movedTaskIndex)
     }
 
-    private fun createPrivateTasksAdapter(tasks: List<Task?>): PrivateTaskListAdapter {
+    private fun createPrivateTasksAdapter(): PrivateTaskListAdapter {
         return PrivateTaskListAdapter(viewModel, this, requireActivity())
     }
 
@@ -241,9 +272,11 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     override fun onEditClick(task: Task) {
+        isOnEdit = true
         val editTaskBottomSheet = EditTaskBottomSheet()
         val args = Bundle()
         args.putString("taskId", task.id.toString())
+        args.putBoolean("isNewTask", false)
         editTaskBottomSheet.arguments = args
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }
