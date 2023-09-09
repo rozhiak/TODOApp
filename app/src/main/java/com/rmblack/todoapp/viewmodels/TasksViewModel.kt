@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.webservice.repository.ApiRepository
@@ -73,15 +72,15 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
         }
     }
 
-    private fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
-        taskRepository.updateTaskState(state, id)
-
-        updateTasks { oldTasks ->
-            val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = tasks.value[pos]?.copy(state = state)
-            updatedTasks
-        }
-    }
+//    private fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
+//        taskRepository.updateTaskState(state, id)
+//
+//        updateTasks { oldTasks ->
+//            val updatedTasks = oldTasks.toMutableList()
+//            updatedTasks[pos] = tasks.value[pos]?.copy(state = state)
+//            updatedTasks
+//        }
+//    }
 
     private fun updateServerID(id: UUID, serverID: String, pos: Int) {
         taskRepository.updateServerID(id, serverID)
@@ -137,7 +136,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
     fun addTaskToServer(task: Task, pos: Int) {
         //user token should be used here
         val addRequest = AddTaskRequest(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6InN0cmluZyJ9.Y7IkXBADVKecpY56t-XG2CnzicQaYbPF1YuL2-gh8Nw",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
             task.title,
             task.addedTime.timeInMillis.toString(),
             task.description,
@@ -152,7 +151,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     loading.value = false
-                    updateTaskState(TaskState.SAVED, task.id, pos)
+//                    updateTaskState(TaskState.SAVED, task.id, pos)
                     response.body()?.data?.id?.let { updateServerID(task.id, it, pos) }
                 } else {
                     onError()
@@ -162,6 +161,10 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
                 }
             }
         }
+    }
+
+    fun editTaskInServer() {
+        //start from here
     }
 
     fun deleteTaskFromServer(serverID: String) {

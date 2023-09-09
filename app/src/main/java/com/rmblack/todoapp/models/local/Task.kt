@@ -18,12 +18,5 @@ data class Task(
     val isShared: Boolean,
     val user: User,
     val groupId: String,
-    val state: TaskState = TaskState.SAVED,
     val serverID: String = ""
 )
-
-enum class TaskState {
-    NEW,
-    CHANGED,
-    SAVED
-}

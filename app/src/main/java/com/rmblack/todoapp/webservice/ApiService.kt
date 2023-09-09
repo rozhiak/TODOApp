@@ -25,20 +25,9 @@ interface ApiService {
     @POST("tasks/new/")
     suspend fun newTask(@Body task: AddTaskRequest) : Response<TaskResponse>
 
-
-
-
-
-
-
-    //Start fom here
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/edit/")
     suspend fun editTask(@Body body: EditTaskRequest): Response<TaskResponse>
-    //
-
-
-
 
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/delete/")
@@ -49,7 +38,7 @@ interface ApiService {
         fun getInstance() : ApiService {
             if (apiService == null) {
                 val retrofit = Retrofit.Builder()
-                    .baseUrl("https://todo-test-h7ld.onrender.com/")
+                    .baseUrl("https://amirh.pythonanywhere.com/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                 apiService = retrofit.create(ApiService::class.java)

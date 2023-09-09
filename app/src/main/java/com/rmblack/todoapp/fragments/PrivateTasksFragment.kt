@@ -23,7 +23,6 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentPrivateTasksBinding
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.webservice.ApiService
@@ -45,6 +44,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
         }
+
+    private var isFirstTime = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -208,14 +209,17 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
-                    setUpNoTaskIconAndText(tasks)
+                    if (!isFirstTime) {
+                        setUpNoTaskIconAndText(tasks.isNotEmpty())
+                    }
+                    isFirstTime = false
                 }
             }
         }
     }
 
-    private fun setUpNoTaskIconAndText(tasks: List<Task?>) {
-        if (tasks.isNotEmpty()) {
+    private fun setUpNoTaskIconAndText(isNotEmpty: Boolean) {
+        if (isNotEmpty) {
             binding.ivNoTask.visibility = View.GONE
             binding.tvNoTask.visibility = View.GONE
         } else {
@@ -252,7 +256,8 @@ class PrivateTasksFragment : Fragment(), TaskHolder.EditClickListener {
                 //Add new task to server
                 tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it, editedTaskIndex) }
             } else {
-                //Edit task in server
+                //TODO Edit task in server
+
             }
         }
     }
