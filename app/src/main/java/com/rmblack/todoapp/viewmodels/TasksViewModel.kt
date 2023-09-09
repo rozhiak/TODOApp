@@ -164,7 +164,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
     }
 
     fun editTaskInServer() {
-        //start from her
+        //start from here
     }
 
     fun deleteTaskFromServer(serverID: String) {
