@@ -17,7 +17,6 @@ import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.fragments.PrivateTasksFragment
 import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.models.local.User
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.MainViewModel
@@ -123,7 +122,6 @@ class MainActivity : AppCompatActivity() {
                     isShared = false,
                     user = user,
                     groupId = "123",
-                    TaskState.NEW
                 )
             } else {
                 Task(
@@ -137,7 +135,6 @@ class MainActivity : AppCompatActivity() {
                     isShared = true,
                     user = user,
                     groupId = "123",
-                    TaskState.NEW
                 )
             }
 

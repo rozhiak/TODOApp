@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.rmblack.todoapp.data.database.TaskDatabase
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.local.TaskState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -49,12 +48,6 @@ class TaskRepository private constructor(
     fun updateUrgentState(isUrgent: Boolean, id: UUID) {
         coroutineScope.launch() {
             database.taskDao().updateUrgentState(isUrgent, id)
-        }
-    }
-
-    fun updateTaskState(state: TaskState, id: UUID) {
-        coroutineScope.launch {
-            database.taskDao().updateTaskState(state, id)
         }
     }
 

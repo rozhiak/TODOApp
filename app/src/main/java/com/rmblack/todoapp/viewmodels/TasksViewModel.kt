@@ -7,6 +7,7 @@ import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
+import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -163,8 +164,16 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
         }
     }
 
-    fun editTaskInServer() {
-        //start from here
+    fun editTaskInServer(task: Task) {
+        val editRequest = EditTaskRequest(
+            "",
+            task.serverID,
+            task.title,
+            task.deadLine.timeInMillis.toString(),
+            task.isUrgent,
+            task.isDone,
+            task.isShared
+        )
     }
 
     fun deleteTaskFromServer(serverID: String) {

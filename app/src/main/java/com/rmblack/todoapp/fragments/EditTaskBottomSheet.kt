@@ -19,7 +19,6 @@ import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
-import com.rmblack.todoapp.models.local.TaskState
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
@@ -73,7 +72,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         isUrgent = b,
                         title = binding.etTitle.text.toString(),
                         description = binding.etDescription.text.toString(),
-                        state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                     )
                 }
                 resetCursorsPosition()
@@ -86,7 +84,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                             isShared = false,
                             title = binding.etTitle.text.toString(),
                             description = binding.etDescription.text.toString(),
-                            state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                         )
                     }
                     resetCursorsPosition()
@@ -96,7 +93,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                             isShared = true,
                             title = binding.etTitle.text.toString(),
                             description = binding.etDescription.text.toString(),
-                            state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                         )
                     }
                     resetCursorsPosition()
@@ -159,7 +155,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         newDeadline.dayOfMonth = persianPickerDate.persianDay
                         it.copy(
                             deadLine = newDeadline,
-                            state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                         )
                     }
                 }
@@ -233,7 +228,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 oldTask.copy(
                     title = binding.etTitle.text.toString(),
                     description = binding.etDescription.text.toString(),
-                    state = if (viewModel.task.value?.state == TaskState.NEW) TaskState.NEW else TaskState.CHANGED
                 )
             }
         }

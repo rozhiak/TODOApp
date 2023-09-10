@@ -6,8 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.PrivateTasksFragment"
-    android:id="@+id/private_refresh_layout"
+    tools:context=".fragments.TasksFragment"
+    android:id="@+id/refresh_layout"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,8 +18,7 @@
             android:nestedScrollingEnabled="true"
             android:clipToPadding="false"
             android:paddingBottom="110dp"
-            tools:listitem="@layout/private_tasks_rv_item"
-            android:id="@+id/private_tasks_rv"
+            android:id="@+id/tasks_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

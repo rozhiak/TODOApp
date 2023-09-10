@@ -26,7 +26,7 @@ import com.suke.widget.SwitchButton
 
 class SharedTaskHolder(
     private val binding: SharedTasksRvItemBinding,
-    private val viewModel: SharedTasksViewModel,
+    private val viewModel: TasksViewModel,
     private val activity: Activity,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
@@ -159,7 +159,7 @@ class SharedTaskHolder(
 }
 
 class SharedTasksAdapter(
-    private val viewModel: SharedTasksViewModel,
+    private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity
 ) : RecyclerView.Adapter<ViewHolder>() {

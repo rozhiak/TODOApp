@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.local.TaskState
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -33,9 +32,6 @@ interface TaskDao {
 
     @Query("UPDATE task SET isUrgent = :isUrgent WHERE id = :id")
     suspend fun updateUrgentState(isUrgent: Boolean, id: UUID)
-
-    @Query("UPDATE task SET state = :state WHERE id = :id")
-    suspend fun updateTaskState(state: TaskState, id: UUID)
 
     @Query("UPDATE task SET serverID = :serverID WHERE id = :id")
     suspend fun updateServerID(id: UUID, serverID: String)
