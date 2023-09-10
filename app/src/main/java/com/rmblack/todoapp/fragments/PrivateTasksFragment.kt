@@ -86,11 +86,12 @@ class PrivateTasksFragment : TasksFragment() {
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
-                    if (!isFirstTime) {
-                        println("inja")
+//                    if (!isFirstTime) {
+                        println(tasks.isNotEmpty())
+                        println(tasks)
                         setUpNoTaskIconAndText(tasks.isNotEmpty())
-                    }
-                    isFirstTime = false
+//                    }
+//                    isFirstTime = false
                 }
             }
         }

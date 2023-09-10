@@ -20,23 +20,23 @@ import java.util.UUID
 
 open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
 
-    open var isFirstTime = true
+    protected var isFirstTime = true
 
-    open var _binding: FragmentTasksBinding? = null
+    protected var _binding: FragmentTasksBinding? = null
 
-    open val binding
+    protected val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
-    open lateinit var viewModel: TasksViewModel
+    protected lateinit var viewModel: TasksViewModel
 
-    open fun setUpServer(): ApiRepository {
+    protected fun setUpServer(): ApiRepository {
         val apiService = ApiService.getInstance()
         return ApiRepository(apiService)
     }
 
-    open fun setUpSwipeToDelete() {
+    protected fun setUpSwipeToDelete() {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
             override fun onMove(
@@ -67,11 +67,12 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                             binding.tasksRv.smoothScrollToPosition(position)
                         }
                     }
+
                     snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                             super.onDismissed(transientBottomBar, event)
                             if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                                //delete from server here
+                                viewModel.deleteTaskFromServer(deletedTask.serverID)
                             }
                         }
                     })
@@ -125,7 +126,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         }).attachToRecyclerView(binding.tasksRv)
     }
 
-    open fun setUpNoTaskIconAndText(isNotEmpty: Boolean) {
+    protected fun setUpNoTaskIconAndText(isNotEmpty: Boolean) {
         if (isNotEmpty) {
             binding.ivNoTask.visibility = View.GONE
             binding.tvNoTask.visibility = View.GONE
@@ -135,12 +136,12 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         }
     }
 
-    open fun setUpIfLabeledTaskMoved() {
+    protected fun setUpIfLabeledTaskMoved() {
         val firstFalseIndex = viewModel.detailsVisibility.indexOfFirst { !it }
         viewModel.deleteVisibility(firstFalseIndex)
     }
 
-    open fun setUpForNewOrEditTask(
+    protected fun setUpForNewOrEditTask(
         tasks: List<Task?>,
         editedTaskId: UUID?,
         isNewTask: Boolean?
@@ -161,13 +162,13 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                 //Add new task to server
                 tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it, editedTaskIndex) }
             } else {
-                //TODO Edit task in server
+                tasks[editedTaskIndex]?.let { viewModel.editTaskInServer(it) }
             }
         }
 
     }
 
-    open fun setUpForTaskMoving() {
+    protected fun setUpForTaskMoving() {
         val movedTaskIndex = viewModel.detailsVisibility.indexOfFirst { it }
         viewModel.deleteVisibility(movedTaskIndex)
     }

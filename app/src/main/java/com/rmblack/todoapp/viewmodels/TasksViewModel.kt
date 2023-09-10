@@ -38,10 +38,12 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
     //Server properties
     private var addJob: Job? = null
 
+    private var editJob: Job? = null
+
     private var deleteJob : Job? = null
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
-        onError()
+//        loading.value = false
     }
 
     private val loading = MutableLiveData<Boolean>()
@@ -72,16 +74,6 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             updatedTasks
         }
     }
-
-//    private fun updateTaskState(state: TaskState, id: UUID, pos: Int) {
-//        taskRepository.updateTaskState(state, id)
-//
-//        updateTasks { oldTasks ->
-//            val updatedTasks = oldTasks.toMutableList()
-//            updatedTasks[pos] = tasks.value[pos]?.copy(state = state)
-//            updatedTasks
-//        }
-//    }
 
     private fun updateServerID(id: UUID, serverID: String, pos: Int) {
         taskRepository.updateServerID(id, serverID)
@@ -155,7 +147,6 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
 //                    updateTaskState(TaskState.SAVED, task.id, pos)
                     response.body()?.data?.id?.let { updateServerID(task.id, it, pos) }
                 } else {
-                    onError()
                     if (response.code() == 403) {
                         //invalid token
                     }
@@ -166,7 +157,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
 
     fun editTaskInServer(task: Task) {
         val editRequest = EditTaskRequest(
-            "",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
             task.serverID,
             task.title,
             task.deadLine.timeInMillis.toString(),
@@ -174,11 +165,26 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             task.isDone,
             task.isShared
         )
+
+        editJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiRepository.editTask(editRequest)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    loading.value = false
+                } else {
+                    if (response.code() == 403) {
+                        //invalid token or access denied
+                    } else if (response.code() == 404) {
+                        //Task not found
+                    }
+                }
+            }
+        }
     }
 
     fun deleteTaskFromServer(serverID: String) {
         val deleteRequest = DeleteTaskRequest(
-            "",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
             serverID
         )
         deleteJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -186,20 +192,19 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     loading.value = false
-                } else {
-
+                } else if (response.code() == 403) {
+                    //Invalid token or access denied
+                } else if (response.code() == 404) {
+                    //task not found
                 }
             }
         }
     }
 
-    private fun onError() {
-//        loading.value = false
-    }
-
     override fun onCleared() {
         super.onCleared()
         addJob?.cancel()
+        editJob?.cancel()
         deleteJob?.cancel()
     }
 
