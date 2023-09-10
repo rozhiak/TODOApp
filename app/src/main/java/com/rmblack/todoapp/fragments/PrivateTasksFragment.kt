@@ -65,6 +65,11 @@ class PrivateTasksFragment : TasksFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
+
+                    for (t in tasks) {
+                        println(t?.title + " == " + t?.isUrgent)
+                    }
+
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
@@ -86,12 +91,14 @@ class PrivateTasksFragment : TasksFragment() {
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
-//                    if (!isFirstTime) {
-                        println(tasks.isNotEmpty())
-                        println(tasks)
+                    if (!isFirstTime) {
+                        //
+//                        println(tasks.isNotEmpty())
+//                        println(tasks)
+                        //
                         setUpNoTaskIconAndText(tasks.isNotEmpty())
-//                    }
-//                    isFirstTime = false
+                    }
+                    isFirstTime = false
                 }
             }
         }

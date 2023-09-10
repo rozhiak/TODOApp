@@ -49,40 +49,40 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
     private val loading = MutableLiveData<Boolean>()
     //End of server properties
 
-    private fun updateTasks(onUpdate: (List<Task?>) -> List<Task?>) {
-        _tasks.update { oldTasks ->
-            onUpdate(oldTasks)
-        }
-    }
+//    private fun updateTasks(onUpdate: (List<Task?>) -> List<Task?>) {
+//        _tasks.update { oldTasks ->
+//            onUpdate(oldTasks)
+//        }
+//    }
 
     fun updateUrgentState(isUrgent: Boolean, id: UUID, pos: Int) {
         taskRepository.updateUrgentState(isUrgent, id)
 
-        updateTasks { oldTasks ->
-            val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = tasks.value[pos]?.copy(isUrgent = isUrgent)
-            updatedTasks
-        }
+//        updateTasks { oldTasks ->
+//            val updatedTasks = oldTasks.toMutableList()
+//            updatedTasks[pos] = tasks.value[pos]?.copy(isUrgent = isUrgent)
+//            updatedTasks
+//        }
     }
 
     fun updateDoneState(isDone: Boolean, id: UUID, pos: Int) {
         taskRepository.updateDoneState(isDone, id)
 
-        updateTasks { oldTasks ->
-            val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = tasks.value[pos]?.copy(isDone = isDone)
-            updatedTasks
-        }
+//        updateTasks { oldTasks ->
+//            val updatedTasks = oldTasks.toMutableList()
+//            updatedTasks[pos] = tasks.value[pos]?.copy(isDone = isDone)
+//            updatedTasks
+//        }
     }
 
     private fun updateServerID(id: UUID, serverID: String, pos: Int) {
         taskRepository.updateServerID(id, serverID)
 
-        updateTasks { oldTasks ->
-            val updatedTasks = oldTasks.toMutableList()
-            updatedTasks[pos] = tasks.value[pos]?.copy(serverID = serverID)
-            updatedTasks
-        }
+//        updateTasks { oldTasks ->
+//            val updatedTasks = oldTasks.toMutableList()
+//            updatedTasks[pos] = tasks.value[pos]?.copy(serverID = serverID)
+//            updatedTasks
+//        }
     }
 
     fun updateVisibility(index: Int, visibility: Boolean) {
@@ -144,7 +144,6 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     loading.value = false
-//                    updateTaskState(TaskState.SAVED, task.id, pos)
                     response.body()?.data?.id?.let { updateServerID(task.id, it, pos) }
                 } else {
                     if (response.code() == 403) {
