@@ -21,7 +21,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-open class TasksViewModel constructor(private val apiRepository: ApiRepository) : ViewModel() {
+open class TasksViewModel : ViewModel() {
+
+    private val apiRepository = ApiRepository()
 
     val taskRepository = TaskRepository.get()
 

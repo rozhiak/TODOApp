@@ -5,7 +5,7 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 
-class PrivateTasksViewModel(apiRepository: ApiRepository): TasksViewModel(apiRepository) {
+class PrivateTasksViewModel: TasksViewModel() {
     init {
         viewModelScope.launch {
             taskRepository.getPrivateTasks().collect {tasks ->

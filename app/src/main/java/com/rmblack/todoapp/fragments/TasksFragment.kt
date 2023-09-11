@@ -31,11 +31,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
 
     protected lateinit var viewModel: TasksViewModel
 
-    protected fun setUpServer(): ApiRepository {
-        val apiService = ApiRepository.getInstance()
-        return ApiRepository(apiService)
-    }
-
     protected fun setUpSwipeToDelete() {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 

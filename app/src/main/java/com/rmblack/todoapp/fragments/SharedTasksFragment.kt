@@ -37,7 +37,7 @@ class SharedTasksFragment : TasksFragment() {
         _binding = FragmentTasksBinding.inflate(inflater, container, false)
         binding.tasksRv.layoutManager = LinearLayoutManager(context)
 
-        viewModel = ViewModelProvider(this, SharedFragmentViewModelFactory(setUpServer()))
+        viewModel = ViewModelProvider(this, SharedFragmentViewModelFactory())
             .get(SharedTasksViewModel::class.java)
 
         return binding.root
@@ -102,10 +102,10 @@ class SharedTasksFragment : TasksFragment() {
     private fun createSharedTasksAdapter() =
         SharedTasksAdapter(viewModel, this, requireActivity())
 
-    class SharedFragmentViewModelFactory constructor(private val repository: ApiRepository): ViewModelProvider.Factory {
+    class SharedFragmentViewModelFactory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
-                SharedTasksViewModel(this.repository) as T
+                SharedTasksViewModel() as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

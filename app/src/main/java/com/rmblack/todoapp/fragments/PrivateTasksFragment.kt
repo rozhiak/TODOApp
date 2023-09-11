@@ -32,7 +32,7 @@ class PrivateTasksFragment : TasksFragment() {
         _binding = FragmentTasksBinding.inflate(inflater, container, false)
         binding.tasksRv.layoutManager = LinearLayoutManager(context)
 
-        viewModel = ViewModelProvider(this, PrivateFragmentViewModelFactory(setUpServer()))
+        viewModel = ViewModelProvider(this, PrivateFragmentViewModelFactory())
             .get(PrivateTasksViewModel::class.java)
 
         return binding.root
@@ -108,10 +108,10 @@ class PrivateTasksFragment : TasksFragment() {
         PrivateTaskListAdapter(viewModel, this, requireActivity())
 
 
-    class PrivateFragmentViewModelFactory constructor(private val repository: ApiRepository): ViewModelProvider.Factory {
+    class PrivateFragmentViewModelFactory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(PrivateTasksViewModel::class.java)) {
-                PrivateTasksViewModel(this.repository) as T
+                PrivateTasksViewModel() as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

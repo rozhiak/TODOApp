@@ -8,16 +8,17 @@ import com.rmblack.todoapp.webservice.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ApiRepository constructor(private val retrofitService: ApiService) {
-    suspend fun getAllTasks(token: String) = retrofitService.getAllTasks(token)
+class ApiRepository {
 
-    suspend fun addNewTask(body: AddTaskRequest) = retrofitService.newTask(body)
+    suspend fun getAllTasks(token: String) = getInstance().getAllTasks(token)
 
-    suspend fun deleteTask(body: DeleteTaskRequest) = retrofitService.deleteTask(body)
+    suspend fun addNewTask(body: AddTaskRequest) = getInstance().newTask(body)
 
-    suspend fun editTask(body: EditTaskRequest) = retrofitService.editTask(body)
+    suspend fun deleteTask(body: DeleteTaskRequest) = getInstance().deleteTask(body)
 
-    suspend fun loginUser(body: LoginRequest) = retrofitService.loginUser(body)
+    suspend fun editTask(body: EditTaskRequest) = getInstance().editTask(body)
+
+    suspend fun loginUser(body: LoginRequest) = getInstance().loginUser(body)
 
     companion object {
         var apiService: ApiService? = null
