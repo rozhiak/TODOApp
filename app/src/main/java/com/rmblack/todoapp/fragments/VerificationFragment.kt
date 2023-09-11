@@ -5,8 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentVerificationBinding
+import com.rmblack.todoapp.viewmodels.LoginViewModel
 
 
 class VerificationFragment : Fragment() {
@@ -18,11 +21,15 @@ class VerificationFragment : Fragment() {
             "Binding is null, is the view visible?"
         }
 
+    private lateinit var viewModel: ViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentVerificationBinding.inflate(inflater, container, false)
+
+        viewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
 
         return binding.root
     }

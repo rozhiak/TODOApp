@@ -143,7 +143,7 @@ class SharedTaskHolder(
         urgentSwitch: SwitchButton
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.updateUrgentState(isChecked, task.id, pos)
+            viewModel.updateUrgentState(isChecked, task.id)
         }
     }
 
@@ -153,7 +153,7 @@ class SharedTaskHolder(
         doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateDoneState(b, task.id, pos)
+            viewModel.updateDoneState(b, task.id)
         }
     }
 }

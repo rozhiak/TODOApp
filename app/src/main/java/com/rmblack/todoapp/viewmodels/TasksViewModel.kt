@@ -55,7 +55,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
 //        }
 //    }
 
-    fun updateUrgentState(isUrgent: Boolean, id: UUID, pos: Int) {
+    fun updateUrgentState(isUrgent: Boolean, id: UUID) {
         taskRepository.updateUrgentState(isUrgent, id)
 
 //        updateTasks { oldTasks ->
@@ -65,7 +65,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
 //        }
     }
 
-    fun updateDoneState(isDone: Boolean, id: UUID, pos: Int) {
+    fun updateDoneState(isDone: Boolean, id: UUID) {
         taskRepository.updateDoneState(isDone, id)
 
 //        updateTasks { oldTasks ->
@@ -75,7 +75,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
 //        }
     }
 
-    private fun updateServerID(id: UUID, serverID: String, pos: Int) {
+    private fun updateServerID(id: UUID, serverID: String) {
         taskRepository.updateServerID(id, serverID)
 
 //        updateTasks { oldTasks ->
@@ -144,7 +144,7 @@ open class TasksViewModel constructor(private val apiRepository: ApiRepository) 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
                     loading.value = false
-                    response.body()?.data?.id?.let { updateServerID(task.id, it, pos) }
+                    response.body()?.data?.id?.let { updateServerID(task.id, it) }
                 } else {
                     if (response.code() == 403) {
                         //invalid token

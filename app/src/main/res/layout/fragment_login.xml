@@ -96,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/iranian_ans"
-                android:hint="شماره تماس"
+                android:hint="شماره همراه"
                 android:inputType="phone" />
 
         </com.google.android.material.textfield.TextInputLayout>

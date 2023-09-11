@@ -1,11 +1,12 @@
 package com.rmblack.todoapp.webservice
 
+import com.rmblack.todoapp.models.StringResponse
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
-import com.rmblack.todoapp.models.server.success.TaskResponse
+import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
-import com.rmblack.todoapp.models.server.success.SuccessResponse
+import com.rmblack.todoapp.models.server.success.TaskResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -31,7 +32,11 @@ interface ApiService {
 
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/delete/")
-    suspend fun deleteTask(@Body request: DeleteTaskRequest): Response<SuccessResponse>
+    suspend fun deleteTask(@Body request: DeleteTaskRequest): Response<StringResponse>
+
+    @Headers("accept: application/json", "Content-Type: application/json")
+    @POST("users/login/")
+    suspend fun loginUser(@Body body: LoginRequest): Response<StringResponse>
 
     companion object {
         var apiService: ApiService? = null
