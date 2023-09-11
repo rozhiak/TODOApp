@@ -38,17 +38,4 @@ interface ApiService {
     @POST("users/login/")
     suspend fun loginUser(@Body body: LoginRequest): Response<StringResponse>
 
-    companion object {
-        var apiService: ApiService? = null
-        fun getInstance() : ApiService {
-            if (apiService == null) {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://amirh.pythonanywhere.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                apiService = retrofit.create(ApiService::class.java)
-            }
-            return apiService!!
-        }
-    }
 }

@@ -32,7 +32,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
     protected lateinit var viewModel: TasksViewModel
 
     protected fun setUpServer(): ApiRepository {
-        val apiService = ApiService.getInstance()
+        val apiService = ApiRepository.getInstance()
         return ApiRepository(apiService)
     }
 
