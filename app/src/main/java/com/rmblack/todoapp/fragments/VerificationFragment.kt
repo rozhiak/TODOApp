@@ -21,7 +21,7 @@ class VerificationFragment : Fragment() {
             "Binding is null, is the view visible?"
         }
 
-    private lateinit var viewModel: ViewModel
+    private lateinit var viewModel: LoginViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

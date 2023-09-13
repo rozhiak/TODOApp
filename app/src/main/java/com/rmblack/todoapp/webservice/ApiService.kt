@@ -5,6 +5,7 @@ import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
+import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
 import retrofit2.Response
@@ -38,4 +39,7 @@ interface ApiService {
     @POST("users/login/")
     suspend fun loginUser(@Body body: LoginRequest): Response<StringResponse>
 
+    @Headers("accept: application/json", "Content-Type: application/json")
+    @POST("users/new/")
+    suspend fun newUser(@Body body: NewUserRequest): Response<StringResponse>
 }

@@ -80,6 +80,17 @@
             app:layout_constraintTop_toBottomOf="@+id/hint_tv"
             app:srcCompat="@drawable/ic_bottom" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/error_hint_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/iranian_ans"
+            android:textColor="@color/urgent_red"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@id/phone_field"
+            app:layout_constraintEnd_toEndOf="@+id/phone_field" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/phone_field"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

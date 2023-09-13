@@ -3,7 +3,6 @@ package com.rmblack.todoapp.fragments
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,15 +14,14 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
 import com.rmblack.todoapp.viewmodels.LoginViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
@@ -35,7 +33,7 @@ class LoginFragment : Fragment() {
             "Binding is null, is the view visible?"
         }
 
-    private lateinit var viewModel: ViewModel
+    private lateinit var viewModel: LoginViewModel
 
     val handler = Handler(Looper.getMainLooper())
 
@@ -53,7 +51,11 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpBottomICAnim()
+        if (viewModel.getBottomICVisibility()) {
+            setUpBottomICAnim()
+        } else {
+            binding.icBottom.visibility = View.GONE
+        }
         setUpClickListeners()
         hideBottomICByScroll()
     }
@@ -88,39 +90,41 @@ class LoginFragment : Fragment() {
     private fun hideBottomIC() {
         binding.icBottom.visibility = View.GONE
         handler.removeCallbacksAndMessages(null)
+        viewModel.setBottomICVisibility(false)
     }
 
     private fun setUpClickListeners() {
         binding.continueCard.setOnClickListener {
-            val phone = binding.phoneEt.text
-            if (phone?.isEmpty() == true) {
-
-            } else {
-
-
-                //TODO start from here: Error on empty phone number
-                binding.phoneEt.setLinkTextColor(Color.parseColor("#D05D8A"))
-
+            binding.errorHintTv.text = ""
+            val phone = binding.phoneEt.text.toString()
+            var name = ""
+            if (binding.nameField.visibility == View.VISIBLE) {
+                name = binding.nameEt.text.toString()
+            }
+            if (phone.isEmpty()) {
                 binding.phoneEt.requestFocus()
                 val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
-
-                val scope = CoroutineScope(Dispatchers.Main)
-                scope.launch {
-                    delay(1300)
-                    binding.phoneEt.hint = "شماره تماس"
-                    binding.phoneEt.setLinkTextColor(Color.TRANSPARENT)
+                binding.errorHintTv.text = "◌ لطفا ، شماره همراه را وارد کنید"
+            } else if (phone.isNotEmpty() && phone.length != 11){
+                binding.phoneEt.requestFocus()
+                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
+                binding.errorHintTv.text = "◌ فرمت شماره غلط است."
+            } else if (binding.nameField.visibility == View.VISIBLE && name.isEmpty()) {
+                binding.nameEt.requestFocus()
+                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.showSoftInput(binding.nameEt, InputMethodManager.SHOW_IMPLICIT)
+                binding.errorHintTv.text = "◌ لطفا نام خود را وارد کنید."
+            } else  {
+                if (binding.nameField.visibility == View.VISIBLE) {
+                    viewModel.newUser(phone, name)
+                    collectNewUserRequestCode()
+                } else {
+                    viewModel.loginUser(phone)
+                    collectPhoneRequestCode()
                 }
-                //
-
-
             }
-
-//            bringContinueUp()
-
-//            findNavController().navigate(
-//                LoginFragmentDirections.verifyPhoneNumber()
-//            )
         }
 
         binding.icBottom.setOnClickListener {
@@ -129,14 +133,66 @@ class LoginFragment : Fragment() {
             }
             hideBottomIC()
         }
-
     }
 
-    private fun bringContinueUp() {
-        val oa = ObjectAnimator.ofFloat(binding.phoneField, "translationY", -230F).apply {
+    private fun collectPhoneRequestCode() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginRequestCode.collect { code ->
+                    if (code == 200) {
+                        findNavController().navigate(
+                            LoginFragmentDirections.verifyPhoneNumber()
+                        )
+                        viewModel.resetLoginRequestCode()
+                    } else if(code == 404) {
+                        bringPhoneUp()
+                        viewModel.resetLoginRequestCode()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun collectNewUserRequestCode() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.newUserRequestCode.collect { code ->
+                    if (code == 201) {
+                        findNavController().navigate(
+                            LoginFragmentDirections.verifyPhoneNumber()
+                        )
+                        viewModel.resetNewUserRequestCode()
+                    } else if(code == 400) {
+                        //User already exist
+                        viewModel.resetNewUserRequestCode()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun bringPhoneUp() {
+        val oaHint = ObjectAnimator.ofFloat(binding.errorHintTv, "translationY", -230F).apply {
             duration = 500
         }
-        oa.addListener(object : Animator.AnimatorListener {
+        oaHint.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(p0: Animator) {
+                binding.nameEt.setText("")
+            }
+
+            override fun onAnimationEnd(p0: Animator) {}
+
+            override fun onAnimationCancel(p0: Animator) {}
+
+            override fun onAnimationRepeat(p0: Animator) {}
+
+        })
+        oaHint.start()
+
+        val oaPhone = ObjectAnimator.ofFloat(binding.phoneField, "translationY", -230F).apply {
+            duration = 500
+        }
+        oaPhone.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(p0: Animator) {}
 
             override fun onAnimationEnd(p0: Animator) {
@@ -148,7 +204,7 @@ class LoginFragment : Fragment() {
             override fun onAnimationRepeat(p0: Animator) {}
 
         })
-        oa.start()
+        oaPhone.start()
     }
 
     override fun onDestroy() {

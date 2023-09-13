@@ -1,5 +1,5 @@
 package com.rmblack.todoapp.models.server.requests
 
-class LoginRequest(
+data class LoginRequest(
     val phone_number: String
 )
