@@ -31,11 +31,19 @@ class LoginViewModel: ViewModel() {
     val newUserRequestCode : StateFlow<Int>
         get() = _newUserRequestCode.asStateFlow()
 
+    private var _phone = ""
+
+    val phone
+        get() = _phone
+
     fun loginUser(phoneNumber: String) {
         val loginRequest = LoginRequest(phoneNumber)
 
         customScope.launch {
             val response = apiRepository.loginUser(loginRequest)
+            if (response.code() == 200) {
+                _phone = phoneNumber
+            }
             _loginRequestCode.update {
                 response.code()
             }
@@ -50,7 +58,9 @@ class LoginViewModel: ViewModel() {
 
         customScope.launch {
             val response = apiRepository.newUser(newUserRequest)
-
+            if (response.code() == 201) {
+                _phone = phoneNumber
+            }
             _newUserRequestCode.update {
                 response.code()
             }

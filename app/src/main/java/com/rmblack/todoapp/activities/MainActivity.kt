@@ -7,8 +7,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.R
@@ -20,7 +18,6 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.local.User
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.MainViewModel
-import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -47,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         val loggedIn = false
         if (!loggedIn) {
             val intent = Intent(this, StarterActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
         }
     }
@@ -105,9 +103,7 @@ class MainActivity : AppCompatActivity() {
             //TODO() This should be deleted
             val user = User(
                 "rozhiak",
-                "099393139575",
-                "123",
-                "456"
+                "099393139575"
             )
 
             val newTask = if (binding.bottomNavigationView.selectedItemId == R.id.privateTasksFragment) {

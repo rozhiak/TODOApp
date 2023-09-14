@@ -36,6 +36,10 @@ class VerificationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setOnClickListeners()
+    }
+
+    private fun setOnClickListeners() {
 
     }
 
