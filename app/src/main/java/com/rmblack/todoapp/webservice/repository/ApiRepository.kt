@@ -5,6 +5,7 @@ import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
+import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.webservice.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,6 +23,8 @@ class ApiRepository {
     suspend fun loginUser(body: LoginRequest) = getInstance().loginUser(body)
 
     suspend fun newUser(body: NewUserRequest) = getInstance().newUser(body)
+
+    suspend fun validateUser(body: ValidateUserRequest) = getInstance().validateUser(body)
 
     companion object {
         var apiService: ApiService? = null

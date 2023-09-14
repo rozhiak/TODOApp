@@ -3,7 +3,7 @@ package com.rmblack.todoapp.utils
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.rmblack.todoapp.models.local.User
+import com.rmblack.todoapp.models.server.success.User
 
 private const val USER_KEY = "user"
 

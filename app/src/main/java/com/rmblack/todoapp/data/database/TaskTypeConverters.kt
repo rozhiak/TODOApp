@@ -2,7 +2,6 @@ package com.rmblack.todoapp.data.database
 
 import androidx.room.TypeConverter
 import com.aminography.primecalendar.persian.PersianCalendar
-import com.rmblack.todoapp.models.local.User
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -17,15 +16,5 @@ class TaskTypeConverters {
         val persianCalendar = PersianCalendar()
         persianCalendar.timeInMillis = millis
         return persianCalendar
-    }
-
-    @TypeConverter
-    fun fromUser(user: User): String {
-        return Json.encodeToString(user)
-    }
-
-    @TypeConverter
-    fun toUser(encoded: String): User {
-        return Json.decodeFromString(encoded)
     }
 }

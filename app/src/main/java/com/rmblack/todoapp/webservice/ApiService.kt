@@ -6,8 +6,10 @@ import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
+import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
+import com.rmblack.todoapp.models.server.success.ValidateUserResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -42,4 +44,8 @@ interface ApiService {
     @Headers("accept: application/json", "Content-Type: application/json")
     @POST("users/new/")
     suspend fun newUser(@Body body: NewUserRequest): Response<StringResponse>
+
+    @POST("users/validate/")
+    @Headers("accept: application/json", "Content-Type: application/json")
+    suspend fun validateUser(@Body body: ValidateUserRequest): Response<ValidateUserResponse>
 }

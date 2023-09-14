@@ -95,7 +95,6 @@ class LoginFragment : Fragment() {
 
     private fun setUpClickListeners() {
         binding.continueCard.setOnClickListener {
-            binding.errorHintTv.text = ""
             val phone = binding.phoneEt.text.toString()
             var name = ""
             if (binding.nameField.visibility == View.VISIBLE) {
@@ -117,6 +116,7 @@ class LoginFragment : Fragment() {
                 inputMethodManager.showSoftInput(binding.nameEt, InputMethodManager.SHOW_IMPLICIT)
                 binding.errorHintTv.text = "◌ لطفا نام خود را وارد کنید."
             } else  {
+                binding.errorHintTv.text = ""
                 if (binding.nameField.visibility == View.VISIBLE) {
                     viewModel.newUser(phone, name)
                     collectNewUserRequestCode()

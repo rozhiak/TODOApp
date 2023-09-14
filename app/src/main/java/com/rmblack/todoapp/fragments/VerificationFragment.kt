@@ -40,7 +40,20 @@ class VerificationFragment : Fragment() {
     }
 
     private fun setOnClickListeners() {
+        binding.confirmCard.setOnClickListener {
+            if (isCodeCompleted()) {
+                //Validation request
+                viewModel.validateUser(binding.verifyCodeEditText.text, requireContext())
+            } else {
+                //code is not completed
+            }
+        }
+    }
 
+    private fun isCodeCompleted(): Boolean {
+        val code = binding.verifyCodeEditText.text
+        if (code.length != 4) return false
+        return true
     }
 
     override fun onDestroy() {

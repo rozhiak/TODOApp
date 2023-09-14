@@ -16,7 +16,7 @@ data class Task(
     val isUrgent: Boolean,
     val isDone: Boolean,
     val isShared: Boolean,
-    val user: User,
+    val composer: String,
     val groupId: String,
     val serverID: String = ""
 )

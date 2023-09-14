@@ -15,7 +15,6 @@ import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.fragments.PrivateTasksFragment
 import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.local.User
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
@@ -100,11 +99,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun showNewTask() {
         lifecycleScope.launch {
-            //TODO() This should be deleted
-            val user = User(
-                "rozhiak",
-                "099393139575"
-            )
+
+            //TODO composer name should be changed
 
             val newTask = if (binding.bottomNavigationView.selectedItemId == R.id.privateTasksFragment) {
                 Task(
@@ -116,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                     isUrgent = false,
                     isDone = false,
                     isShared = false,
-                    user = user,
+                    composer = "user",
                     groupId = "123",
                 )
             } else {
@@ -129,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                     isUrgent = false,
                     isDone = false,
                     isShared = true,
-                    user = user,
+                    composer = "user",
                     groupId = "123",
                 )
             }

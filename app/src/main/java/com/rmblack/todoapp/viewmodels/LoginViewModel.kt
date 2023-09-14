@@ -1,8 +1,11 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
+import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,10 +34,10 @@ class LoginViewModel: ViewModel() {
     val newUserRequestCode : StateFlow<Int>
         get() = _newUserRequestCode.asStateFlow()
 
-    private var _phone = ""
+    private var _verifyingPhone = ""
 
-    val phone
-        get() = _phone
+    val verifyingPhone
+        get() = _verifyingPhone
 
     fun loginUser(phoneNumber: String) {
         val loginRequest = LoginRequest(phoneNumber)
@@ -42,7 +45,7 @@ class LoginViewModel: ViewModel() {
         customScope.launch {
             val response = apiRepository.loginUser(loginRequest)
             if (response.code() == 200) {
-                _phone = phoneNumber
+                _verifyingPhone = phoneNumber
             }
             _loginRequestCode.update {
                 response.code()
@@ -59,10 +62,29 @@ class LoginViewModel: ViewModel() {
         customScope.launch {
             val response = apiRepository.newUser(newUserRequest)
             if (response.code() == 201) {
-                _phone = phoneNumber
+                _verifyingPhone = phoneNumber
             }
             _newUserRequestCode.update {
                 response.code()
+            }
+        }
+    }
+
+    fun validateUser(code: String, context: Context) {
+        val validateUserRequest = ValidateUserRequest(
+            verifyingPhone,
+            code.toInt()
+        )
+
+        customScope.launch {
+            val response = apiRepository.validateUser(validateUserRequest)
+            if (response.code() == 200) {
+                //TODO sync tasks with server
+                //TODO name of user should be saved for tasks which are created before login
+                val sharedPreferencesManager = SharedPreferencesManager(context)
+                response.body()?.user?.let { sharedPreferencesManager.saveUser(it) }
+            } else {
+                //Not found
             }
         }
     }

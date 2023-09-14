@@ -64,7 +64,7 @@ class SharedTaskHolder(
                 setBackground(pos, rootConstraint)
                 setUpDelete(pos, it, adapter, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
-                composerNameTv.text = it.user.name
+                composerNameTv.text = it.composer
             }
         }
     }
