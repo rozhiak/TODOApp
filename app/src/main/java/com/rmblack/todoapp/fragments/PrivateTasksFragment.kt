@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
@@ -32,7 +33,8 @@ class PrivateTasksFragment : TasksFragment() {
         _binding = FragmentTasksBinding.inflate(inflater, container, false)
         binding.tasksRv.layoutManager = LinearLayoutManager(context)
 
-        viewModel = ViewModelProvider(this, PrivateFragmentViewModelFactory())
+        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
+        viewModel = ViewModelProvider(this, PrivateFragmentViewModelFactory(sharedPreferencesManager))
             .get(PrivateTasksViewModel::class.java)
 
         return binding.root
@@ -108,10 +110,10 @@ class PrivateTasksFragment : TasksFragment() {
         PrivateTaskListAdapter(viewModel, this, requireActivity())
 
 
-    class PrivateFragmentViewModelFactory : ViewModelProvider.Factory {
+    class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(PrivateTasksViewModel::class.java)) {
-                PrivateTasksViewModel() as T
+                PrivateTasksViewModel(sharedPreferencesManager) as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

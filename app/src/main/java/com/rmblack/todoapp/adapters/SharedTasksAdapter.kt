@@ -43,8 +43,8 @@ class SharedTaskHolder(
         val task = tasks[pos]
         task?.let {
             binding.apply {
-                configUrgentSwitch(it, pos, urgentSwitch)
-                configDoneCheckBox(it, pos, doneCheckBox)
+                configUrgentSwitch(it, urgentSwitch)
+                configDoneCheckBox(it, doneCheckBox)
                 if (pos in viewModel.detailsVisibility.indices) {
                     setDetailsVisibility(
                         viewModel.detailsVisibility[pos],
@@ -98,7 +98,7 @@ class SharedTaskHolder(
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                        //delete from server here
+                        viewModel.deleteTaskFromServer(task.serverID)
                     }
                 }
             })
@@ -139,7 +139,6 @@ class SharedTaskHolder(
 
     private fun configUrgentSwitch(
         task: Task,
-        pos: Int,
         urgentSwitch: SwitchButton
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -149,7 +148,6 @@ class SharedTaskHolder(
 
     private fun configDoneCheckBox(
         task: Task,
-        pos: Int,
         doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->

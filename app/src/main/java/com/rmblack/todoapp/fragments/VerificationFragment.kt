@@ -5,11 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentVerificationBinding
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
+import kotlinx.coroutines.launch
 
 
 class VerificationFragment : Fragment() {
@@ -29,7 +34,10 @@ class VerificationFragment : Fragment() {
     ): View? {
         _binding = FragmentVerificationBinding.inflate(inflater, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
+        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
+        viewModel = ViewModelProvider(requireActivity(),
+            LoginFragment.LoginViewModelFactory(sharedPreferencesManager)
+        )[LoginViewModel::class.java]
 
         return binding.root
     }
@@ -42,10 +50,16 @@ class VerificationFragment : Fragment() {
     private fun setOnClickListeners() {
         binding.confirmCard.setOnClickListener {
             if (isCodeCompleted()) {
-                //Validation request
-                viewModel.validateUser(binding.verifyCodeEditText.text, requireContext())
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        val response = viewModel.validateUser(binding.verifyCodeEditText.text)
+                        if (response) {
+                            viewModel.changeEntranceState(true)
+                        }
+                    }
+                }
             } else {
-                //code is not completed
+                //verification code is not completed by user
             }
         }
     }

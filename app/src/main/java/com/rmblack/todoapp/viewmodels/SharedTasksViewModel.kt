@@ -2,9 +2,10 @@ package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
-class SharedTasksViewModel: TasksViewModel() {
+class SharedTasksViewModel(sharedPreferencesManager: SharedPreferencesManager): TasksViewModel(sharedPreferencesManager) {
 
     init {
         viewModelScope.launch {

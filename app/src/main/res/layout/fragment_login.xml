@@ -141,30 +141,32 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="72dp"
             android:backgroundTint="@color/green"
-            app:cardCornerRadius="30sp"
+            app:cardCornerRadius="8sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:layout_editor_absoluteX="16dp">
+            app:cardElevation="0dp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+            <com.dd.morphingbutton.MorphingButton
+                android:id="@+id/progress_btn"
+                android:paddingTop="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:text="ادامه"
-                android:textAlignment="center"
+                android:backgroundTint="@color/green"
                 android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/iranian_ans"/>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.appcompat.widget.AppCompatTextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iranian_ans"
             android:text="ورود بدون ثبت نام"
             android:textColor="@color/grey"
             android:textSize="14sp"
+            android:id="@+id/enter_without_login_lable"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

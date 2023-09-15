@@ -20,7 +20,6 @@ import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 
@@ -43,8 +42,8 @@ class PrivateTaskHolder(
         val task = tasks[pos]
         task?.let {
             binding.apply {
-                configUrgentSwitch(it, pos, urgentSwitch)
-                configDoneCheckBox(it, pos, doneCheckBox)
+                configUrgentSwitch(it, urgentSwitch)
+                configDoneCheckBox(it, doneCheckBox)
                 if (pos in viewModel.detailsVisibility.indices) {
                     setDetailsVisibility(
                         viewModel.detailsVisibility[pos],
@@ -97,7 +96,7 @@ class PrivateTaskHolder(
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                        //delete from server here
+                        viewModel.deleteTaskFromServer(task.serverID)
                     }
                 }
             })
@@ -138,7 +137,6 @@ class PrivateTaskHolder(
 
     private fun configUrgentSwitch(
         task: Task,
-        pos: Int,
         urgentSwitch: SwitchButton
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -148,7 +146,6 @@ class PrivateTaskHolder(
 
     private fun configDoneCheckBox(
         task: Task,
-        pos: Int,
         doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, b ->

@@ -8,6 +8,7 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-open class TasksViewModel : ViewModel() {
+open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
     private val apiRepository = ApiRepository()
 
@@ -51,40 +52,17 @@ open class TasksViewModel : ViewModel() {
     private val loading = MutableLiveData<Boolean>()
     //End of server properties
 
-//    private fun updateTasks(onUpdate: (List<Task?>) -> List<Task?>) {
-//        _tasks.update { oldTasks ->
-//            onUpdate(oldTasks)
-//        }
-//    }
 
     fun updateUrgentState(isUrgent: Boolean, id: UUID) {
         taskRepository.updateUrgentState(isUrgent, id)
-
-//        updateTasks { oldTasks ->
-//            val updatedTasks = oldTasks.toMutableList()
-//            updatedTasks[pos] = tasks.value[pos]?.copy(isUrgent = isUrgent)
-//            updatedTasks
-//        }
     }
 
     fun updateDoneState(isDone: Boolean, id: UUID) {
         taskRepository.updateDoneState(isDone, id)
-
-//        updateTasks { oldTasks ->
-//            val updatedTasks = oldTasks.toMutableList()
-//            updatedTasks[pos] = tasks.value[pos]?.copy(isDone = isDone)
-//            updatedTasks
-//        }
     }
 
     private fun updateServerID(id: UUID, serverID: String) {
         taskRepository.updateServerID(id, serverID)
-
-//        updateTasks { oldTasks ->
-//            val updatedTasks = oldTasks.toMutableList()
-//            updatedTasks[pos] = tasks.value[pos]?.copy(serverID = serverID)
-//            updatedTasks
-//        }
     }
 
     fun updateVisibility(index: Int, visibility: Boolean) {
@@ -128,28 +106,31 @@ open class TasksViewModel : ViewModel() {
         }
     }
 
-    fun addTaskToServer(task: Task, pos: Int) {
+    fun addTaskToServer(task: Task) {
         //user token should be used here
-        val addRequest = AddTaskRequest(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
-            task.title,
-            task.addedTime.timeInMillis.toString(),
-            task.description,
-            task.deadLine.timeInMillis.toString(),
-            task.isUrgent,
-            task.isDone,
-            task.isShared
-        )
+        val user = sharedPreferencesManager.getUser()
+        if (user != null) {
+            val addRequest = AddTaskRequest(
+                user.token,
+                task.title,
+                task.addedTime.timeInMillis.toString(),
+                task.description,
+                task.deadLine.timeInMillis.toString(),
+                task.isUrgent,
+                task.isDone,
+                task.isShared
+            )
 
-        addJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiRepository.addNewTask(addRequest)
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    loading.value = false
-                    response.body()?.data?.id?.let { updateServerID(task.id, it) }
-                } else {
-                    if (response.code() == 403) {
-                        //invalid token
+            addJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                val response = apiRepository.addNewTask(addRequest)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        loading.value = false
+                        response.body()?.data?.id?.let { updateServerID(task.id, it) }
+                    } else {
+                        if (response.code() == 403) {
+                            //invalid token
+                        }
                     }
                 }
             }
@@ -157,26 +138,29 @@ open class TasksViewModel : ViewModel() {
     }
 
     fun editTaskInServer(task: Task) {
-        val editRequest = EditTaskRequest(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
-            task.serverID,
-            task.title,
-            task.deadLine.timeInMillis.toString(),
-            task.isUrgent,
-            task.isDone,
-            task.isShared
-        )
+        val user = sharedPreferencesManager.getUser()
+        if (user != null) {
+            val editRequest = EditTaskRequest(
+                user.token,
+                task.serverID,
+                task.title,
+                task.deadLine.timeInMillis.toString(),
+                task.isUrgent,
+                task.isDone,
+                task.isShared
+            )
 
-        editJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiRepository.editTask(editRequest)
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    loading.value = false
-                } else {
-                    if (response.code() == 403) {
-                        //invalid token or access denied
-                    } else if (response.code() == 404) {
-                        //Task not found
+            editJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                val response = apiRepository.editTask(editRequest)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        loading.value = false
+                    } else {
+                        if (response.code() == 403) {
+                            //invalid token or access denied
+                        } else if (response.code() == 404) {
+                            //Task not found
+                        }
                     }
                 }
             }
@@ -184,19 +168,22 @@ open class TasksViewModel : ViewModel() {
     }
 
     fun deleteTaskFromServer(serverID: String) {
-        val deleteRequest = DeleteTaskRequest(
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTIxMjM0NTY3In0.ieQ7vwW7LiwF2ZUboUYXxHAvLzoA1lhaLfEHczB_r-M",
-            serverID
-        )
-        deleteJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiRepository.deleteTask(deleteRequest)
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    loading.value = false
-                } else if (response.code() == 403) {
-                    //Invalid token or access denied
-                } else if (response.code() == 404) {
-                    //task not found
+        val user = sharedPreferencesManager.getUser()
+        if (user != null) {
+            val deleteRequest = DeleteTaskRequest(
+                user.token,
+                serverID
+            )
+            deleteJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                val response = apiRepository.deleteTask(deleteRequest)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        loading.value = false
+                    } else if (response.code() == 403) {
+                        //Invalid token or access denied
+                    } else if (response.code() == 404) {
+                        //task not found
+                    }
                 }
             }
         }

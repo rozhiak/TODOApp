@@ -3,10 +3,11 @@ package com.rmblack.todoapp.fragments
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,15 +15,21 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.dd.morphingbutton.MorphingButton
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
+
 
 class LoginFragment : Fragment() {
 
@@ -44,7 +51,10 @@ class LoginFragment : Fragment() {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        viewModel = ViewModelProvider(requireActivity())[LoginViewModel::class.java]
+        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
+        viewModel = ViewModelProvider(requireActivity(),
+            LoginViewModelFactory(sharedPreferencesManager)
+        )[LoginViewModel::class.java]
 
         return binding.root
     }
@@ -94,7 +104,23 @@ class LoginFragment : Fragment() {
     }
 
     private fun setUpClickListeners() {
-        binding.continueCard.setOnClickListener {
+        binding.progressBtn.setOnClickListener {
+
+            //TODO() //start from here (progressing button)
+            //this should be done also for verification button in verification fragment
+            val circle = MorphingButton.Params.create()
+                .duration(500)
+                .cornerRadius(56) // 56 dp
+                .width(56) // 56 dp
+                .height(56) // 56 dp
+                .color(Color.GREEN) // normal state color
+                .colorPressed(Color.RED) // pressed state color
+                .icon(R.drawable.icon_for_login) // icon
+
+            binding.progressBtn.morph(circle)
+            //TODO() //start from here (progressing button)
+
+
             val phone = binding.phoneEt.text.toString()
             var name = ""
             if (binding.nameField.visibility == View.VISIBLE) {
@@ -132,6 +158,13 @@ class LoginFragment : Fragment() {
                 binding.rootScroll.post { binding.rootScroll.fullScroll(ScrollView.FOCUS_DOWN) }
             }
             hideBottomIC()
+        }
+
+        binding.enterWithoutLoginLable.setOnClickListener {
+            viewModel.changeEntranceState(true)
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
         }
     }
 
@@ -210,6 +243,15 @@ class LoginFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    class LoginViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+                return LoginViewModel(sharedPreferencesManager) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
     }
 
 }

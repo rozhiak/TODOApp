@@ -21,6 +21,7 @@ import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import com.rmblack.todoapp.webservice.repository.ApiRepository
@@ -37,7 +38,8 @@ class SharedTasksFragment : TasksFragment() {
         _binding = FragmentTasksBinding.inflate(inflater, container, false)
         binding.tasksRv.layoutManager = LinearLayoutManager(context)
 
-        viewModel = ViewModelProvider(this, SharedFragmentViewModelFactory())
+        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
+        viewModel = ViewModelProvider(this, SharedFragmentViewModelFactory(sharedPreferencesManager))
             .get(SharedTasksViewModel::class.java)
 
         return binding.root
@@ -102,10 +104,10 @@ class SharedTasksFragment : TasksFragment() {
     private fun createSharedTasksAdapter() =
         SharedTasksAdapter(viewModel, this, requireActivity())
 
-    class SharedFragmentViewModelFactory : ViewModelProvider.Factory {
+    class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
-                SharedTasksViewModel() as T
+                SharedTasksViewModel(sharedPreferencesManager) as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

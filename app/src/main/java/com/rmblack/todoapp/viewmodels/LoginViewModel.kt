@@ -1,10 +1,10 @@
 package com.rmblack.todoapp.viewmodels
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
+import com.rmblack.todoapp.models.server.success.ValidateUserResponse
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
 
     private val customScope = CoroutineScope(Dispatchers.IO)
 
@@ -70,23 +71,32 @@ class LoginViewModel: ViewModel() {
         }
     }
 
-    fun validateUser(code: String, context: Context) {
+    suspend fun validateUser(code: String): Boolean {
         val validateUserRequest = ValidateUserRequest(
             verifyingPhone,
             code.toInt()
         )
 
-        customScope.launch {
-            val response = apiRepository.validateUser(validateUserRequest)
-            if (response.code() == 200) {
-                //TODO sync tasks with server
-                //TODO name of user should be saved for tasks which are created before login
-                val sharedPreferencesManager = SharedPreferencesManager(context)
-                response.body()?.user?.let { sharedPreferencesManager.saveUser(it) }
-            } else {
-                //Not found
-            }
+        val response = apiRepository.validateUser(validateUserRequest)
+        if (response.code() == 200) {
+            //TODO: sync tasks with server - merge all tasks
+            saveUserInSharedPreferences(response)
+            changeEntranceState(true)
+            return true
+        } else {
+            //Not found
         }
+        return false
+    }
+
+    fun changeEntranceState(state: Boolean) {
+        sharedPreferencesManager.saveEntranceState(state)
+    }
+
+    private fun saveUserInSharedPreferences(
+        response: Response<ValidateUserResponse>
+    ) {
+        response.body()?.user?.let { sharedPreferencesManager.saveUser(it) }
     }
 
     fun resetLoginRequestCode() {

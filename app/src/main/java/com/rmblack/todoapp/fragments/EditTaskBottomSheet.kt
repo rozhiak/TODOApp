@@ -78,25 +78,15 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             segmentedBtn.setOnPositionChangedListener { pos ->
-                if (pos == 1) {
-                    viewModel.updateTask { oldTask ->
-                        oldTask.copy(
-                            isShared = false,
-                            title = binding.etTitle.text.toString(),
-                            description = binding.etDescription.text.toString(),
-                        )
-                    }
-                    resetCursorsPosition()
-                } else if (pos == 0) {
-                    viewModel.updateTask { oldTask ->
-                        oldTask.copy(
-                            isShared = true,
-                            title = binding.etTitle.text.toString(),
-                            description = binding.etDescription.text.toString(),
-                        )
-                    }
-                    resetCursorsPosition()
+                //TODO: Check if user want to change to shared , he/she should be logged in.
+                viewModel.updateTask { oldTask ->
+                    oldTask.copy(
+                        isShared = pos == 0,
+                        title = binding.etTitle.text.toString(),
+                        description = binding.etDescription.text.toString(),
+                    )
                 }
+                resetCursorsPosition()
             }
 
             deadlineTv.setOnClickListener {

@@ -3,10 +3,11 @@ package com.rmblack.todoapp.activities
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.R
@@ -16,6 +17,7 @@ import com.rmblack.todoapp.fragments.PrivateTasksFragment
 import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.PersianNum
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -25,10 +27,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val viewModel: MainViewModel by viewModels()
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPreferencesManager = SharedPreferencesManager(this)
+        viewModel = ViewModelProvider(this, MainViewModelFactory(sharedPreferencesManager))[MainViewModel::class.java]
+
         checkLoginState()
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -40,8 +46,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLoginState() {
-        val loggedIn = false
-        if (!loggedIn) {
+        val enterWithoutLogin = viewModel.getEntranceState()
+        if (!enterWithoutLogin) {
             val intent = Intent(this, StarterActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
@@ -93,42 +99,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.fab.setOnClickListener {
-            showNewTask()
+            if(binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment &&
+                    viewModel.getUserFromSharedPreferences() == null) {
+            //TODO: Say to user that they can't add shared tasks until login
+            } else {
+                showNewTask()
+            }
         }
     }
 
     private fun showNewTask() {
         lifecycleScope.launch {
 
-            //TODO composer name should be changed
-
-            val newTask = if (binding.bottomNavigationView.selectedItemId == R.id.privateTasksFragment) {
-                Task(
-                    title = "",
-                    id = UUID.randomUUID(),
-                    description = "",
-                    addedTime = PersianCalendar(),
-                    deadLine = PersianCalendar(),
-                    isUrgent = false,
-                    isDone = false,
-                    isShared = false,
-                    composer = "user",
-                    groupId = "123",
-                )
-            } else {
-                Task(
-                    title = "",
-                    id = UUID.randomUUID(),
-                    description = "",
-                    addedTime = PersianCalendar(),
-                    deadLine = PersianCalendar(),
-                    isUrgent = false,
-                    isDone = false,
-                    isShared = true,
-                    composer = "user",
-                    groupId = "123",
-                )
-            }
+            val newTask = Task(
+                title = "",
+                id = UUID.randomUUID(),
+                description = "",
+                addedTime = PersianCalendar(),
+                deadLine = PersianCalendar(),
+                isUrgent = false,
+                isDone = false,
+                isShared = binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment,
+                composer = "user",
+                groupId = "123",
+            )
 
             val editTaskBottomSheet = EditTaskBottomSheet()
             val args = Bundle()
@@ -138,6 +132,15 @@ class MainActivity : AppCompatActivity() {
             editTaskBottomSheet.show(supportFragmentManager, "TODO tag")
 
             viewModel.addTask(newTask)
+        }
+    }
+
+    class MainViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                return MainViewModel(sharedPreferencesManager) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }

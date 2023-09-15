@@ -155,7 +155,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         if (isNewTask != null && editedTaskIndex != -1) {
             if (isNewTask) {
                 //Add new task to server
-                tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it, editedTaskIndex) }
+                tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it) }
             } else {
                 tasks[editedTaskIndex]?.let { viewModel.editTaskInServer(it) }
             }

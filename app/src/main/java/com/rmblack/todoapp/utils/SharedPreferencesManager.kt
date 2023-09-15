@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.rmblack.todoapp.models.server.success.User
 
-private const val USER_KEY = "user"
+private const val USER_KEY = "USER_KEY"
+
+private const val ENTRANCE_STATE_KEY = "ENTRANCE_STATE_KEY"
 
 class SharedPreferencesManager(context: Context) {
 
@@ -26,6 +28,14 @@ class SharedPreferencesManager(context: Context) {
         } else {
             null
         }
+    }
+
+    fun saveEntranceState(state: Boolean) {
+        sharedPreferences.edit().putBoolean(ENTRANCE_STATE_KEY, state).apply()
+    }
+
+    fun getEntranceState(): Boolean {
+        return sharedPreferences.getBoolean(ENTRANCE_STATE_KEY, false)
     }
 
 }
