@@ -99,7 +99,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="260dp"
-            app:layout_constraintBottom_toTopOf="@+id/continue_card"
+            app:layout_constraintBottom_toTopOf="@+id/progress_btn"
             app:layout_constraintTop_toBottomOf="@+id/hint_tv">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/continue_card">
+            app:layout_constraintBottom_toTopOf="@+id/progress_btn">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/name_et"
@@ -134,30 +134,20 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/continue_card"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/progress_btn"
             android:layout_width="match_parent"
-            android:layout_height="50sp"
+            android:layout_height="64dp"
+            android:text="ادامه"
+            android:paddingTop="8dp"
+            android:textSize="20sp"
+            android:layout_marginBottom="20dp"
+            android:textStyle="bold"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="72dp"
+            android:fontFamily="@font/iranian_ans"
             android:backgroundTint="@color/green"
-            app:cardCornerRadius="8sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:cardElevation="0dp">
-
-            <com.dd.morphingbutton.MorphingButton
-                android:id="@+id/progress_btn"
-                android:paddingTop="14dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="ادامه"
-                android:backgroundTint="@color/green"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/iranian_ans"/>
-
-        </androidx.cardview.widget.CardView>
+            app:layout_constraintBottom_toTopOf="@id/enter_without_login_lable"
+            android:textColor="@color/white"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
@@ -166,11 +156,12 @@
             android:text="ورود بدون ثبت نام"
             android:textColor="@color/grey"
             android:textSize="14sp"
+            android:layout_marginVertical="20dp"
             android:id="@+id/enter_without_login_lable"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/continue_card" />
+            app:layout_constraintBottom_toBottomOf="parent"
+             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

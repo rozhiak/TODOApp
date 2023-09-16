@@ -22,7 +22,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.dd.morphingbutton.MorphingButton
+import com.github.razir.progressbutton.attachTextChangeAnimator
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
@@ -68,6 +71,12 @@ class LoginFragment : Fragment() {
         }
         setUpClickListeners()
         hideBottomICByScroll()
+        setUpProgressButton()
+    }
+
+    private fun setUpProgressButton() {
+        bindProgressButton(binding.progressBtn)
+        binding.progressBtn.attachTextChangeAnimator()
     }
 
     private fun hideBottomICByScroll() {
@@ -105,21 +114,7 @@ class LoginFragment : Fragment() {
 
     private fun setUpClickListeners() {
         binding.progressBtn.setOnClickListener {
-
-            //TODO() //start from here (progressing button)
             //this should be done also for verification button in verification fragment
-            val circle = MorphingButton.Params.create()
-                .duration(500)
-                .cornerRadius(56) // 56 dp
-                .width(56) // 56 dp
-                .height(56) // 56 dp
-                .color(Color.GREEN) // normal state color
-                .colorPressed(Color.RED) // pressed state color
-                .icon(R.drawable.icon_for_login) // icon
-
-            binding.progressBtn.morph(circle)
-            //TODO() //start from here (progressing button)
-
 
             val phone = binding.phoneEt.text.toString()
             var name = ""
@@ -127,21 +122,13 @@ class LoginFragment : Fragment() {
                 name = binding.nameEt.text.toString()
             }
             if (phone.isEmpty()) {
-                binding.phoneEt.requestFocus()
-                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
-                binding.errorHintTv.text = "◌ لطفا ، شماره همراه را وارد کنید"
+                setEmptyPhoneHint()
             } else if (phone.isNotEmpty() && phone.length != 11){
-                binding.phoneEt.requestFocus()
-                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
-                binding.errorHintTv.text = "◌ فرمت شماره غلط است."
+                setIncorrectPhoneHint()
             } else if (binding.nameField.visibility == View.VISIBLE && name.isEmpty()) {
-                binding.nameEt.requestFocus()
-                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.showSoftInput(binding.nameEt, InputMethodManager.SHOW_IMPLICIT)
-                binding.errorHintTv.text = "◌ لطفا نام خود را وارد کنید."
+                setEmptyNameHint()
             } else  {
+                showProgressing()
                 binding.errorHintTv.text = ""
                 if (binding.nameField.visibility == View.VISIBLE) {
                     viewModel.newUser(phone, name)
@@ -168,6 +155,37 @@ class LoginFragment : Fragment() {
         }
     }
 
+    private fun setEmptyNameHint() {
+        binding.nameEt.requestFocus()
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(binding.nameEt, InputMethodManager.SHOW_IMPLICIT)
+        binding.errorHintTv.text = "◌ لطفا نام خود را وارد کنید."
+    }
+
+    private fun setIncorrectPhoneHint() {
+        binding.phoneEt.requestFocus()
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
+        binding.errorHintTv.text = "◌ فرمت شماره غلط است."
+    }
+
+    private fun setEmptyPhoneHint() {
+        binding.phoneEt.requestFocus()
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
+        binding.errorHintTv.text = "◌ لطفا ، شماره همراه را وارد کنید"
+    }
+
+    private fun showProgressing() {
+        binding.progressBtn.setPadding(0, 8, 20, 0)
+        binding.progressBtn.showProgress {
+            progressColor = Color.WHITE
+        }
+    }
+
     private fun collectPhoneRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -176,11 +194,11 @@ class LoginFragment : Fragment() {
                         findNavController().navigate(
                             LoginFragmentDirections.verifyPhoneNumber()
                         )
-                        viewModel.resetLoginRequestCode()
                     } else if(code == 404) {
                         bringPhoneUp()
-                        viewModel.resetLoginRequestCode()
+                        binding.progressBtn.hideProgress("ادامه")
                     }
+                    viewModel.resetLoginRequestCode()
                 }
             }
         }
@@ -194,11 +212,12 @@ class LoginFragment : Fragment() {
                         findNavController().navigate(
                             LoginFragmentDirections.verifyPhoneNumber()
                         )
-                        viewModel.resetNewUserRequestCode()
                     } else if(code == 400) {
-                        //User already exist
-                        viewModel.resetNewUserRequestCode()
+                        //User already exist -this situation must not happen
+                        //because we are calling login before any thing
+                        binding.progressBtn.hideProgress("ادامه")
                     }
+                    viewModel.resetNewUserRequestCode()
                 }
             }
         }

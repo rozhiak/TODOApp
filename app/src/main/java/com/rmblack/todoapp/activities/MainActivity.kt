@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener {
             if(binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment &&
-                    viewModel.getUserFromSharedPreferences() == null) {
-            //TODO: Say to user that they can't add shared tasks until login
+                viewModel.getUserFromSharedPreferences() == null) {
+                //TODO: Say to user that they can't add shared tasks until login
             } else {
                 showNewTask()
             }

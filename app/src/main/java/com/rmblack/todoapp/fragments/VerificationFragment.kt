@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.activities.MainActivity
+import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.databinding.FragmentVerificationBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
@@ -55,6 +58,9 @@ class VerificationFragment : Fragment() {
                         val response = viewModel.validateUser(binding.verifyCodeEditText.text)
                         if (response) {
                             viewModel.changeEntranceState(true)
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
                         }
                     }
                 }

@@ -99,8 +99,7 @@ dependencies {
     //Gson
     implementation 'com.google.code.gson:gson:2.10.1'
     //Progress Button
-    implementation "com.github.dmytrodanylyk:android-morphing-button:1.0"
-
+    implementation "com.github.razir.progressbutton:progressbutton:2.1.0"
 }
 
 
