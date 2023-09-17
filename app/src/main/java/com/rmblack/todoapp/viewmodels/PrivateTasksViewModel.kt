@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 class PrivateTasksViewModel(sharedPreferencesManager: SharedPreferencesManager): TasksViewModel(sharedPreferencesManager) {
     init {
         viewModelScope.launch {
-            taskRepository.getPrivateTasks().collect {tasks ->
+            taskRepository.getPrivateTasksFlow().collect { tasks ->
                 val sortedTasks = tasks.sortedBy { it.deadLine }
                 val tasksWithDatePositionNull = mutableListOf<Task?>()
 

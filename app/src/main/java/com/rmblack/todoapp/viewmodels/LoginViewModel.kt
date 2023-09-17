@@ -1,6 +1,9 @@
 package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.rmblack.todoapp.data.repository.TaskRepository
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
@@ -15,11 +18,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.util.UUID
 
 class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
 
     private val customScope = CoroutineScope(Dispatchers.IO)
+
+    val taskRepository = TaskRepository.get()
 
     private val apiRepository: ApiRepository = ApiRepository()
 
@@ -79,12 +86,67 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
         val response = apiRepository.validateUser(validateUserRequest)
         if (response.code() == 200) {
-            //TODO: sync tasks with server - merge all tasks
+            response.body()?.user?.token?.let { syncTasksWithServer(it) }
             saveUserInSharedPreferences(response)
             changeEntranceState(true)
             return true
         } else {
             //Not found
+        }
+        return false
+    }
+
+    private suspend fun syncTasksWithServer(token: String) {
+        val allServerTasks = token.let { apiRepository.getAllTasks(it).body()?.data }
+        val privateLocalTasks = taskRepository.getPrivateTasks().toList()
+        val sharedLocalTasks = taskRepository.getSharedTasks().toList()
+
+        if (allServerTasks != null) {
+            for(pTask in allServerTasks.private) {
+                if (!checkIfContains(privateLocalTasks, pTask.id)) {
+                    val task = pTask.convertToTask()
+                    taskRepository.addTask(task)
+                }
+            }
+            for(sTask in allServerTasks.shared) {
+                if (!checkIfContains(sharedLocalTasks, sTask.id)) {
+                    val task = sTask.convertToTask()
+                    taskRepository.addTask(task)
+                }
+            }
+        }
+
+        for (pTask in privateLocalTasks) {
+            if (pTask.serverID == "") {
+                val addRequest = AddTaskRequest(
+                    token,
+                    pTask.title,
+                    pTask.addedTime.timeInMillis.toString(),
+                    pTask.description,
+                    pTask.deadLine.timeInMillis.toString(),
+                    pTask.isUrgent,
+                    pTask.isDone,
+                    pTask.isShared
+                )
+
+                val response = apiRepository.addNewTask(addRequest)
+                if (response.isSuccessful) {
+                    response.body()?.data?.id?.let { updateServerID(pTask.id, it) }
+                }
+            }
+        }
+    }
+
+    private fun updateServerID(id: UUID, serverID: String) {
+        taskRepository.updateServerID(id, serverID)
+    }
+
+    private fun checkIfContains(localTasks: List<Task>, serverID: String): Boolean {
+        for (eachTask in localTasks) {
+            println(eachTask.title)
+            if (serverID == eachTask.serverID) {
+                return true
+            }
         }
         return false
     }

@@ -16,10 +16,16 @@ interface TaskDao {
     fun getTasks(): Flow<List<Task>>
 
     @Query("SELECT * FROM task WHERE isShared = 0")
-    fun getPrivateTasks(): Flow<List<Task>>
+    fun getPrivateTasksFlow(): Flow<List<Task>>
 
     @Query("SELECT * FROM task WHERE isShared = 1")
-    fun getSharedTasks(): Flow<List<Task>>
+    fun getSharedTasksFlow(): Flow<List<Task>>
+
+    @Query("SELECT * FROM task WHERE isShared = 0")
+    suspend fun getPrivateTasks(): List<Task>
+
+    @Query("SELECT * FROM task WHERE isShared = 1")
+    suspend fun getSharedTasks(): List<Task>
 
     @Query("SELECT * FROM Task WHERE id=(:id)")
     fun getTask(id: UUID): Task

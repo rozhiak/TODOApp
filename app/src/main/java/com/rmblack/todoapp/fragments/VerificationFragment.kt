@@ -57,7 +57,6 @@ class VerificationFragment : Fragment() {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = viewModel.validateUser(binding.verifyCodeEditText.text)
                         if (response) {
-                            viewModel.changeEntranceState(true)
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)

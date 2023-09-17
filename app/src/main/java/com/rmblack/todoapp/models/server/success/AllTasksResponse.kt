@@ -8,8 +8,8 @@ data class AllTasksResponse(
 )
 
 data class Tasks(
-    val private: List<Task>,
-    val shared: List<Task>
+    val private: List<ServerTask>,
+    val shared: List<ServerTask>
 )
 
 

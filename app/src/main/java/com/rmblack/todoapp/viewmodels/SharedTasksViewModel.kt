@@ -3,13 +3,12 @@ package com.rmblack.todoapp.viewmodels
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.SharedPreferencesManager
-import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 class SharedTasksViewModel(sharedPreferencesManager: SharedPreferencesManager): TasksViewModel(sharedPreferencesManager) {
 
     init {
         viewModelScope.launch {
-            taskRepository.getSharedTasks().collect {tasks ->
+            taskRepository.getSharedTasksFlow().collect { tasks ->
                 val sortedTasks = tasks.sortedBy { it.deadLine }
                 val tasksWithDatePositionNull = mutableListOf<Task?>()
 

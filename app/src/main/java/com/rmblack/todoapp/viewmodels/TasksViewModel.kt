@@ -107,7 +107,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun addTaskToServer(task: Task) {
-        //user token should be used here
         val user = sharedPreferencesManager.getUser()
         if (user != null) {
             val addRequest = AddTaskRequest(
