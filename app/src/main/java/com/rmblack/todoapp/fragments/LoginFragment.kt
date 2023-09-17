@@ -64,14 +64,34 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpBottomIC()
+        setUpClickListeners()
+        hideBottomICByScroll()
+        setUpProgressButton()
+        setUpProgressingState()
+
+    }
+
+    private fun setUpProgressingState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginFragmentLoading.collect { isLoading ->
+                    if (isLoading) {
+                        showProgressing()
+                    } else {
+                        binding.progressBtn.hideProgress("ادامه")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setUpBottomIC() {
         if (viewModel.getBottomICVisibility()) {
             setUpBottomICAnim()
         } else {
             binding.icBottom.visibility = View.GONE
         }
-        setUpClickListeners()
-        hideBottomICByScroll()
-        setUpProgressButton()
     }
 
     private fun setUpProgressButton() {
@@ -114,8 +134,6 @@ class LoginFragment : Fragment() {
 
     private fun setUpClickListeners() {
         binding.progressBtn.setOnClickListener {
-            //this should be done also for verification button in verification fragment
-
             val phone = binding.phoneEt.text.toString()
             var name = ""
             if (binding.nameField.visibility == View.VISIBLE) {
@@ -128,7 +146,7 @@ class LoginFragment : Fragment() {
             } else if (binding.nameField.visibility == View.VISIBLE && name.isEmpty()) {
                 setEmptyNameHint()
             } else  {
-                showProgressing()
+                viewModel.updateLoginLoadingState(true)
                 binding.errorHintTv.text = ""
                 if (binding.nameField.visibility == View.VISIBLE) {
                     viewModel.newUser(phone, name)
@@ -180,7 +198,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun showProgressing() {
-        binding.progressBtn.setPadding(0, 8, 20, 0)
+        binding.progressBtn.setPadding(0, 12, 0, 0)
         binding.progressBtn.showProgress {
             progressColor = Color.WHITE
         }
@@ -196,7 +214,6 @@ class LoginFragment : Fragment() {
                         )
                     } else if(code == 404) {
                         bringPhoneUp()
-                        binding.progressBtn.hideProgress("ادامه")
                     }
                     viewModel.resetLoginRequestCode()
                 }
@@ -215,7 +232,6 @@ class LoginFragment : Fragment() {
                     } else if(code == 400) {
                         //User already exist -this situation must not happen
                         //because we are calling login before any thing
-                        binding.progressBtn.hideProgress("ادامه")
                     }
                     viewModel.resetNewUserRequestCode()
                 }

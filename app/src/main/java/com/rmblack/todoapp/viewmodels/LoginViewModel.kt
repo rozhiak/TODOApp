@@ -47,11 +47,34 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     val verifyingPhone
         get() = _verifyingPhone
 
+    private var _loginFragmentLoading = MutableStateFlow<Boolean>(false)
+
+    val loginFragmentLoading: StateFlow<Boolean>
+        get() = _loginFragmentLoading.asStateFlow()
+
+    private var _verificationFragmentLogin = MutableStateFlow(false)
+
+    val verificationFragmentLogin: StateFlow<Boolean>
+        get() = _verificationFragmentLogin.asStateFlow()
+
+    fun updateLoginLoadingState(isLoading: Boolean) {
+        _loginFragmentLoading.update {
+            isLoading
+        }
+    }
+
+    fun updateVerificationLoadingState(isLoading: Boolean) {
+        _verificationFragmentLogin.update {
+            isLoading
+        }
+    }
+
     fun loginUser(phoneNumber: String) {
         val loginRequest = LoginRequest(phoneNumber)
 
         customScope.launch {
             val response = apiRepository.loginUser(loginRequest)
+            updateLoginLoadingState(false)
             if (response.code() == 200) {
                 _verifyingPhone = phoneNumber
             }
@@ -69,6 +92,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
         customScope.launch {
             val response = apiRepository.newUser(newUserRequest)
+            updateLoginLoadingState(false)
             if (response.code() == 201) {
                 _verifyingPhone = phoneNumber
             }
