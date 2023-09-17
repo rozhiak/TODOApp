@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.fragments
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.activities.StarterActivity
@@ -51,8 +54,9 @@ class VerificationFragment : Fragment() {
     }
 
     private fun setOnClickListeners() {
-        binding.confirmCard.setOnClickListener {
+        binding.progressBtn.setOnClickListener {
             if (isCodeCompleted()) {
+                showProgressing()
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = viewModel.validateUser(binding.verifyCodeEditText.text)
@@ -60,11 +64,13 @@ class VerificationFragment : Fragment() {
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
+                        } else {
+                            binding.progressBtn.hideProgress("تایید")
                         }
                     }
                 }
             } else {
-                //verification code is not completed by user
+                //TODO verification code is not completed by user
             }
         }
     }
@@ -73,6 +79,13 @@ class VerificationFragment : Fragment() {
         val code = binding.verifyCodeEditText.text
         if (code.length != 4) return false
         return true
+    }
+
+    private fun showProgressing() {
+        binding.progressBtn.setPadding(0, 8, 20, 0)
+        binding.progressBtn.showProgress {
+            progressColor = Color.WHITE
+        }
     }
 
     override fun onDestroy() {
