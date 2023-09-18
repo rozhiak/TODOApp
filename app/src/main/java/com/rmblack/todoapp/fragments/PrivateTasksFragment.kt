@@ -67,11 +67,6 @@ class PrivateTasksFragment : TasksFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
-
-                    for (t in tasks) {
-                        println(t?.title + " == " + t?.isUrgent)
-                    }
-
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {

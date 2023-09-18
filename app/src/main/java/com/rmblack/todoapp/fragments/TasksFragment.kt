@@ -92,6 +92,9 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                     actionState,
                     isCurrentlyActive
                 )
+
+                binding.refreshLayout.isEnabled = !isCurrentlyActive
+
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val position = viewHolder.absoluteAdapterPosition
                     val viewType = binding.tasksRv.adapter?.getItemViewType(position)
