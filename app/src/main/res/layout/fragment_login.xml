@@ -135,12 +135,13 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:layoutDirection="rtl"
             android:id="@+id/progress_btn"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="ادامه"
             android:paddingTop="8dp"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_marginBottom="20dp"
             android:textStyle="bold"
             android:layout_marginHorizontal="16dp"

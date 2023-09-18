@@ -107,7 +107,7 @@ class PrivateTasksFragment : TasksFragment() {
     }
 
     private fun createPrivateTasksAdapter(): PrivateTaskListAdapter =
-        PrivateTaskListAdapter(viewModel, this, requireActivity())
+        PrivateTaskListAdapter(viewModel.getUserToken(), viewModel, this, requireActivity())
 
 
     class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {

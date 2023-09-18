@@ -51,12 +51,27 @@ class VerificationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
+        setLoadingState()
+    }
+
+    private fun setLoadingState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.verificationFragmentLoading.collect {isLoading ->
+                    if (isLoading) {
+                        showProgressing()
+                    } else {
+                        binding.progressBtn.hideProgress("تایید")
+                    }
+                }
+            }
+        }
     }
 
     private fun setOnClickListeners() {
         binding.progressBtn.setOnClickListener {
             if (isCodeCompleted()) {
-                showProgressing()
+                viewModel.updateVerificationLoadingState(true)
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = viewModel.validateUser(binding.verifyCodeEditText.text)
@@ -65,7 +80,7 @@ class VerificationFragment : Fragment() {
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
                         } else {
-                            binding.progressBtn.hideProgress("تایید")
+
                         }
                     }
                 }
@@ -85,6 +100,7 @@ class VerificationFragment : Fragment() {
         binding.progressBtn.setPadding(0, 8, 20, 0)
         binding.progressBtn.showProgress {
             progressColor = Color.WHITE
+            buttonText = "کمی صبر...   "
         }
     }
 

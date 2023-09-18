@@ -201,6 +201,8 @@ class LoginFragment : Fragment() {
         binding.progressBtn.setPadding(0, 12, 0, 0)
         binding.progressBtn.showProgress {
             progressColor = Color.WHITE
+            buttonText = "کمی صبر...   "
+
         }
     }
 

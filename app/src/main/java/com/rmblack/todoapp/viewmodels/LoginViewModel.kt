@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.util.UUID
 
@@ -52,10 +51,11 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     val loginFragmentLoading: StateFlow<Boolean>
         get() = _loginFragmentLoading.asStateFlow()
 
-    private var _verificationFragmentLogin = MutableStateFlow(false)
+    private var _verificationFragmentLoading = MutableStateFlow(false)
 
-    val verificationFragmentLogin: StateFlow<Boolean>
-        get() = _verificationFragmentLogin.asStateFlow()
+    //TODO implement loading state in verification fragment
+    val verificationFragmentLoading: StateFlow<Boolean>
+        get() = _verificationFragmentLoading.asStateFlow()
 
     fun updateLoginLoadingState(isLoading: Boolean) {
         _loginFragmentLoading.update {
@@ -64,7 +64,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     }
 
     fun updateVerificationLoadingState(isLoading: Boolean) {
-        _verificationFragmentLogin.update {
+        _verificationFragmentLoading.update {
             isLoading
         }
     }
@@ -109,6 +109,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         )
 
         val response = apiRepository.validateUser(validateUserRequest)
+        updateVerificationLoadingState(false)
         if (response.code() == 200) {
             response.body()?.user?.token?.let { syncTasksWithServer(it) }
             saveUserInSharedPreferences(response)

@@ -17,9 +17,9 @@ data class ServerTask(
     val group_id: String,
     val description: String,
     val deadline: String,
-    val is_urgent: Boolean,
-    val is_done: Boolean,
-    val is_shared: Boolean
+    val is_urgent: Int,
+    val is_done: Int,
+    val is_shared: Int
 ) {
     fun convertToTask(): Task {
         val addedTime = PersianCalendar()
@@ -33,9 +33,9 @@ data class ServerTask(
             description = description,
             addedTime = addedTime,
             deadLine = deadLine,
-            isUrgent = is_urgent,
-            isDone = is_done,
-            isShared = is_shared,
+            isUrgent = is_urgent == 1,
+            isDone = is_done == 1,
+            isShared = is_shared == 1,
             composer = user,
             groupId = group_id,
             serverID = id

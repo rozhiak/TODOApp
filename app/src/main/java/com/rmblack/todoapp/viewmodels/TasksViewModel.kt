@@ -17,7 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -110,7 +109,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         val user = sharedPreferencesManager.getUser()
         if (user != null) {
             val addRequest = AddTaskRequest(
-                user.token,
+                getUserToken()!!,
                 task.title,
                 task.addedTime.timeInMillis.toString(),
                 task.description,
@@ -136,17 +135,17 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         }
     }
 
-    fun editTaskInServer(task: Task) {
+    fun editTaskInServer(editedTask: Task) {
         val user = sharedPreferencesManager.getUser()
         if (user != null) {
             val editRequest = EditTaskRequest(
-                user.token,
-                task.serverID,
-                task.title,
-                task.deadLine.timeInMillis.toString(),
-                task.isUrgent,
-                task.isDone,
-                task.isShared
+                getUserToken()!!,
+                editedTask.serverID,
+                editedTask.title,
+                editedTask.deadLine.timeInMillis.toString(),
+                editedTask.isUrgent,
+                editedTask.isDone,
+                editedTask.isShared
             )
 
             editJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -170,7 +169,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         val user = sharedPreferencesManager.getUser()
         if (user != null) {
             val deleteRequest = DeleteTaskRequest(
-                user.token,
+                getUserToken()!!,
                 serverID
             )
             deleteJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -186,6 +185,11 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 }
             }
         }
+    }
+
+    fun getUserToken(): String? {
+        val user = sharedPreferencesManager.getUser()
+        return user?.token
     }
 
     override fun onCleared() {

@@ -24,12 +24,14 @@ import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 
 class PrivateTaskHolder(
+    token: String?,
     private val binding: PrivateTasksRvItemBinding,
     private val viewModel: TasksViewModel,
     private val activity: Activity,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView,
 ) : TaskHolder(
+    token,
     editClickListener,
     recyclerView,
     binding
@@ -42,8 +44,8 @@ class PrivateTaskHolder(
         val task = tasks[pos]
         task?.let {
             binding.apply {
-                configUrgentSwitch(it, urgentSwitch)
-                configDoneCheckBox(it, doneCheckBox)
+                configUrgentSwitch(viewModel, it, urgentSwitch)
+                configDoneCheckBox(viewModel, it, doneCheckBox)
                 if (pos in viewModel.detailsVisibility.indices) {
                     setDetailsVisibility(
                         viewModel.detailsVisibility[pos],
@@ -60,7 +62,7 @@ class PrivateTaskHolder(
                 setEachTaskClick(pos, adapter, rootCard)
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
-                setBackground(pos, rootConstraint)
+                setBackground(viewModel, pos, rootConstraint)
                 setUpDelete(pos, it, adapter, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
             }
@@ -126,35 +128,36 @@ class PrivateTaskHolder(
             }
         }
     }
+//
+//    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
+//        if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
+//            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+//        } else {
+//            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+//        }
+//    }
 
-    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
-        if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
-            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
-        } else {
-            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
-        }
-    }
+//    private fun configUrgentSwitch(
+//        task: Task,
+//        urgentSwitch: SwitchButton
+//    ) {
+//        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            viewModel.updateUrgentState(isChecked, task.id)
+//        }
+//    }
 
-    private fun configUrgentSwitch(
-        task: Task,
-        urgentSwitch: SwitchButton
-    ) {
-        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.updateUrgentState(isChecked, task.id)
-        }
-    }
-
-    private fun configDoneCheckBox(
-        task: Task,
-        doneCheckBox: AppCompatCheckBox
-    ) {
-        doneCheckBox.setOnCheckedChangeListener { _, b ->
-            viewModel.updateDoneState(b, task.id)
-        }
-    }
+//    private fun configDoneCheckBox(
+//        task: Task,
+//        doneCheckBox: AppCompatCheckBox
+//    ) {
+//        doneCheckBox.setOnCheckedChangeListener { _, b ->
+//            viewModel.updateDoneState(b, task.id)
+//        }
+//    }
 }
 
 class PrivateTaskListAdapter(
+    private val token: String?,
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity
@@ -174,7 +177,7 @@ class PrivateTaskListAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-            PrivateTaskHolder(binding, viewModel ,activity ,editClickListener, recyclerView)
+            PrivateTaskHolder(token , binding, viewModel ,activity ,editClickListener, recyclerView)
         }
     }
 

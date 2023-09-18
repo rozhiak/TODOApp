@@ -7,20 +7,30 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.requests.EditTaskRequest
+import com.rmblack.todoapp.viewmodels.TasksViewModel
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 import com.suke.widget.SwitchButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val TASK = 0
 
 const val REMAINING_DAYS_LABLE = 1
 
 open class TaskHolder(
+    private val token: String?,
     private val editClickListener: EditClickListener,
     val recyclerView: RecyclerView,
-    binding: ViewBinding
+    binding: ViewBinding,
+
 ) :RecyclerView.ViewHolder(binding.root) {
+
+    val apiRepository = ApiRepository()
 
     interface EditClickListener {
         fun onEditClick(task: Task)
@@ -112,6 +122,38 @@ open class TaskHolder(
         }
     }
 
+    fun configUrgentSwitch(
+        viewModel: TasksViewModel,
+        task: Task,
+        urgentSwitch: SwitchButton
+    ) {
+        urgentSwitch.setOnCheckedChangeListener { _, isUrgent ->
+            viewModel.updateUrgentState(isUrgent, task.id)
+            viewModel.editTaskInServer(task.copy(isUrgent = isUrgent))
+        }
+    }
 
+    fun configDoneCheckBox(
+        viewModel: TasksViewModel,
+        task: Task,
+        doneCheckBox: AppCompatCheckBox
+    ) {
+        doneCheckBox.setOnCheckedChangeListener { _, isDone ->
+            viewModel.updateDoneState(isDone, task.id)
+            viewModel.editTaskInServer(task.copy(isDone = isDone))
+        }
+    }
+
+    fun setBackground(
+        viewModel: TasksViewModel,
+        pos: Int,
+        rootConstraint: ConstraintLayout
+    ) {
+        if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
+            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+        } else {
+            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+        }
+    }
 
 }
