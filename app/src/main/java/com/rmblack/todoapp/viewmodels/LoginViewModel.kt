@@ -53,7 +53,6 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private var _verificationFragmentLoading = MutableStateFlow(false)
 
-    //TODO implement loading state in verification fragment
     val verificationFragmentLoading: StateFlow<Boolean>
         get() = _verificationFragmentLoading.asStateFlow()
 
@@ -168,7 +167,6 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private fun checkIfContains(localTasks: List<Task>, serverID: String): Boolean {
         for (eachTask in localTasks) {
-            println(eachTask.title)
             if (serverID == eachTask.serverID) {
                 return true
             }
