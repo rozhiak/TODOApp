@@ -13,6 +13,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.data.repository.TaskRepository
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 
 class Utilities {
 
@@ -41,29 +43,52 @@ class Utilities {
             return snackBar
         }
 
-    }
+        //TODO before using this function , check user login state
+        suspend fun syncTasksWithServer(token: String) {
+            //TODO before anything you should check if there is any cashed request here
+            //TODO be  careful that all cashed requests should be performed and then continue
 
-    class MoveUpwardBehavior(context: Context?, attrs: AttributeSet?) :
-        CoordinatorLayout.Behavior<View>(context, attrs) {
+            val apiRepository = ApiRepository()
+            val taskRepository = TaskRepository.get()
 
-        override fun layoutDependsOn(
-            parent: CoordinatorLayout,
-            child: View,
-            dependency: View
-        ): Boolean {
-            return dependency is SnackbarLayout
+            val allServerTasks = apiRepository.getAllTasks(token).body()?.data
+            val allPrivateLocalTasks = taskRepository.getPrivateTasks()
+            val allSharedLocalTasks = taskRepository.getSharedTasks()
+
+            if (allServerTasks != null) {
+                for (pServerTask in allServerTasks.private) {
+                    val index = allPrivateLocalTasks.indexOfFirst { it.serverID == pServerTask.id }
+                    if (index >= 0) {
+                        //Task found
+                        val task = allPrivateLocalTasks[index]
+                        if (!pServerTask.checkEquality(task)) {
+                            //Task has been changed -> update in local database
+                        }
+                    } else {
+                        //Not Found in local database -> add the task in local data base.
+                    }
+                }
+
+                for (sServerTask in allServerTasks.shared) {
+                    val index = allSharedLocalTasks.indexOfFirst { it.serverID == sServerTask.id }
+                    if (index >= 0) {
+                        //Task found
+                        val task = allSharedLocalTasks[index]
+                        if (!sServerTask.checkEquality(task)) {
+                            //Task has been changed -> update in local database
+                        }
+                    } else {
+                        //Not Found in local database -> add the task in local data base.
+                    }
+                }
+            }
         }
 
-        override fun onDependentViewChanged(
-            parent: CoordinatorLayout,
-            child: View,
-            dependency: View
-        ): Boolean {
-            val translationY = minOf(0f, dependency.translationY - dependency.height)
-            if (dependency.translationY != 0f)
-                child.translationY = translationY
-            return true
-        }
+
+
+
+        //TODO at the end you should check if any task is not checked it means the it is removed from server and you should remove
+        //TODO it from local data base too. (for that we should create a list of Pairs (task, boolean).  )
     }
 
 }

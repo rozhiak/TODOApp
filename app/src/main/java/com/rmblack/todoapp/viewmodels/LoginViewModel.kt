@@ -128,13 +128,13 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         if (allServerTasks != null) {
             for(pTask in allServerTasks.private) {
                 if (!checkIfContains(privateLocalTasks, pTask.id)) {
-                    val task = pTask.convertToTask()
+                    val task = pTask.convertToLocalTask()
                     taskRepository.addTask(task)
                 }
             }
             for(sTask in allServerTasks.shared) {
                 if (!checkIfContains(sharedLocalTasks, sTask.id)) {
-                    val task = sTask.convertToTask()
+                    val task = sTask.convertToLocalTask()
                     taskRepository.addTask(task)
                 }
             }

@@ -30,8 +30,6 @@ open class TaskHolder(
 
 ) :RecyclerView.ViewHolder(binding.root) {
 
-    val apiRepository = ApiRepository()
-
     interface EditClickListener {
         fun onEditClick(task: Task)
     }

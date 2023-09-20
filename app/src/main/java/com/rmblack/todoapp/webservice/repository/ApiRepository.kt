@@ -27,8 +27,8 @@ class ApiRepository {
     suspend fun validateUser(body: ValidateUserRequest) = getInstance().validateUser(body)
 
     companion object {
-        var apiService: ApiService? = null
-        fun getInstance() : ApiService {
+        private var apiService: ApiService? = null
+        private fun getInstance() : ApiService {
             if (apiService == null) {
                 val retrofit = Retrofit.Builder()
                     .baseUrl("https://amirh.pythonanywhere.com/")

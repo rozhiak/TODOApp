@@ -5,6 +5,7 @@ import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.success.User
 import com.rmblack.todoapp.utils.SharedPreferencesManager
+import com.rmblack.todoapp.webservice.repository.ApiRepository
 
 class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
 
@@ -21,5 +22,4 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
     fun getEntranceState(): Boolean {
         return sharedPreferencesManager.getEntranceState()
     }
-
 }

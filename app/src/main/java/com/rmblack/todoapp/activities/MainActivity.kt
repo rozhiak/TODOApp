@@ -1,15 +1,20 @@
 package com.rmblack.todoapp.activities
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aminography.primecalendar.persian.PersianCalendar
+import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
@@ -132,6 +137,29 @@ class MainActivity : AppCompatActivity() {
             editTaskBottomSheet.show(supportFragmentManager, "TODO tag")
 
             viewModel.addTask(newTask)
+        }
+    }
+
+    class MoveUpwardBehavior(context: Context?, attrs: AttributeSet?) :
+        CoordinatorLayout.Behavior<View>(context, attrs) {
+
+        override fun layoutDependsOn(
+            parent: CoordinatorLayout,
+            child: View,
+            dependency: View
+        ): Boolean {
+            return dependency is Snackbar.SnackbarLayout
+        }
+
+        override fun onDependentViewChanged(
+            parent: CoordinatorLayout,
+            child: View,
+            dependency: View
+        ): Boolean {
+            val translationY = minOf(0f, dependency.translationY - dependency.height)
+            if (dependency.translationY != 0f)
+                child.translationY = translationY
+            return true
         }
     }
 

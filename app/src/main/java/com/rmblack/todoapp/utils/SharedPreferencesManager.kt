@@ -20,17 +20,14 @@ private const val FAILED_DELETE_REQUESTS_KEY = "FAILED_DELETE_REQUESTS_KEY"
 private const val FAILED_EDIT_REQUESTS_KEY = "FAILED_EDIT_REQUESTS_KEY"
 
 
-class SharedPreferencesManager(context: Context) {
+class SharedPreferencesManager(private val context: Context) {
 
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-
-    private val editor = sharedPreferences.edit()
+    private val editor = getSharedPreferences(context).edit()
 
     private val gson = Gson()
 
     fun getFailedAddRequests(): List<AddTaskRequest> {
-        val serializedRequests = sharedPreferences.getString(FAILED_ADD_REQUESTS_KEY, null)
+        val serializedRequests = getSharedPreferences(context).getString(FAILED_ADD_REQUESTS_KEY, null)
 
         return if (serializedRequests != null) {
             gson.fromJson(serializedRequests, object : TypeToken<List<AddTaskRequest>>() {}.type)
@@ -60,7 +57,7 @@ class SharedPreferencesManager(context: Context) {
     }
 
     fun getFailedDeleteRequests(): List<DeleteTaskRequest> {
-        val serializedRequests = sharedPreferences.getString(FAILED_DELETE_REQUESTS_KEY, null)
+        val serializedRequests = getSharedPreferences(context).getString(FAILED_DELETE_REQUESTS_KEY, null)
 
         return if (serializedRequests != null) {
             gson.fromJson(serializedRequests, object : TypeToken<List<DeleteTaskRequest>>() {}.type)
@@ -90,7 +87,7 @@ class SharedPreferencesManager(context: Context) {
     }
 
     fun getFailedEditRequests(): List<EditTaskRequest> {
-        val serializedRequests = sharedPreferences.getString(FAILED_EDIT_REQUESTS_KEY, null)
+        val serializedRequests = getSharedPreferences(context).getString(FAILED_EDIT_REQUESTS_KEY, null)
 
         return if (serializedRequests != null) {
             gson.fromJson(serializedRequests, object : TypeToken<List<EditTaskRequest>>() {}.type)
@@ -125,7 +122,7 @@ class SharedPreferencesManager(context: Context) {
     }
 
     fun getUser(): User? {
-        val serializedUser = sharedPreferences.getString(USER_KEY, null)
+        val serializedUser = getSharedPreferences(context).getString(USER_KEY, null)
         return if (serializedUser != null) {
             gson.fromJson(serializedUser, User::class.java)
         } else {
@@ -138,7 +135,21 @@ class SharedPreferencesManager(context: Context) {
     }
 
     fun getEntranceState(): Boolean {
-        return sharedPreferences.getBoolean(ENTRANCE_STATE_KEY, false)
+        return getSharedPreferences(context).getBoolean(ENTRANCE_STATE_KEY, false)
+    }
+
+    companion object {
+        private var sharedPreferences: SharedPreferences? = null
+        private val LOCK = Any()
+
+        private fun getSharedPreferences(context: Context): SharedPreferences {
+            synchronized(LOCK) {
+                if (sharedPreferences == null) {
+                    sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                }
+                return sharedPreferences!!
+            }
+        }
     }
 
 }
