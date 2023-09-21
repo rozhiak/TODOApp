@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.lang.Exception
 import java.util.UUID
 
 class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
@@ -121,24 +122,24 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     }
 
     private suspend fun syncTasksWithServer(token: String) {
-        val allServerTasks = token.let { apiRepository.getAllTasks(it).body()?.data }
+//        val allServerTasks = token.let { apiRepository.getAllTasks(it).body()?.data }
         val privateLocalTasks = taskRepository.getPrivateTasks().toList()
-        val sharedLocalTasks = taskRepository.getSharedTasks().toList()
+//        val sharedLocalTasks = taskRepository.getSharedTasks().toList()
 
-        if (allServerTasks != null) {
-            for(pTask in allServerTasks.private) {
-                if (!checkIfContains(privateLocalTasks, pTask.id)) {
-                    val task = pTask.convertToLocalTask()
-                    taskRepository.addTask(task)
-                }
-            }
-            for(sTask in allServerTasks.shared) {
-                if (!checkIfContains(sharedLocalTasks, sTask.id)) {
-                    val task = sTask.convertToLocalTask()
-                    taskRepository.addTask(task)
-                }
-            }
-        }
+//        if (allServerTasks != null) {
+//            for(pTask in allServerTasks.private) {
+//                if (!checkIfContains(privateLocalTasks, pTask.id)) {
+//                    val task = pTask.convertToLocalTask()
+//                    taskRepository.addTask(task)
+//                }
+//            }
+//            for(sTask in allServerTasks.shared) {
+//                if (!checkIfContains(sharedLocalTasks, sTask.id)) {
+//                    val task = sTask.convertToLocalTask()
+//                    taskRepository.addTask(task)
+//                }
+//            }
+//        }
 
         for (pTask in privateLocalTasks) {
             if (pTask.serverID == "") {
@@ -153,9 +154,17 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                     pTask.isShared
                 )
 
-                val response = apiRepository.addNewTask(addRequest)
-                if (response.isSuccessful) {
-                    response.body()?.data?.id?.let { updateServerID(pTask.id, it) }
+                try {
+                    val response = apiRepository.addNewTask(addRequest)
+                    if (response.isSuccessful) {
+                        response.body()?.data?.id?.let { updateServerID(pTask.id, it) }
+                    } else {
+                        if (response.code() == 403) {
+                            //invalid token
+                        }
+                    }
+                } catch (e: Exception) {
+                    sharedPreferencesManager.insertFailedAddRequest(addRequest)
                 }
             }
         }
@@ -165,14 +174,14 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         taskRepository.updateServerID(id, serverID)
     }
 
-    private fun checkIfContains(localTasks: List<Task>, serverID: String): Boolean {
-        for (eachTask in localTasks) {
-            if (serverID == eachTask.serverID) {
-                return true
-            }
-        }
-        return false
-    }
+//    private fun checkIfContains(localTasks: List<Task>, serverID: String): Boolean {
+//        for (eachTask in localTasks) {
+//            if (serverID == eachTask.serverID) {
+//                return true
+//            }
+//        }
+//        return false
+//    }
 
     fun changeEntranceState(state: Boolean) {
         sharedPreferencesManager.saveEntranceState(state)

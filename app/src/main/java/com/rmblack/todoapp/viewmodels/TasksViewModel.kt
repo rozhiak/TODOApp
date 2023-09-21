@@ -119,7 +119,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                     val response = apiRepository.addNewTask(addRequest)
                     if (response.isSuccessful) {
                         loading.value = false
-                        println(response.body()?.data)
                         response.body()?.data?.id?.let { updateServerID(task.id, it) }
                     } else {
                         if (response.code() == 403) {

@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
@@ -26,11 +27,11 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
         return sharedPreferencesManager.getEntranceState()
     }
 
-    fun syncTasksWithServer() {
+    fun syncTasksWithServer(context: Context) {
         val user = getUserFromSharedPreferences()
         if (user != null) {
             viewModelScope.launch {
-                Utilities.syncTasksWithServer(user.token)
+                Utilities.syncTasksWithServer(user.token, context)
             }
         }
     }

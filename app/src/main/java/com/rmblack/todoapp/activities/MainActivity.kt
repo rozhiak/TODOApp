@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        viewModel.syncTasksWithServer()    //some problems with Booleans from server found
+//        viewModel.syncTasksWithServer(this)    //some problems with Booleans from server found
         setUpUI()
         wireUpBottomNav()
         showToday()
