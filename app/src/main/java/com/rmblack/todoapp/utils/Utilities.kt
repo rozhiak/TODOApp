@@ -1,12 +1,9 @@
 package com.rmblack.todoapp.utils
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
-import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -14,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.data.repository.TaskRepository
+import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 
 class Utilities {
@@ -52,43 +50,73 @@ class Utilities {
             val taskRepository = TaskRepository.get()
 
             val allServerTasks = apiRepository.getAllTasks(token).body()?.data
-            val allPrivateLocalTasks = taskRepository.getPrivateTasks()
-            val allSharedLocalTasks = taskRepository.getSharedTasks()
+
+            val privateLocalTasks = taskRepository.getPrivateTasks()
+            val privateLocalTasksPair: MutableList<Pair<Task, Boolean>> = privateLocalTasks.map { task ->
+                Pair(task, false)
+            } as MutableList<Pair<Task, Boolean>>
+
+            val sharedLocalTasks = taskRepository.getSharedTasks()
+            val sharedLocalTasksPair: MutableList<Pair<Task, Boolean>> = sharedLocalTasks.map {task ->
+                Pair(task, false)
+            } as MutableList<Pair<Task, Boolean>>
 
             if (allServerTasks != null) {
                 for (pServerTask in allServerTasks.private) {
-                    val index = allPrivateLocalTasks.indexOfFirst { it.serverID == pServerTask.id }
+                    val index = privateLocalTasksPair.indexOfFirst {pair ->
+                        pair.first.serverID == pServerTask.id && !pair.second
+                    }
                     if (index >= 0) {
                         //Task found
-                        val task = allPrivateLocalTasks[index]
-                        if (!pServerTask.checkEquality(task)) {
+                        val localTask = privateLocalTasksPair[index].first
+                        if (!pServerTask.checkEquality(localTask)) {
                             //Task has been changed -> update in local database
+                            taskRepository.updateTask(pServerTask.convertToLocalTaskWithLocalID(localTask.id))
                         }
+                        privateLocalTasksPair[index] = Pair(localTask, true)
                     } else {
                         //Not Found in local database -> add the task in local data base.
                     }
                 }
 
                 for (sServerTask in allServerTasks.shared) {
-                    val index = allSharedLocalTasks.indexOfFirst { it.serverID == sServerTask.id }
+                    val index = sharedLocalTasksPair.indexOfFirst {pair ->
+                        pair.first.serverID == sServerTask.id  && !pair.second
+                    }
                     if (index >= 0) {
                         //Task found
-                        val task = allSharedLocalTasks[index]
-                        if (!sServerTask.checkEquality(task)) {
+                        val localTask = sharedLocalTasksPair[index].first
+                        if (!sServerTask.checkEquality(localTask)) {
                             //Task has been changed -> update in local database
+                            taskRepository.updateTask(sServerTask.convertToLocalTaskWithLocalID(localTask.id))
                         }
+                        sharedLocalTasksPair[index] = Pair(localTask, true)
                     } else {
                         //Not Found in local database -> add the task in local data base.
                     }
                 }
             }
+
+            val privateTasksToDelete: List<Task> = privateLocalTasksPair.filter { pair ->
+                !pair.second
+            }.map { pair ->
+                pair.first
+            }
+
+            for (toDelete in privateTasksToDelete) {
+                taskRepository.deleteTask(toDelete)
+            }
+
+            val sharedTasksToDelete: List<Task> = sharedLocalTasksPair.filter { pair ->
+                !pair.second
+            }.map { pair ->
+                pair.first
+            }
+
+            for (toDelete in sharedTasksToDelete) {
+                taskRepository.deleteTask(toDelete)
+            }
         }
-
-
-
-
-        //TODO at the end you should check if any task is not checked it means the it is removed from server and you should remove
-        //TODO it from local data base too. (for that we should create a list of Pairs (task, boolean).  )
     }
 
 }

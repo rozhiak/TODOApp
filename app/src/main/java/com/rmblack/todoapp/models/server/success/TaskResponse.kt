@@ -44,6 +44,27 @@ data class ServerTask(
         )
     }
 
+    fun convertToLocalTaskWithLocalID(localID: UUID): Task {
+        val addedTime = PersianCalendar()
+        addedTime.timeInMillis = added_time.toLong()
+        val deadLine = PersianCalendar()
+        deadLine.timeInMillis = deadline.toLong()
+
+        return Task(
+            title = title,
+            id = localID,
+            description = description,
+            addedTime = addedTime,
+            deadLine = deadLine,
+            isUrgent = is_urgent,
+            isDone = is_done,
+            isShared = is_shared,
+            composer = user,
+            groupId = group_id,
+            serverID = id
+        )
+    }
+
     fun checkEquality(localTask: Task): Boolean {
         if (title != localTask.title) return false
         else if (description != localTask.description) return false

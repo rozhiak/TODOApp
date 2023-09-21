@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.R
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+//        viewModel.syncTasksWithServer()    //some problems with Booleans from server found
         setUpUI()
         wireUpBottomNav()
         showToday()
