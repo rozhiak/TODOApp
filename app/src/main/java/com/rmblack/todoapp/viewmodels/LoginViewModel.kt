@@ -151,7 +151,8 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                     pTask.deadLine.timeInMillis.toString(),
                     pTask.isUrgent,
                     pTask.isDone,
-                    pTask.isShared
+                    pTask.isShared,
+                    pTask.id
                 )
 
                 try {

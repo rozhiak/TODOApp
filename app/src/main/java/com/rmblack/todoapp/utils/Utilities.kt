@@ -44,23 +44,48 @@ class Utilities {
 
         //TODO before using this function , check user login state
         suspend fun syncTasksWithServer(token: String, context: Context) {
-            //TODO before anything you should check if there is any cashed request here
-            //TODO be  careful that all cashed requests should be performed and then continue
+            //TODO functionality of this code should be tested section by section
 
             val sharedPreferencesManager = SharedPreferencesManager(context)
+            val failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
+            val failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
+            val failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+
+            val apiRepository = ApiRepository()
+            val taskRepository = TaskRepository.get()
+
+            for (addReq in failedAddRequests) {
+                val response = apiRepository.addNewTask(addReq)
+                if (response.isSuccessful) {
+                    sharedPreferencesManager.removeFailedAddRequest(addReq)
+                    response.body()?.data?.id?.let {
+                        taskRepository.updateServerID(addReq.localTaskID , it)
+                    }
+                }
+            }
+
+            for (editReq in failedEditRequests) {
+                val response = apiRepository.editTask(editReq)
+                if (response.code() == 200 || response.code() == 404)
+                    sharedPreferencesManager.removeFailedEditRequest(editReq)
+            }
+
+            for (deleteReq in failedDeleteRequests) {
+                val response = apiRepository.deleteTask(deleteReq)
+                if (response.code() == 200 || response.code() == 404)
+                    sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
+            }
+
             var isThereAnyFailedRequest = false
-            if (sharedPreferencesManager.getFailedAddRequests().isNotEmpty()) {
+            if (failedAddRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
-            } else if (sharedPreferencesManager.getFailedEditRequests().isNotEmpty()) {
+            } else if (failedEditRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
-            } else if (sharedPreferencesManager.getFailedDeleteRequests().isNotEmpty()) {
+            } else if (failedDeleteRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
             }
 
             if (!isThereAnyFailedRequest) {
-                val apiRepository = ApiRepository()
-                val taskRepository = TaskRepository.get()
-
                 val allServerTasks = apiRepository.getAllTasks(token).body()?.data
 
                 val privateLocalTasks = taskRepository.getPrivateTasks()
@@ -125,10 +150,6 @@ class Utilities {
                     taskRepository.deleteTask(toDelete)
                 }
             }
-
-
-
-
         }
     }
 

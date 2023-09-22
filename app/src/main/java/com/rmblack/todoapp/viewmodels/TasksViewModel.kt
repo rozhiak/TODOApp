@@ -43,7 +43,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     private var deleteJob : Job? = null
 
-    private val loading = MutableLiveData<Boolean>()
     //End of server properties
 
 
@@ -111,14 +110,14 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 task.deadLine.timeInMillis.toString(),
                 task.isUrgent,
                 task.isDone,
-                task.isShared
+                task.isShared,
+                task.id
             )
 
             addJob = CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val response = apiRepository.addNewTask(addRequest)
                     if (response.isSuccessful) {
-                        loading.value = false
                         response.body()?.data?.id?.let { updateServerID(task.id, it) }
                     } else {
                         if (response.code() == 403) {
@@ -176,7 +175,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 try {
                     val response = apiRepository.deleteTask(deleteRequest)
                     if (response.isSuccessful) {
-                        loading.value = false
                     } else if (response.code() == 403) {
                         //Invalid token or access denied
                     } else if (response.code() == 404) {
