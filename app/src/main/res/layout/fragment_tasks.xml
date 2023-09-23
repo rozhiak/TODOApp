@@ -38,6 +38,8 @@
             app:srcCompat="@drawable/ic_no_task" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:textAlignment="center"
+            android:lineSpacingExtra="8dp"
             android:visibility="gone"
             android:id="@+id/tv_no_task"
             android:layout_width="wrap_content"

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
@@ -92,12 +93,22 @@ class SharedTasksFragment : TasksFragment() {
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
-                    if (!isFirstTime) {
-                        setUpNoTaskIconAndText(tasks.isNotEmpty())
-                    }
-                    isFirstTime = false
+                    if (tasks.size != 1) setUpNoTaskIconAndText(tasks.isNotEmpty())
                 }
             }
+        }
+    }
+
+    override fun setUpNoTaskIconAndText(hide: Boolean) {
+        if (viewModel.getUser() != null) {
+            binding.tvNoTask.text = "تسکی برای انجام نداری!"
+            binding.ivNoTask.setImageResource(R.drawable.ic_no_task)
+            super.setUpNoTaskIconAndText(hide)
+        } else {
+            binding.ivNoTask.setImageResource(R.drawable.ic_open_door)
+            binding.tvNoTask.text = "برای استفاده از بخش اشتراکی ،\n باید ابتدا وارد حساب کاربری شوید."
+            binding.ivNoTask.visibility = View.VISIBLE
+            binding.tvNoTask.visibility = View.VISIBLE
         }
     }
 

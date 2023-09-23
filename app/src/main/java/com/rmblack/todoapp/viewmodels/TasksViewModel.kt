@@ -8,6 +8,7 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
+import com.rmblack.todoapp.models.server.success.User
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +27,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     val taskRepository = TaskRepository.get()
 
-    protected val _tasks: MutableStateFlow<List<Task?>> = MutableStateFlow(emptyList())
+    protected val _tasks: MutableStateFlow<List<Task?>> = MutableStateFlow(listOf(null))
 
     val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
@@ -100,7 +101,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun addTaskToServer(task: Task) {
-        val user = sharedPreferencesManager.getUser()
+        val user = getUser()
         if (user != null) {
             val addRequest = AddTaskRequest(
                 user.token,
@@ -132,7 +133,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun editTaskInServer(editedTask: Task) {
-        val user = sharedPreferencesManager.getUser()
+        val user = getUser()
         if (user != null) {
             val editRequest = EditTaskRequest(
                 user.token,
@@ -164,7 +165,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun deleteTaskFromServer(serverID: String) {
-        val user = sharedPreferencesManager.getUser()
+        val user = getUser()
         if (user != null) {
             val deleteRequest = DeleteTaskRequest(
                 user.token,
@@ -189,8 +190,12 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun getUserToken(): String? {
-        val user = sharedPreferencesManager.getUser()
+        val user = getUser()
         return user?.token
+    }
+
+    fun getUser(): User? {
+        return sharedPreferencesManager.getUser()
     }
 
     override fun onCleared() {

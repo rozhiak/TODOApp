@@ -46,7 +46,6 @@ class PrivateTasksFragment : TasksFragment() {
         setUpSwipeToDelete()
     }
 
-
     private fun setUpRecyclerview() {
         var editedTaskId: UUID? = null
 
@@ -88,14 +87,7 @@ class PrivateTasksFragment : TasksFragment() {
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
-                    if (!isFirstTime) {
-                        //
-//                        println(tasks.isNotEmpty())
-//                        println(tasks)
-                        //
-                        setUpNoTaskIconAndText(tasks.isNotEmpty())
-                    }
-                    isFirstTime = false
+                    if (tasks.size != 1) setUpNoTaskIconAndText(tasks.isNotEmpty())
                 }
             }
         }

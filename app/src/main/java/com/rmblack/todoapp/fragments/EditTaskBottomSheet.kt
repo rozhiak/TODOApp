@@ -19,6 +19,7 @@ import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
@@ -78,15 +79,22 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             segmentedBtn.setOnPositionChangedListener { pos ->
-                //TODO: Check if user want to change to shared , he/she should be logged in.
-                viewModel.updateTask { oldTask ->
-                    oldTask.copy(
-                        isShared = pos == 0,
-                        title = binding.etTitle.text.toString(),
-                        description = binding.etDescription.text.toString(),
-                    )
+                val sharedPropertiesManager = SharedPreferencesManager(requireContext())
+                val user = sharedPropertiesManager.getUser()
+
+                if (user != null) {
+                    viewModel.updateTask { oldTask ->
+                        oldTask.copy(
+                            isShared = pos == 0,
+                            title = binding.etTitle.text.toString(),
+                            description = binding.etDescription.text.toString(),
+                        )
+                    }
+                    resetCursorsPosition()
+                } else {
+                    binding.segmentedBtn.isEnabled = false
+                    //TODO: Say to user that he/she should log in.
                 }
-                resetCursorsPosition()
             }
 
             deadlineTv.setOnClickListener {

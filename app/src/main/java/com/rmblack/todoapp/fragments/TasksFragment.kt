@@ -14,13 +14,9 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
-import com.rmblack.todoapp.webservice.ApiService
-import com.rmblack.todoapp.webservice.repository.ApiRepository
 import java.util.UUID
 
 open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
-
-    protected var isFirstTime = true
 
     protected var _binding: FragmentTasksBinding? = null
 
@@ -124,8 +120,8 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         }).attachToRecyclerView(binding.tasksRv)
     }
 
-    protected fun setUpNoTaskIconAndText(isNotEmpty: Boolean) {
-        if (isNotEmpty) {
+    protected open fun setUpNoTaskIconAndText(hide: Boolean) {
+        if (hide) {
             binding.ivNoTask.visibility = View.GONE
             binding.tvNoTask.visibility = View.GONE
         } else {
