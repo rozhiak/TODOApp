@@ -13,6 +13,8 @@ private const val USER_KEY = "USER_KEY"
 
 private const val ENTRANCE_STATE_KEY = "ENTRANCE_STATE_KEY"
 
+private const val CONNECTED_PHONE_KEY = "CONNECTED_PHONE_KEY"
+
 private const val FAILED_ADD_REQUESTS_KEY = "FAILED_ADD_REQUESTS_KEY"
 
 private const val FAILED_DELETE_REQUESTS_KEY = "FAILED_DELETE_REQUESTS_KEY"
@@ -136,6 +138,14 @@ class SharedPreferencesManager(private val context: Context) {
 
     fun getEntranceState(): Boolean {
         return getSharedPreferences(context).getBoolean(ENTRANCE_STATE_KEY, false)
+    }
+
+    fun saveConnectedPhone(phone: String) {
+        editor.putString(CONNECTED_PHONE_KEY ,phone).apply()
+    }
+
+    fun getConnectedPhone(): String? {
+        return getSharedPreferences(context).getString(CONNECTED_PHONE_KEY, null)
     }
 
     companion object {

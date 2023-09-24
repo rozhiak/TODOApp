@@ -41,7 +41,8 @@ class VerificationFragment : Fragment() {
         _binding = FragmentVerificationBinding.inflate(inflater, container, false)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
-        viewModel = ViewModelProvider(requireActivity(),
+        viewModel = ViewModelProvider(
+            requireActivity(),
             LoginFragment.LoginViewModelFactory(sharedPreferencesManager)
         )[LoginViewModel::class.java]
 

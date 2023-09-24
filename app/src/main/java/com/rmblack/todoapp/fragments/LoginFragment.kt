@@ -55,7 +55,8 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
-        viewModel = ViewModelProvider(requireActivity(),
+        viewModel = ViewModelProvider(
+            requireActivity(),
             LoginViewModelFactory(sharedPreferencesManager)
         )[LoginViewModel::class.java]
 
@@ -69,7 +70,6 @@ class LoginFragment : Fragment() {
         hideBottomICByScroll()
         setUpProgressButton()
         setUpProgressingState()
-
     }
 
     private fun setUpProgressingState() {
