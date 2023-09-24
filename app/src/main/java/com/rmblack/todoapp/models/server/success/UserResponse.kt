@@ -2,7 +2,7 @@ package com.rmblack.todoapp.models.server.success
 
 import com.google.gson.annotations.SerializedName
 
-class ValidateUserResponse (
+class UserResponse (
     val message: String,
     @SerializedName("data")
     val user: User

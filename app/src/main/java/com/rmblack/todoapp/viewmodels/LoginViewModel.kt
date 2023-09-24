@@ -2,12 +2,11 @@ package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.rmblack.todoapp.data.repository.TaskRepository
-import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
-import com.rmblack.todoapp.models.server.success.ValidateUserResponse
+import com.rmblack.todoapp.models.server.success.UserResponse
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
@@ -189,7 +188,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     }
 
     private fun saveUserInSharedPreferences(
-        response: Response<ValidateUserResponse>
+        response: Response<UserResponse>
     ) {
         response.body()?.user?.let { sharedPreferencesManager.saveUser(it) }
     }

@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
@@ -48,8 +50,29 @@ class SharedTasksFragment : TasksFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
+        binding.manageConnectionBtn.visibility = View.VISIBLE
+
+
+
         setUpRecyclerview()
         setUpSwipeToDelete()
+        setUpClickListeners()
+    }
+
+    private fun setUpClickListeners() {
+        if (viewModel.getUser() == null) {
+            binding.ivNoTask.setOnClickListener {
+                val intent = Intent(requireContext(), StarterActivity::class.java)
+                startActivity(intent)
+            }
+            binding.tvNoTask.setOnClickListener {
+                val intent = Intent(requireContext(), StarterActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 
     private fun setUpRecyclerview() {

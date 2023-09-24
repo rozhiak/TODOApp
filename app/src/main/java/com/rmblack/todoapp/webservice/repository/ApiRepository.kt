@@ -1,7 +1,9 @@
 package com.rmblack.todoapp.webservice.repository
 
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
+import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
+import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
@@ -25,6 +27,10 @@ class ApiRepository {
     suspend fun newUser(body: NewUserRequest) = getInstance().newUser(body)
 
     suspend fun validateUser(body: ValidateUserRequest) = getInstance().validateUser(body)
+
+    suspend fun connectUser(body: ConnectUserRequest) = getInstance().connectUser(body)
+
+    suspend fun disconnectUser(body: DisconnectUserRequest) = getInstance().disconnectUser(body)
 
     companion object {
         private var apiService: ApiService? = null
