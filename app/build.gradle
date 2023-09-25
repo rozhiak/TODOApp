@@ -100,6 +100,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     //Progress Button
     implementation "com.github.razir.progressbutton:progressbutton:2.1.0"
+    implementation "com.github.leandroborgesferreira:loading-button-android:2.3.0"
+
 }
 
 

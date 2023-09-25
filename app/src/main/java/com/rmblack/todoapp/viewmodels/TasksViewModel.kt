@@ -198,6 +198,10 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         return sharedPreferencesManager.getUser()
     }
 
+    fun getConnectedPhone(): String {
+        return sharedPreferencesManager.getConnectedPhone() ?: ""
+    }
+
     override fun onCleared() {
         super.onCleared()
         addJob?.cancel()

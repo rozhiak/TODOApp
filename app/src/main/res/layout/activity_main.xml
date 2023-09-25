@@ -78,8 +78,7 @@
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragment_container"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:id="@+id/manage_user_connection_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

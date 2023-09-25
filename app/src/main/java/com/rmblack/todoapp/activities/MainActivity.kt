@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.R
@@ -90,8 +89,8 @@ class MainActivity : AppCompatActivity() {
         val secondFragment: Fragment = SharedTasksFragment()
         val fm = supportFragmentManager
 
-        fm.beginTransaction().add(R.id.fragment_container, secondFragment, "2").hide(secondFragment).commit()
-        fm.beginTransaction().add(R.id.fragment_container, firstFragment, "1").commit()
+        fm.beginTransaction().add(R.id.manage_user_connection_container, secondFragment, "2").hide(secondFragment).commit()
+        fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {

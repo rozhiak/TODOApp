@@ -43,6 +43,7 @@ class Utilities {
         }
 
         //TODO before using this function , check user login state
+        //TODO Declare a boolean to show proccess result.
         suspend fun syncTasksWithServer(token: String, context: Context) {
             //TODO functionality of this code should be tested section by section
 
