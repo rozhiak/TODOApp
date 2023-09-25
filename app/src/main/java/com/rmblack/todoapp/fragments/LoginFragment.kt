@@ -33,7 +33,6 @@ import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
-
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null

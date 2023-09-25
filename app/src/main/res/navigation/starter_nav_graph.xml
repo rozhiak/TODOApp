@@ -14,6 +14,7 @@
             android:id="@+id/verify_phone_number"
             app:destination="@id/verificationFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/verificationFragment"
         android:name="com.rmblack.todoapp.fragments.VerificationFragment"

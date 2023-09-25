@@ -50,9 +50,12 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun setUpConnectionManagementSection() {
-        binding.manageConnectionBtn.visibility = View.VISIBLE
         binding.manageConnectionBtn.rotation = 180f
-
+        if (viewModel.getUser() == null) {
+            binding.manageConnectionBtn.visibility = View.GONE
+        } else {
+            binding.manageConnectionBtn.visibility = View.VISIBLE
+        }
 
         val firstFragment: Fragment = ConnectUserFragment()
         val secondFragment: Fragment = ConnectionStatusFragment()
@@ -168,8 +171,8 @@ class SharedTasksFragment : TasksFragment() {
         } else {
             binding.ivNoTask.setImageResource(R.drawable.ic_open_door)
             binding.tvNoTask.text = "برای استفاده از بخش اشتراکی ،\n باید ابتدا وارد حساب کاربری شوید."
-            binding.ivNoTask.visibility = View.VISIBLE
-            binding.tvNoTask.visibility = View.VISIBLE
+            super.setUpNoTaskIconAndText(hide)
+
         }
     }
 

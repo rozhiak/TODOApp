@@ -40,15 +40,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/phone_field">
 
-        <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressImageButton
+        <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
             android:padding="14dp"
             android:id="@+id/first_loading_start_btn"
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:backgroundTint="@color/green"
             android:fontFamily="@font/iranian_ans"
-            android:text="اتصال"
-            android:src="@drawable/ic_connect"
             android:scaleType="fitCenter"
             android:textSize="18sp"
             android:textStyle="bold"
