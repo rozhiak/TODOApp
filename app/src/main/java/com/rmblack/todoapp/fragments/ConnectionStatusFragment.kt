@@ -10,7 +10,7 @@ import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 
-class ConnectionStatusFragment: Fragment() {
+class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 
     private lateinit var viewModel : ConnectUserViewModel
 
@@ -47,7 +47,7 @@ class ConnectionStatusFragment: Fragment() {
 
     private fun setClickListeners() {
         binding.disconnectBtnCard.setOnClickListener {
-            viewModel.disconnectUserFromSharedList()
+            viewModel.disconnectUserFromSharedList(this)
         }
     }
 
@@ -55,4 +55,17 @@ class ConnectionStatusFragment: Fragment() {
         binding.connectedPhoneTv.text = viewModel.getConnectedPhone()
     }
 
+    override fun onSuccess() {
+        //TODO
+    }
+
+    override fun onFailure() {
+        //TODO
+    }
+
+}
+
+interface DisconnectUserCallback {
+    fun onSuccess()
+    fun onFailure()
 }

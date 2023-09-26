@@ -5,20 +5,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.viewmodels.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class ConnectUserFragment: Fragment() {
+class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
     private lateinit var viewModel : ConnectUserViewModel
 
     private var _binding : FragmentConnectUserBinding? = null
+
+    private var syncTasksJob : Job? = null
 
     val binding
         get() = checkNotNull(_binding) {
@@ -53,23 +63,9 @@ class ConnectUserFragment: Fragment() {
             val phone = binding.phoneEt.text ?: ""
             if (phone.length == 11) {
                 binding.connectProgressBtn.startAnimation()
-                try {
-                    viewModel.connectUserToSharedList(phone.toString())
-
-                    val fragmentManager = requireActivity().supportFragmentManager
-                    val transaction = fragmentManager.beginTransaction()
-                    val newFragment = ConnectionStatusFragment()
-                    transaction.add(R.id.manage_user_connection_container, newFragment).hide(this)
-                    transaction.commit()
-
-                    viewModel.saveConnectedPhone(phone.toString())
-
-                    binding.connectProgressBtn.revertAnimation()
-                } catch (e: Exception) {
-
-                }
+                viewModel.connectUserToSharedList(phone.toString(), this)
             } else {
-                //Phone format is not correct
+                //TODO Phone format is not correct
             }
         }
     }
@@ -87,7 +83,48 @@ class ConnectUserFragment: Fragment() {
 
     override fun onDestroy() {
         _binding = null
+        syncTasksJob?.cancel()
         super.onDestroy()
     }
 
+    override fun onConnectUserSuccess() {
+        syncTasksJob = viewLifecycleOwner.lifecycleScope.launch {
+            Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+        }
+
+        val fragmentContainerView = requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
+        val fragmentManager = parentFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(fragmentContainerView.id, ConnectionStatusFragment())
+        transaction.commit()
+
+        val phone = binding.phoneEt.text
+        viewModel.saveConnectedPhone(phone.toString())
+
+        binding.connectProgressBtn.revertAnimation()
+    }
+
+    override fun onConnectUserFailure(errorCode: Int) {
+        binding.connectProgressBtn.revertAnimation()
+        when (errorCode) {
+            CONNECTION_ERROR_CODE -> {
+                //TODO say to user: connection error
+            }
+            404 -> {
+                //phone number not found
+            }
+            403 -> {
+                //invalid token
+            }
+            400 -> {
+                //same giver and receiver
+            }
+        }
+    }
+
+}
+
+interface ConnectUserCallback {
+    fun onConnectUserSuccess()
+    fun onConnectUserFailure(errorCode: Int)
 }

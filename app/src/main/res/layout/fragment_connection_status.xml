@@ -26,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="09939139575"
         android:textColor="@color/urgent_red"
         android:textSize="16sp"
         android:textStyle="bold"
