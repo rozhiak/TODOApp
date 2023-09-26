@@ -16,7 +16,7 @@
         android:layout_marginHorizontal="16dp"
         app:layout_constraintBottom_toTopOf="@id/hint_tv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/connect_btn"
+        app:layout_constraintStart_toEndOf="@+id/connect_btn_card"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -30,9 +30,9 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/connect_btn"
+        android:id="@+id/connect_btn_card"
         android:layout_width="wrap_content"
-        android:layout_height="55dp"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:backgroundTint="@color/green"
         app:cardCornerRadius="30dp"
@@ -41,12 +41,13 @@
         app:layout_constraintTop_toTopOf="@+id/phone_field">
 
         <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
-            android:padding="14dp"
-            android:id="@+id/first_loading_start_btn"
+            android:id="@+id/connect_progress_btn"
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:backgroundTint="@color/green"
             android:fontFamily="@font/iranian_ans"
+            android:text="اتصال"
+            android:textColor="@color/white"
             android:scaleType="fitCenter"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -60,7 +61,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:lineSpacingExtra="5dp"
-
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/iranian_ans"
         android:text="شـمـاره شـخـصـی که می خواهید لیستتان با هم هماهنگ شود را در فیلد بالا وارد کنید ، سپس متصل شوید."
@@ -68,7 +68,7 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/phone_field"
-        app:layout_constraintStart_toStartOf="@+id/connect_btn"
+        app:layout_constraintStart_toStartOf="@+id/connect_btn_card"
         app:layout_constraintTop_toBottomOf="@+id/phone_field" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

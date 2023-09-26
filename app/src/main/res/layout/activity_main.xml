@@ -81,7 +81,7 @@
             android:id="@+id/main_fragment_container"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="720dp" />
+            android:layout_height="match_parent" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             app:layout_behavior="com.google.android.material.bottomappbar.BottomAppBar$Behavior"

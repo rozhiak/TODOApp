@@ -155,7 +155,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                 )
 
                 try {
-                    val response = apiRepository.addNewTask(addRequest)
+                    val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
                     if (response.isSuccessful) {
                         response.body()?.data?.id?.let { updateServerID(pTask.id, it) }
                     } else {

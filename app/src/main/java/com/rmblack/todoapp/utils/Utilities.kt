@@ -13,7 +13,10 @@ import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.webservice.repository.ApiRepository
+import retrofit2.Response
+import java.lang.Exception
 
 class Utilities {
 
@@ -45,8 +48,6 @@ class Utilities {
         //TODO before using this function , check user login state
         //TODO Declare a boolean to show proccess result.
         suspend fun syncTasksWithServer(token: String, context: Context) {
-            //TODO functionality of this code should be tested section by section
-
             val sharedPreferencesManager = SharedPreferencesManager(context)
             val failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
             val failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
@@ -56,25 +57,38 @@ class Utilities {
             val taskRepository = TaskRepository.get()
 
             for (addReq in failedAddRequests) {
-                val response = apiRepository.addNewTask(addReq)
-                if (response.isSuccessful) {
-                    sharedPreferencesManager.removeFailedAddRequest(addReq)
-                    response.body()?.data?.id?.let {
-                        taskRepository.updateServerID(addReq.localTaskID , it)
+                val response : Response<TaskResponse>
+                try {
+                    response = apiRepository.addNewTask(addReq.convertToServerAddModel())
+                    if (response.isSuccessful) {
+                        sharedPreferencesManager.removeFailedAddRequest(addReq)
+                        response.body()?.data?.id?.let {
+                            taskRepository.updateServerID(addReq.localTaskID , it)
+                        }
                     }
+                } catch (e: Exception) {
+
                 }
             }
 
             for (editReq in failedEditRequests) {
-                val response = apiRepository.editTask(editReq)
-                if (response.code() == 200 || response.code() == 404)
-                    sharedPreferencesManager.removeFailedEditRequest(editReq)
+                try {
+                    val response = apiRepository.editTask(editReq)
+                    if (response.code() == 200 || response.code() == 404)
+                        sharedPreferencesManager.removeFailedEditRequest(editReq)
+                } catch (e: Exception) {
+
+                }
             }
 
             for (deleteReq in failedDeleteRequests) {
-                val response = apiRepository.deleteTask(deleteReq)
-                if (response.code() == 200 || response.code() == 404)
-                    sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
+                try {
+                    val response = apiRepository.deleteTask(deleteReq)
+                    if (response.code() == 200 || response.code() == 404)
+                        sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
+                } catch (e: Exception) {
+
+                }
             }
 
             var isThereAnyFailedRequest = false

@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -117,12 +118,15 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
             addJob = CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val response = apiRepository.addNewTask(addRequest)
+                    val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
+
                     if (response.isSuccessful) {
                         response.body()?.data?.id?.let { updateServerID(task.id, it) }
                     } else {
                         if (response.code() == 403) {
                             //invalid token
+                        } else {
+                            sharedPreferencesManager.insertFailedAddRequest(addRequest)
                         }
                     }
                 } catch (e: Exception) {
@@ -155,6 +159,8 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                             //invalid token or access denied
                         } else if (response.code() == 404) {
                             //Task not found
+                        } else {
+                            sharedPreferencesManager.insertFailedEditRequest(editRequest)
                         }
                     }
                 } catch (e: Exception) {
@@ -180,9 +186,10 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                         //Invalid token or access denied
                     } else if (response.code() == 404) {
                         //task not found
+                    } else {
+                        sharedPreferencesManager.insertFailedDeleteRequest(deleteRequest)
                     }
                 } catch (e: Exception) {
-                    //TODO Here cash the network request
                     sharedPreferencesManager.insertFailedDeleteRequest(deleteRequest)
                 }
             }

@@ -7,6 +7,7 @@ import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
+import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.webservice.ApiService
 import retrofit2.Retrofit
@@ -16,7 +17,7 @@ class ApiRepository {
 
     suspend fun getAllTasks(token: String) = getInstance().getAllTasks(token)
 
-    suspend fun addNewTask(body: AddTaskRequest) = getInstance().newTask(body)
+    suspend fun addNewTask(body: ServerAddTaskRequest) = getInstance().newTask(body)
 
     suspend fun deleteTask(body: DeleteTaskRequest) = getInstance().deleteTask(body)
 

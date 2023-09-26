@@ -50,7 +50,6 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun setUpConnectionManagementSection() {
-        binding.manageConnectionBtn.rotation = 180f
         if (viewModel.getUser() == null) {
             binding.manageConnectionBtn.visibility = View.GONE
         } else {
@@ -66,6 +65,7 @@ class SharedTasksFragment : TasksFragment() {
 
         if (viewModel.getUser() != null) {
             if (viewModel.getConnectedPhone() == "") {
+                binding.manageConnectionBtn.rotation = 180f
                 binding.manageUserConnectionContainer.visibility = View.VISIBLE
                 fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
             } else {
