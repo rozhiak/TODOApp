@@ -5,12 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
+import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.viewmodels.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
+
+    private var syncTasksJob : Job? = null
 
     private lateinit var viewModel : ConnectUserViewModel
 
@@ -46,7 +55,8 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     }
 
     private fun setClickListeners() {
-        binding.disconnectBtnCard.setOnClickListener {
+        binding.disconnectProgressBtn.setOnClickListener {
+            binding.disconnectProgressBtn.startAnimation()
             viewModel.disconnectUserFromSharedList(this)
         }
     }
@@ -56,16 +66,44 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     }
 
     override fun onSuccess() {
-        //TODO
+        binding.disconnectProgressBtn.revertAnimation()
+
+        syncTasksJob = viewLifecycleOwner.lifecycleScope.launch {
+            Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+        }
+
+        val fragmentContainerView = requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
+        val fragmentManager = parentFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(fragmentContainerView.id, ConnectUserFragment())
+        transaction.commit()
+
+        viewModel.saveConnectedPhone("")
+
+
     }
 
-    override fun onFailure() {
-        //TODO
+    override fun onFailure(errorCode: Int) {
+        binding.disconnectProgressBtn.revertAnimation()
+        when (errorCode) {
+            CONNECTION_ERROR_CODE -> {
+
+            }
+            403 -> {
+                //Invalid token
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        syncTasksJob?.cancel()
     }
 
 }
 
 interface DisconnectUserCallback {
     fun onSuccess()
-    fun onFailure()
+    fun onFailure(errorCode: Int)
 }

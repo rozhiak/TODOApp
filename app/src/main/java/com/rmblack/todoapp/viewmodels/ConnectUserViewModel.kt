@@ -2,13 +2,11 @@ package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.fragments.ConnectUserCallback
 import com.rmblack.todoapp.fragments.DisconnectUserCallback
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.utils.SharedPreferencesManager
-import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -22,7 +20,7 @@ class ConnectUserViewModel(
 
     private val apiRepository = ApiRepository()
 
-    fun connectUserToSharedList(phoneNumber: String, connectUserCallback: ConnectUserCallback) {
+    fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
         val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
             ConnectUserRequest(
                 token,
@@ -35,20 +33,20 @@ class ConnectUserViewModel(
                 try {
                     val response = apiRepository.connectUser(connectUserRequest)
                     if (response.isSuccessful) {
-                        connectUserCallback.onConnectUserSuccess()
+                        connectCallback.onConnectUserSuccess()
                     } else {
-                        connectUserCallback.onConnectUserFailure(response.code())
+                        connectCallback.onConnectUserFailure(response.code())
                     }
                 } catch (e: Exception) {
                     if (e is UnknownHostException) {
-                        connectUserCallback.onConnectUserFailure(0)
+                        connectCallback.onConnectUserFailure(0)
                     }
                 }
             }
         }
     }
 
-    fun disconnectUserFromSharedList(callback: DisconnectUserCallback) {
+    fun disconnectUserFromSharedList(disconnectCallback: DisconnectUserCallback) {
         val disconnectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
             DisconnectUserRequest(
                 token
@@ -60,10 +58,14 @@ class ConnectUserViewModel(
                 try {
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
+                        disconnectCallback.onSuccess()
                     } else {
+                        disconnectCallback.onFailure(response.code())
                     }
                 } catch (e:Exception) {
-
+                    if (e is UnknownHostException) {
+                        disconnectCallback.onFailure(CONNECTION_ERROR_CODE)
+                    }
                 }
             }
         }

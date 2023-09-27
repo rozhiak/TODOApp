@@ -160,20 +160,13 @@ class SharedTasksFragment : TasksFragment() {
 
     override fun setUpNoTaskIconAndText(hide: Boolean) {
         if (viewModel.getUser() != null) {
-            if (viewModel.getConnectedPhone() == "") {
-                binding.ivNoTask.setImageResource(R.drawable.ic_community)
-                binding.tvNoTask.text = "ابتدا باید به لیست اشتراکی \n فرد مورد نظرتان متصل شوید "
-            } else {
-                binding.tvNoTask.text = "تسکی برای انجام نداری!"
-                binding.ivNoTask.setImageResource(R.drawable.ic_no_task)
-            }
-            super.setUpNoTaskIconAndText(hide)
+            binding.tvNoTask.text = "تسکی برای انجام نداری!"
+            binding.ivNoTask.setImageResource(R.drawable.ic_no_task)
         } else {
             binding.ivNoTask.setImageResource(R.drawable.ic_open_door)
             binding.tvNoTask.text = "برای استفاده از بخش اشتراکی ،\n باید ابتدا وارد حساب کاربری شوید."
-            super.setUpNoTaskIconAndText(hide)
-
         }
+        super.setUpNoTaskIconAndText(hide)
     }
 
     private fun createSharedTasksAdapter() =

@@ -88,6 +88,8 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
     }
 
     override fun onConnectUserSuccess() {
+        binding.connectProgressBtn.revertAnimation()
+
         syncTasksJob = viewLifecycleOwner.lifecycleScope.launch {
             Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
         }
@@ -100,8 +102,6 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
         val phone = binding.phoneEt.text
         viewModel.saveConnectedPhone(phone.toString())
-
-        binding.connectProgressBtn.revertAnimation()
     }
 
     override fun onConnectUserFailure(errorCode: Int) {
