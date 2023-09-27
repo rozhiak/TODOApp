@@ -2,9 +2,15 @@ package com.rmblack.todoapp.fragments
 
 import android.graphics.Canvas
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -14,9 +20,13 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
+import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 import java.util.UUID
 
 open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
+
+    protected lateinit var viewModel: TasksViewModel
 
     protected var _binding: FragmentTasksBinding? = null
 
@@ -25,9 +35,42 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
-    protected lateinit var viewModel: TasksViewModel
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentTasksBinding.inflate(inflater, container, false)
+        binding.tasksRv.layoutManager = LinearLayoutManager(context)
+        return binding.root
+    }
 
-    protected fun setUpSwipeToDelete() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpSwipeToDelete()
+
+        binding.refreshLayout.setOnRefreshListener {
+            val userToken = viewModel.getUserToken()
+            if (userToken != null) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        val response = Utilities.syncTasksWithServer(userToken, requireContext())
+                        response.onSuccess {
+                            binding.refreshLayout.isRefreshing = false
+                        }
+                        response.onFailure { e ->
+                            if (e is UnknownHostException) {
+                                //TODO say to user: couldn't refresh because of network connection issue
+                                binding.refreshLayout.isRefreshing = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setUpSwipeToDelete() {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
 
             override fun onMove(
@@ -153,7 +196,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         }
         if (isNewTask != null && editedTaskIndex != -1) {
             if (isNewTask) {
-                //Add new task to server
                 tasks[editedTaskIndex]?.let { viewModel.addTaskToServer(it) }
             } else {
                 tasks[editedTaskIndex]?.let { viewModel.editTaskInServer(it) }

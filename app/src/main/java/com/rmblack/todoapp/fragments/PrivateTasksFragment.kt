@@ -28,22 +28,21 @@ class PrivateTasksFragment : TasksFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentTasksBinding.inflate(inflater, container, false)
-        binding.tasksRv.layoutManager = LinearLayoutManager(context)
+    ): View? {
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
-        viewModel = ViewModelProvider(this, PrivateFragmentViewModelFactory(sharedPreferencesManager))
-            .get(PrivateTasksViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this,
+            PrivateFragmentViewModelFactory(sharedPreferencesManager)
+        )[PrivateTasksViewModel::class.java]
 
-        return binding.root
+        return super.onCreateView(inflater, container, savedInstanceState)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerview()
-        setUpSwipeToDelete()
     }
 
     private fun setUpRecyclerview() {

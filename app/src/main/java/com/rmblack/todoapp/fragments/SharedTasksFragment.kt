@@ -29,23 +29,21 @@ class SharedTasksFragment : TasksFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentTasksBinding.inflate(inflater, container, false)
-        binding.tasksRv.layoutManager = LinearLayoutManager(context)
+    ): View? {
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
-        viewModel = ViewModelProvider(this, SharedFragmentViewModelFactory(sharedPreferencesManager))
-            .get(SharedTasksViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this,
+            SharedFragmentViewModelFactory(sharedPreferencesManager)
+        )[SharedTasksViewModel::class.java]
 
-        return binding.root
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpConnectionManagementSection()
         setUpRecyclerview()
-        setUpSwipeToDelete()
         setUpClickListeners()
     }
 

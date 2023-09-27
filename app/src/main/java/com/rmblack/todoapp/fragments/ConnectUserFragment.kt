@@ -21,6 +21,7 @@ import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.net.UnknownHostException
 
 class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
@@ -91,7 +92,12 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
         binding.connectProgressBtn.revertAnimation()
 
         syncTasksJob = viewLifecycleOwner.lifecycleScope.launch {
-            Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+            val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+            response.onFailure {e ->
+                if (e is UnknownHostException) {
+                    //TODO say to user: Couldn't sync data due to network connection issue
+                }
+            }
         }
 
         val fragmentContainerView = requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)

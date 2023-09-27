@@ -13,7 +13,9 @@ import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
+import com.rmblack.todoapp.models.server.success.Tasks
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import retrofit2.Response
 import java.lang.Exception
@@ -46,8 +48,7 @@ class Utilities {
         }
 
         //TODO before using this function , check user login state
-        //TODO Declare a boolean to show proccess result.
-        suspend fun syncTasksWithServer(token: String, context: Context) {
+        suspend fun syncTasksWithServer(token: String, context: Context): Result<Unit> {
             val sharedPreferencesManager = SharedPreferencesManager(context)
             val failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
             val failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
@@ -67,7 +68,7 @@ class Utilities {
                         }
                     }
                 } catch (e: Exception) {
-
+                    return Result.failure(e)
                 }
             }
 
@@ -77,7 +78,7 @@ class Utilities {
                     if (response.code() == 200 || response.code() == 404)
                         sharedPreferencesManager.removeFailedEditRequest(editReq)
                 } catch (e: Exception) {
-
+                    return Result.failure(e)
                 }
             }
 
@@ -87,7 +88,7 @@ class Utilities {
                     if (response.code() == 200 || response.code() == 404)
                         sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
                 } catch (e: Exception) {
-
+                    return Result.failure(e)
                 }
             }
 
@@ -101,7 +102,12 @@ class Utilities {
             }
 
             if (!isThereAnyFailedRequest) {
-                val allServerTasks = apiRepository.getAllTasks(token).body()?.data
+                val allServerTasks : Tasks?
+                try {
+                    allServerTasks = apiRepository.getAllTasks(token).body()?.data
+                } catch (e: Exception) {
+                    return Result.failure(e)
+                }
 
                 val privateLocalTasks = taskRepository.getPrivateTasks()
                 val privateLocalTasksPair: MutableList<Pair<Task, Boolean>> = privateLocalTasks.map { task ->
@@ -164,7 +170,11 @@ class Utilities {
                 for (toDelete in sharedTasksToDelete) {
                     taskRepository.deleteTask(toDelete)
                 }
+            } else {
+                return Result.failure(Exception())
             }
+
+            return Result.success(Unit)
         }
     }
 
