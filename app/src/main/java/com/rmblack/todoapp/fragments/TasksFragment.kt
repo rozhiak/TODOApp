@@ -48,10 +48,16 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpSwipeToDelete()
+        setUpRefreshLayout()
+    }
 
-        binding.refreshLayout.setOnRefreshListener {
-            val userToken = viewModel.getUserToken()
-            if (userToken != null) {
+    private fun setUpRefreshLayout() {
+        val userToken = viewModel.getUserToken()
+
+        if (userToken == null) {
+            binding.refreshLayout.isEnabled = false
+        } else {
+            binding.refreshLayout.setOnRefreshListener {
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = Utilities.syncTasksWithServer(userToken, requireContext())
@@ -203,7 +209,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                 tasks[editedTaskIndex]?.let { viewModel.editTaskInServer(it) }
             }
         }
-
     }
 
     protected fun setUpForTaskMoving() {

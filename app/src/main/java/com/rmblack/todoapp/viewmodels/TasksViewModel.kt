@@ -96,9 +96,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     private fun removeRelatedCashedRequests(task: Task?) {
-        println("ADD: " + sharedPreferencesManager.getFailedAddRequests())
-        println("EDIT" + sharedPreferencesManager.getFailedEditRequests())
-
         task?.let {
             val addRequests = sharedPreferencesManager.getFailedAddRequests()
             for (addReq in addRequests) {
@@ -114,9 +111,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 }
             }
         }
-
-        println("ADD: " + sharedPreferencesManager.getFailedAddRequests())
-        println("EDIT" + sharedPreferencesManager.getFailedEditRequests())
     }
 
     fun insertTask(task: Task) {
