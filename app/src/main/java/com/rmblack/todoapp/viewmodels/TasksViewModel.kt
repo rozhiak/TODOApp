@@ -1,7 +1,5 @@
 package com.rmblack.todoapp.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
@@ -93,6 +91,32 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         viewModelScope.launch {
             taskRepository.deleteTask(task)
         }
+
+        removeRelatedCashedRequests(task)
+    }
+
+    private fun removeRelatedCashedRequests(task: Task?) {
+        println("ADD: " + sharedPreferencesManager.getFailedAddRequests())
+        println("EDIT" + sharedPreferencesManager.getFailedEditRequests())
+
+        task?.let {
+            val addRequests = sharedPreferencesManager.getFailedAddRequests()
+            for (addReq in addRequests) {
+                if (addReq.localTaskID == task.id) {
+                    sharedPreferencesManager.removeFailedAddRequest(addReq)
+                }
+            }
+
+            val editRequests = sharedPreferencesManager.getFailedEditRequests()
+            for (editReq in editRequests) {
+                if (editReq.task_id == task.serverID) {
+                    sharedPreferencesManager.removeFailedEditRequest(editReq)
+                }
+            }
+        }
+
+        println("ADD: " + sharedPreferencesManager.getFailedAddRequests())
+        println("EDIT" + sharedPreferencesManager.getFailedEditRequests())
     }
 
     fun insertTask(task: Task) {
