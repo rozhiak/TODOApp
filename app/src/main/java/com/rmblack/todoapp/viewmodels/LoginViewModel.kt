@@ -33,17 +33,17 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private var bottomIcVisibility = true
 
-    var _loginRequestCode = MutableStateFlow(-1)
+    private var _loginRequestCode = MutableStateFlow(-1)
 
     val loginRequestCode : StateFlow<Int>
         get() = _loginRequestCode.asStateFlow()
 
-    var _verifyRequestCode = MutableStateFlow(-1)
+    private var _verifyRequestCode = MutableStateFlow(-1)
 
     val verifyRequestCode : StateFlow<Int>
         get() = _verifyRequestCode.asStateFlow()
 
-    var _newUserRequestCode = MutableStateFlow(-1)
+    private var _newUserRequestCode = MutableStateFlow(-1)
 
     val newUserRequestCode : StateFlow<Int>
         get() = _newUserRequestCode.asStateFlow()

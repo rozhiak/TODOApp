@@ -8,15 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.razir.progressbutton.hideProgress
 import com.github.razir.progressbutton.showProgress
-import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
-import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.databinding.FragmentVerificationBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
@@ -84,7 +81,7 @@ class VerificationFragment : Fragment() {
 
     private fun collectVerifyRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel._verifyRequestCode.collect {code ->
+            viewModel.verifyRequestCode.collect {code ->
                 when (code) {
                     200 -> {
                         val intent = Intent(requireContext(), MainActivity::class.java)
