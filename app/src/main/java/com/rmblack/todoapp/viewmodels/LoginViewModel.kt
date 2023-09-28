@@ -7,6 +7,7 @@ import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.models.server.success.UserResponse
+import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
+import java.net.UnknownHostException
 import java.util.UUID
 
 class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
@@ -31,12 +33,17 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private var bottomIcVisibility = true
 
-    var _loginRequestCode = MutableStateFlow(0)
+    var _loginRequestCode = MutableStateFlow(-1)
 
     val loginRequestCode : StateFlow<Int>
         get() = _loginRequestCode.asStateFlow()
 
-    var _newUserRequestCode = MutableStateFlow(0)
+    var _verifyRequestCode = MutableStateFlow(-1)
+
+    val verifyRequestCode : StateFlow<Int>
+        get() = _verifyRequestCode.asStateFlow()
+
+    var _newUserRequestCode = MutableStateFlow(-1)
 
     val newUserRequestCode : StateFlow<Int>
         get() = _newUserRequestCode.asStateFlow()
@@ -72,13 +79,22 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         val loginRequest = LoginRequest(phoneNumber)
 
         customScope.launch {
-            val response = apiRepository.loginUser(loginRequest)
-            updateLoginLoadingState(false)
-            if (response.code() == 200) {
-                _verifyingPhone = phoneNumber
-            }
-            _loginRequestCode.update {
-                response.code()
+            try {
+                val response = apiRepository.loginUser(loginRequest)
+                if (response.code() == 200) {
+                    _verifyingPhone = phoneNumber
+                }
+                _loginRequestCode.update {
+                    response.code()
+                }
+                updateLoginLoadingState(false)
+            } catch (e: Exception) {
+                if (e is UnknownHostException) {
+                    _loginRequestCode.update {
+                        CONNECTION_ERROR_CODE
+                    }
+                }
+                updateLoginLoadingState(false)
             }
         }
     }
@@ -90,34 +106,57 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         )
 
         customScope.launch {
-            val response = apiRepository.newUser(newUserRequest)
-            updateLoginLoadingState(false)
-            if (response.code() == 201) {
-                _verifyingPhone = phoneNumber
-            }
-            _newUserRequestCode.update {
-                response.code()
+            try {
+                val response = apiRepository.newUser(newUserRequest)
+                if (response.code() == 201) {
+                    _verifyingPhone = phoneNumber
+                }
+                _newUserRequestCode.update {
+                    response.code()
+                }
+                updateLoginLoadingState(false)
+            } catch (e: Exception) {
+                if (e is UnknownHostException) {
+                    _newUserRequestCode.update {
+                        CONNECTION_ERROR_CODE
+                    }
+                }
+                updateLoginLoadingState(false)
             }
         }
     }
 
-    suspend fun validateUser(code: String): Boolean {
+    fun validateUser(code: String) {
         val validateUserRequest = ValidateUserRequest(
             verifyingPhone,
             code.toInt()
         )
 
-        val response = apiRepository.validateUser(validateUserRequest)
-        updateVerificationLoadingState(false)
-        if (response.code() == 200) {
-            response.body()?.user?.token?.let { syncTasksWithServer(it) }
-            saveUserInSharedPreferences(response)
-            changeEntranceState(true)
-            return true
-        } else {
-            //Not found
+        customScope.launch {
+            try {
+                val response = apiRepository.validateUser(validateUserRequest)
+                if (response.code() == 200) {
+                    response.body()?.user?.token?.let { syncTasksWithServer(it) }
+                    saveUserInSharedPreferences(response)
+                    changeEntranceState(true)
+                    _verifyRequestCode.update {
+                        response.code()
+                    }
+                } else {
+                    _verifyRequestCode.update {
+                        response.code()
+                    }
+                }
+                updateVerificationLoadingState(false)
+            } catch (e: Exception) {
+                if (e is UnknownHostException) {
+                    _verifyRequestCode.update {
+                        CONNECTION_ERROR_CODE
+                    }
+                }
+                updateVerificationLoadingState(false)
+            }
         }
-        return false
     }
 
     private suspend fun syncTasksWithServer(token: String) {
@@ -194,11 +233,15 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     }
 
     fun resetLoginRequestCode() {
-        _loginRequestCode.value = 0
+        _loginRequestCode.value = -1
     }
 
     fun resetNewUserRequestCode() {
-        _newUserRequestCode.value = 0
+        _newUserRequestCode.value = -1
+    }
+
+    fun resetVerifyRequestCode() {
+        _verifyRequestCode.value = -1
     }
 
     fun getBottomICVisibility() : Boolean {

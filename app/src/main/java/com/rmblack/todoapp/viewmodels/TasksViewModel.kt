@@ -119,7 +119,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
             addJob = CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
-
                     if (response.isSuccessful) {
                         response.body()?.data?.id?.let { updateServerID(task.id, it) }
                     } else {

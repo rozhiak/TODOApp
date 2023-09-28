@@ -14,9 +14,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
+import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch

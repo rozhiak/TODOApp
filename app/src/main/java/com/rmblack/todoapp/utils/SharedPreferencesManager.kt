@@ -24,8 +24,6 @@ private const val FAILED_EDIT_REQUESTS_KEY = "FAILED_EDIT_REQUESTS_KEY"
 
 class SharedPreferencesManager(private val context: Context) {
 
-    private val editor = getSharedPreferences(context).edit()
-
     private val gson = Gson()
 
     fun getFailedAddRequests(): List<AddTaskRequest> {
@@ -45,7 +43,7 @@ class SharedPreferencesManager(private val context: Context) {
         existingList.add(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        editor.putString(FAILED_ADD_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(FAILED_ADD_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun removeFailedAddRequest(request: AddTaskRequest) {
@@ -55,7 +53,7 @@ class SharedPreferencesManager(private val context: Context) {
         existingList.remove(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        editor.putString(FAILED_ADD_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(FAILED_ADD_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun getFailedDeleteRequests(): List<DeleteTaskRequest> {
@@ -75,7 +73,7 @@ class SharedPreferencesManager(private val context: Context) {
         existingList.add(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        editor.putString(FAILED_DELETE_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(FAILED_DELETE_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun removeFailedDeleteRequest(request: DeleteTaskRequest) {
@@ -85,7 +83,7 @@ class SharedPreferencesManager(private val context: Context) {
         existingList.remove(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        editor.putString(FAILED_DELETE_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(FAILED_DELETE_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun getFailedEditRequests(): List<EditTaskRequest> {
@@ -105,7 +103,7 @@ class SharedPreferencesManager(private val context: Context) {
         existingList.add(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        editor.putString(FAILED_EDIT_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(FAILED_EDIT_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun removeFailedEditRequest(request: EditTaskRequest) {
@@ -115,12 +113,12 @@ class SharedPreferencesManager(private val context: Context) {
         existingList.remove(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        editor.putString(FAILED_EDIT_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(FAILED_EDIT_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun saveUser(user: User) {
         val serializedUser = gson.toJson(user)
-        editor.putString(USER_KEY, serializedUser).apply()
+        getEditor(context).putString(USER_KEY, serializedUser).apply()
     }
 
     fun getUser(): User? {
@@ -133,7 +131,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun saveEntranceState(state: Boolean) {
-        editor.putBoolean(ENTRANCE_STATE_KEY, state).apply()
+        getEditor(context).putBoolean(ENTRANCE_STATE_KEY, state).apply()
     }
 
     fun getEntranceState(): Boolean {
@@ -141,7 +139,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun saveConnectedPhone(phone: String) {
-        editor.putString(CONNECTED_PHONE_KEY ,phone).apply()
+        getEditor(context).putString(CONNECTED_PHONE_KEY ,phone).apply()
     }
 
     fun getConnectedPhone(): String? {
@@ -150,16 +148,28 @@ class SharedPreferencesManager(private val context: Context) {
 
     companion object {
         private var sharedPreferences: SharedPreferences? = null
-        private val LOCK = Any()
-
+        private val spLOCK = Any()
         private fun getSharedPreferences(context: Context): SharedPreferences {
-            synchronized(LOCK) {
+            synchronized(spLOCK) {
                 if (sharedPreferences == null) {
                     sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                 }
                 return sharedPreferences!!
             }
         }
+
+        private var editor : SharedPreferences.Editor? = null
+        private val editorLOCK = Any()
+        private fun getEditor(context: Context): SharedPreferences.Editor {
+            synchronized(editorLOCK) {
+                if (editor == null) {
+                    editor = getSharedPreferences(context).edit()
+                }
+                return editor!!
+            }
+        }
+
+
     }
 
 }

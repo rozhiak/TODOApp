@@ -28,7 +28,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
 
     protected lateinit var viewModel: TasksViewModel
 
-    protected var _binding: FragmentTasksBinding? = null
+    private var _binding: FragmentTasksBinding? = null
 
     protected val binding
         get() = checkNotNull(_binding) {
@@ -61,6 +61,8 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                         response.onFailure { e ->
                             if (e is UnknownHostException) {
                                 //TODO say to user: couldn't refresh because of network connection issue
+                                binding.refreshLayout.isRefreshing = false
+                            } else {
                                 binding.refreshLayout.isRefreshing = false
                             }
                         }

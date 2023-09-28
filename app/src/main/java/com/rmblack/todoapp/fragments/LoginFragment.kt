@@ -29,6 +29,7 @@ import com.github.razir.progressbutton.showProgress
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
+import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
@@ -207,35 +208,35 @@ class LoginFragment : Fragment() {
 
     private fun collectPhoneRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loginRequestCode.collect { code ->
-                    if (code == 200) {
-                        findNavController().navigate(
-                            LoginFragmentDirections.verifyPhoneNumber()
-                        )
-                    } else if(code == 404) {
-                        bringPhoneUp()
-                    }
-                    viewModel.resetLoginRequestCode()
+            viewModel.loginRequestCode.collect { code ->
+                if (code == 200) {
+                    findNavController().navigate(
+                        LoginFragmentDirections.verifyPhoneNumber()
+                    )
+                } else if(code == 404) {
+                    bringPhoneUp()
+                } else if (code == CONNECTION_ERROR_CODE) {
+                    //TODO say to user: connection error
                 }
+                viewModel.resetLoginRequestCode()
             }
         }
     }
 
     private fun collectNewUserRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.newUserRequestCode.collect { code ->
-                    if (code == 201) {
-                        findNavController().navigate(
-                            LoginFragmentDirections.verifyPhoneNumber()
-                        )
-                    } else if(code == 400) {
-                        //User already exist -this situation must not happen
-                        //because we are calling login before any thing
-                    }
-                    viewModel.resetNewUserRequestCode()
+            viewModel.newUserRequestCode.collect { code ->
+                if (code == 201) {
+                    findNavController().navigate(
+                        LoginFragmentDirections.verifyPhoneNumber()
+                    )
+                } else if(code == 400) {
+                    //User already exist -this situation must not happen
+                    //because we are calling login before any thing
+                } else if (code == CONNECTION_ERROR_CODE)  {
+                    //TODO say to user: connection error
                 }
+                viewModel.resetNewUserRequestCode()
             }
         }
     }

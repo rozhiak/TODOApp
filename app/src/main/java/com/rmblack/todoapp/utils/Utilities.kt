@@ -20,6 +20,8 @@ import com.rmblack.todoapp.webservice.repository.ApiRepository
 import retrofit2.Response
 import java.lang.Exception
 
+const val CONNECTION_ERROR_CODE = 0
+
 class Utilities {
 
     companion object {
@@ -50,9 +52,9 @@ class Utilities {
         //TODO before using this function , check user login state
         suspend fun syncTasksWithServer(token: String, context: Context): Result<Unit> {
             val sharedPreferencesManager = SharedPreferencesManager(context)
-            val failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
-            val failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
-            val failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+            var failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
+            var failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
+            var failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
 
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
@@ -92,10 +94,15 @@ class Utilities {
                 }
             }
 
+            failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
+            failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
+            failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+
             var isThereAnyFailedRequest = false
             if (failedAddRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
             } else if (failedEditRequests.isNotEmpty()) {
+                println(sharedPreferencesManager.getFailedEditRequests())
                 isThereAnyFailedRequest = true
             } else if (failedDeleteRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true

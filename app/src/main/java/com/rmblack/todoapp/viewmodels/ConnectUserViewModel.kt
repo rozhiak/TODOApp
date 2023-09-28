@@ -6,13 +6,12 @@ import com.rmblack.todoapp.fragments.ConnectUserCallback
 import com.rmblack.todoapp.fragments.DisconnectUserCallback
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
+import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.UnknownHostException
-
-const val CONNECTION_ERROR_CODE = 0
 
 class ConnectUserViewModel(
     private val sharedPreferencesManager: SharedPreferencesManager

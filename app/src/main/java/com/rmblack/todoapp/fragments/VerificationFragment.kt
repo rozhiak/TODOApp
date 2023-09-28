@@ -18,6 +18,7 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.databinding.FragmentVerificationBinding
+import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
@@ -73,20 +74,31 @@ class VerificationFragment : Fragment() {
         binding.progressBtn.setOnClickListener {
             if (isCodeCompleted()) {
                 viewModel.updateVerificationLoadingState(true)
-                viewLifecycleOwner.lifecycleScope.launch {
-                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        val response = viewModel.validateUser(binding.verifyCodeEditText.text)
-                        if (response) {
-                            val intent = Intent(requireContext(), MainActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            startActivity(intent)
-                        } else {
-
-                        }
-                    }
-                }
+                viewModel.validateUser(binding.verifyCodeEditText.text)
+                collectVerifyRequestCode()
             } else {
                 //TODO verification code is not completed by user
+            }
+        }
+    }
+
+    private fun collectVerifyRequestCode() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel._verifyRequestCode.collect {code ->
+                when (code) {
+                    200 -> {
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }
+                    404 -> {
+                        //Not found
+                    }
+                    CONNECTION_ERROR_CODE -> {
+                        //TODO say to user: connection error
+                    }
+                }
+                viewModel.resetVerifyRequestCode()
             }
         }
     }
