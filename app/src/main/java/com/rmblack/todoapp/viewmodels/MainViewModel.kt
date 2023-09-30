@@ -23,6 +23,10 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
         return sharedPreferencesManager.getUser()
     }
 
+    fun getUserToken(): String? {
+        return sharedPreferencesManager.getUserToken()
+    }
+
     fun getEntranceState(): Boolean {
         return sharedPreferencesManager.getEntranceState()
     }

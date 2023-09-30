@@ -130,6 +130,10 @@ class SharedPreferencesManager(private val context: Context) {
         }
     }
 
+    fun getUserToken(): String? {
+        return getUser()?.token
+    }
+
     fun saveEntranceState(state: Boolean) {
         getEditor(context).putBoolean(ENTRANCE_STATE_KEY, state).apply()
     }

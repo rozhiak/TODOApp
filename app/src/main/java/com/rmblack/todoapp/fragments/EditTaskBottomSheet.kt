@@ -80,7 +80,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
             segmentedBtn.setOnPositionChangedListener { pos ->
                 val sharedPropertiesManager = SharedPreferencesManager(requireContext())
-                val user = sharedPropertiesManager.getUser()
+                val user = sharedPropertiesManager.getUserToken()
 
                 if (user != null) {
                     viewModel.updateTask { oldTask ->

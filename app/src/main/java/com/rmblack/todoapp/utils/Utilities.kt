@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -38,6 +39,26 @@ class Utilities {
                 onUndo()
                 snackBar.dismiss()
             }
+            snackBarLayout.addView(customSnackView, 0)
+            val behavior = BaseTransientBottomBar.Behavior().apply {
+                setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY)
+            }
+            snackBar.behavior = behavior
+            val fab = activity.findViewById<FloatingActionButton>(R.id.fab)
+            snackBar.anchorView = fab
+            snackBar.show()
+            return snackBar
+        }
+
+        fun makeWarningSnack(activity: Activity, container: View, warningMsg: String): Snackbar {
+            val snackBar = Snackbar.make(container, "", Snackbar.LENGTH_LONG)
+            val customSnackView: View =
+                activity.layoutInflater.inflate(R.layout.warning_snack, null)
+            val tvWarning = customSnackView.findViewById<AppCompatTextView>(R.id.tv_warning)
+            tvWarning.text = warningMsg
+            snackBar.view.setBackgroundColor(Color.TRANSPARENT)
+            val snackBarLayout = snackBar.view as SnackbarLayout
+            snackBarLayout.setPadding(0, 0, 0, 0)
             snackBarLayout.addView(customSnackView, 0)
             val behavior = BaseTransientBottomBar.Behavior().apply {
                 setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY)
