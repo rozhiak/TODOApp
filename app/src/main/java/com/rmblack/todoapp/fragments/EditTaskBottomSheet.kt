@@ -35,6 +35,8 @@ import java.util.UUID
 
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
+    private lateinit var context: Context
+
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
         EditTaskViewModelFactory(UUID.fromString(taskId))
@@ -55,6 +57,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentEditTaskBottomSheetBinding.inflate(inflater, container, false)
+        context = requireContext()
         return binding.root
     }
 
@@ -79,15 +82,19 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             segmentedBtn.setOnPositionChangedListener { pos ->
-                val sharedPropertiesManager = SharedPreferencesManager(requireContext())
-                val user = sharedPropertiesManager.getUserToken()
+                val sharedPropertiesManager = SharedPreferencesManager(context)
+                val user = sharedPropertiesManager.getUser()
 
-                if (user != null) {
+                if (user?.token != null) {
                     viewModel.updateTask { oldTask ->
+                        if (pos == 0 && oldTask.composer == "") {
+
+                        }
                         oldTask.copy(
                             isShared = pos == 0,
                             title = binding.etTitle.text.toString(),
                             description = binding.etDescription.text.toString(),
+                            composer = if (pos == 0 && oldTask.composer == "") user.name else oldTask.composer
                         )
                     }
                     resetCursorsPosition()
@@ -133,7 +140,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
 
-        val picker = PersianDatePickerDialog(requireContext())
+        val picker = PersianDatePickerDialog(context)
             .setPositiveButtonString("باشه")
             .setNegativeButton("بیخیال")
             .setTodayButton("امروز")

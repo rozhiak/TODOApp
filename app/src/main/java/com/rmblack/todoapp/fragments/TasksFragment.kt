@@ -79,7 +79,9 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
     }
 
     private fun setUpSwipeToDelete() {
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
 
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -144,18 +146,20 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val position = viewHolder.absoluteAdapterPosition
-                    val viewType = binding.tasksRv.adapter?.getItemViewType(position)
-                    if (viewType == REMAINING_DAYS_LABLE) {
-                        super.onChildDraw(
-                            c,
-                            recyclerView,
-                            viewHolder,
-                            0f,
-                            dY,
-                            actionState,
-                            isCurrentlyActive
-                        )
-                        return
+                    if (position >= 0 && position < (binding.tasksRv.adapter?.itemCount ?: 0)) {
+                        val viewType = binding.tasksRv.adapter?.getItemViewType(position)
+                        if (viewType == REMAINING_DAYS_LABLE) {
+                            super.onChildDraw(
+                                c,
+                                recyclerView,
+                                viewHolder,
+                                0f,
+                                dY,
+                                actionState,
+                                isCurrentlyActive
+                            )
+                            return
+                        }
                     }
                 }
                 super.onChildDraw(

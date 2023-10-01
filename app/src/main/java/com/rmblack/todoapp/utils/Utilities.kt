@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
@@ -186,6 +187,7 @@ class Utilities {
                 }
 
                 for (toDelete in privateTasksToDelete) {
+                    if (toDelete.serverID == newlyAddedTaskServerID) continue
                     taskRepository.deleteTask(toDelete)
                 }
 
@@ -196,6 +198,7 @@ class Utilities {
                 }
 
                 for (toDelete in sharedTasksToDelete) {
+                    if (toDelete.serverID == newlyAddedTaskServerID) continue
                     taskRepository.deleteTask(toDelete)
                 }
             } else {

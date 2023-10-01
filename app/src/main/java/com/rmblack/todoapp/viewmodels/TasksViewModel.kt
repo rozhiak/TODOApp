@@ -121,7 +121,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     fun addTaskToServer(task: Task) {
         val user = getUser()
-        if (user != null) {
+        if (user?.token != null) {
             val addRequest = AddTaskRequest(
                 user.token,
                 task.title,
@@ -155,7 +155,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     fun editTaskInServer(editedTask: Task) {
         val user = getUser()
-        if (user != null) {
+        if (user?.token != null) {
             val editRequest = EditTaskRequest(
                 user.token,
                 editedTask.serverID,
@@ -189,7 +189,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     fun deleteTaskFromServer(serverID: String) {
         val user = getUser()
-        if (user != null) {
+        if (user?.token != null) {
             val deleteRequest = DeleteTaskRequest(
                 user.token,
                 serverID

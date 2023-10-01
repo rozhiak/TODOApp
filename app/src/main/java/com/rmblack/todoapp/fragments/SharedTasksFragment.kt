@@ -21,6 +21,7 @@ import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
+import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -42,13 +43,13 @@ class SharedTasksFragment : TasksFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpConnectionManagementSection()
         setUpRecyclerview()
         setUpClickListeners()
+        setUpConnectionManagementSection()
     }
 
     private fun setUpConnectionManagementSection() {
-        if (viewModel.getUser() == null) {
+        if (viewModel.getUser()?.token == null) {
             binding.manageConnectionBtn.visibility = View.GONE
         } else {
             binding.manageConnectionBtn.visibility = View.VISIBLE
@@ -61,7 +62,7 @@ class SharedTasksFragment : TasksFragment() {
         fm.beginTransaction().add(R.id.manage_user_connection_container, secondFragment, "2").hide(secondFragment).commit()
         fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
 
-        if (viewModel.getUser() != null) {
+        if (viewModel.getUser()?.token != null) {
             if (viewModel.getConnectedPhone() == "") {
                 binding.manageConnectionBtn.rotation = 180f
                 binding.manageUserConnectionContainer.visibility = View.VISIBLE
@@ -73,10 +74,11 @@ class SharedTasksFragment : TasksFragment() {
         } else {
             binding.manageUserConnectionContainer.visibility = View.GONE
         }
+
     }
 
     private fun setUpClickListeners() {
-        if (viewModel.getUser() == null) {
+        if (viewModel.getUser()?.token == null) {
             binding.ivNoTask.setOnClickListener {
                 goToStarterActivity()
             }
@@ -88,7 +90,7 @@ class SharedTasksFragment : TasksFragment() {
         binding.manageConnectionBtn.setOnClickListener {
             val slideInAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in)
             val slideOutAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_out)
-            if (viewModel.getUser() == null) {
+            if (viewModel.getUser()?.token == null) {
                 goToStarterActivity()
             } else {
                 if (binding.manageUserConnectionContainer.visibility == View.GONE) {
@@ -157,7 +159,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     override fun setUpNoTaskIconAndText(hide: Boolean) {
-        if (viewModel.getUser() != null) {
+        if (viewModel.getUser()?.token != null) {
             binding.tvNoTask.text = "تسکی برای انجام نداری!"
             binding.ivNoTask.setImageResource(R.drawable.ic_no_task)
         } else {

@@ -27,6 +27,7 @@ import com.rmblack.todoapp.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+const val newlyAddedTaskServerID = "newly added"
 
 class MainActivity : AppCompatActivity() {
 
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener {
             if(binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment &&
-                viewModel.getUserFromSharedPreferences() == null) {
+                viewModel.getUserFromSharedPreferences()?.token == null) {
                 //TODO: Say to user that they can't add shared tasks until login
             } else {
                 showNewTask()
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
 
             val newTask = Task(
+                serverID = newlyAddedTaskServerID,
                 title = "",
                 id = UUID.randomUUID(),
                 description = "",
