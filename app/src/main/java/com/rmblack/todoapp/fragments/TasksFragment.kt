@@ -66,7 +66,10 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                         }
                         response.onFailure { e ->
                             if (e is UnknownHostException) {
-                                //TODO say to user: couldn't refresh because of network connection issue
+                                Utilities.makeWarningSnack(
+                                    requireActivity(),
+                                    binding.root,
+                                "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید.")
                                 binding.refreshLayout.isRefreshing = false
                             } else {
                                 binding.refreshLayout.isRefreshing = false

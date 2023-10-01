@@ -6,7 +6,7 @@
     app:cardCornerRadius="19dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     app:cardElevation="0dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -26,15 +26,17 @@
             android:tint="@color/white"/>
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:layout_marginVertical="16dp"
+            android:lineSpacingExtra="5dp"
+            android:textDirection="rtl"
             android:id="@+id/tv_warning"
-            android:layout_width="wrap_content"
+            android:layout_width="315dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="16dp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="16sp"
             android:fontFamily="@font/iranian_ans"
+            android:textColor="@color/white"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ic_warning"
             app:layout_constraintTop_toTopOf="parent" />

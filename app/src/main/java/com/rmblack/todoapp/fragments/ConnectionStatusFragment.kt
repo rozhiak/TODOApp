@@ -1,10 +1,12 @@
 package com.rmblack.todoapp.fragments
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +23,8 @@ import java.net.UnknownHostException
 class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 
     private var syncTasksJob : Job? = null
+
+    private lateinit var activity: Activity
 
     private lateinit var viewModel : ConnectUserViewModel
 
@@ -41,8 +45,10 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 
         val sharedPropertiesManager = SharedPreferencesManager(requireContext())
 
+        activity = requireActivity()
+
         viewModel = ViewModelProvider(
-            requireActivity(),
+            activity as FragmentActivity,
             ConnectUserFragment.ConnectUserViewModelFactory(sharedPropertiesManager)
         )[ConnectUserViewModel::class.java]
 
@@ -73,30 +79,41 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onFailure {e ->
                 if (e is UnknownHostException) {
-                    //TODO say to user: Couldn't sync data due to network connection issue
+                    Utilities.makeWarningSnack(
+                        activity,
+                        requireParentFragment().requireView(),
+                        "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
+                    )
                 }
             }
         }
 
-        val fragmentContainerView = requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
+        val fragmentContainerView = activity.findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
         val fragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(fragmentContainerView.id, ConnectUserFragment())
         transaction.commit()
 
         viewModel.saveConnectedPhone("")
-
-
     }
 
     override fun onFailure(errorCode: Int) {
         binding.disconnectProgressBtn.revertAnimation()
         when (errorCode) {
             CONNECTION_ERROR_CODE -> {
-
+                Utilities.makeWarningSnack(
+                    activity,
+                    binding.root,
+                    "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                )
             }
+
             403 -> {
-                //Invalid token
+                Utilities.makeWarningSnack(
+                    activity,
+                    binding.root,
+                    "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
+                )
             }
         }
     }

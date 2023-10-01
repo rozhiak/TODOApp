@@ -23,6 +23,7 @@ import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -108,7 +109,11 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener {
             if(binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment &&
                 viewModel.getUserFromSharedPreferences()?.token == null) {
-                //TODO: Say to user that they can't add shared tasks until login
+                Utilities.makeWarningSnack(
+                    this,
+                    binding.root,
+                    "برای استفاده از بخش اشتراکی باید ابتدا وارد حساب کاربری خود شوید."
+                )
             } else {
                 showNewTask()
             }

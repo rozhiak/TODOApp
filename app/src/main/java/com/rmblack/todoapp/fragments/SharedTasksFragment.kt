@@ -74,7 +74,6 @@ class SharedTasksFragment : TasksFragment() {
         } else {
             binding.manageUserConnectionContainer.visibility = View.GONE
         }
-
     }
 
     private fun setUpClickListeners() {

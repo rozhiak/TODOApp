@@ -130,32 +130,6 @@ class SharedTaskHolder(
             }
         }
     }
-
-//    private fun setBackground(pos: Int, rootConstraint: ConstraintLayout) {
-//        if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
-//            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
-//        } else {
-//            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
-//        }
-//    }
-
-//    private fun configUrgentSwitch(
-//        task: Task,
-//        urgentSwitch: SwitchButton
-//    ) {
-//        urgentSwitch.setOnCheckedChangeListener { _, isChecked ->
-//            viewModel.updateUrgentState(isChecked, task.id)
-//        }
-//    }
-
-//    private fun configDoneCheckBox(
-//        task: Task,
-//        doneCheckBox: AppCompatCheckBox
-//    ) {
-//        doneCheckBox.setOnCheckedChangeListener { _, b ->
-//            viewModel.updateDoneState(b, task.id)
-//        }
-//    }
 }
 
 class SharedTasksAdapter(
