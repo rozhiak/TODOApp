@@ -99,6 +99,10 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                 var visibility = viewModel.detailsVisibility[position]
                 val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
+                    val deleteReq = viewModel.makeDeleteRequest(deletedTask.serverID)
+                    if (deleteReq != null) {
+                        viewModel.cashDeleteRequest(deleteReq)
+                    }
                     viewModel.deleteTask(viewModel.tasks.value[position], position)
                     binding.tasksRv.adapter?.notifyItemRemoved(position)
                     val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
@@ -113,13 +117,16 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                         binding.tasksRv.post {
                             binding.tasksRv.smoothScrollToPosition(position)
                         }
+                        if (deleteReq != null) {
+                            viewModel.removeDeleteRequest(deleteReq)
+                        }
                     }
 
                     snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                             super.onDismissed(transientBottomBar, event)
-                            if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                                viewModel.deleteTaskFromServer(deletedTask.serverID)
+                            if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
+                                viewModel.deleteTaskFromServer(deleteReq)
                             }
                         }
                     })

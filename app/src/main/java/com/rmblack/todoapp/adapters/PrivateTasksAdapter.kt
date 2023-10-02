@@ -79,6 +79,10 @@ class PrivateTaskHolder(
     ) {
         deleteBtn.setOnClickListener {
             var visibility = viewModel.detailsVisibility[pos]
+            val deleteReq = viewModel.makeDeleteRequest(task.serverID)
+            if (deleteReq != null) {
+                viewModel.cashDeleteRequest(deleteReq)
+            }
             viewModel.deleteTask(task, pos)
             adapter.notifyItemRemoved(pos)
             val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
@@ -93,12 +97,15 @@ class PrivateTaskHolder(
                 recyclerView.post {
                     recyclerView.smoothScrollToPosition(pos)
                 }
+                if (deleteReq != null) {
+                    viewModel.removeDeleteRequest(deleteReq)
+                }
             }
             snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
-                    if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                        viewModel.deleteTaskFromServer(task.serverID)
+                    if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
+                        viewModel.deleteTaskFromServer(deleteReq)
                     }
                 }
             })

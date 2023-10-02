@@ -187,30 +187,45 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         }
     }
 
-    fun deleteTaskFromServer(serverID: String) {
+    fun deleteTaskFromServer(deleteRequest: DeleteTaskRequest) {
         val user = getUser()
         if (user?.token != null) {
-            val deleteRequest = DeleteTaskRequest(
-                user.token,
-                serverID
-            )
-
             deleteJob = CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val response = apiRepository.deleteTask(deleteRequest)
                     if (response.isSuccessful) {
+                        removeDeleteRequest(deleteRequest)
                     } else if (response.code() == 403) {
                         //Invalid token or access denied
+                        removeDeleteRequest(deleteRequest)
                     } else if (response.code() == 404) {
                         //task not found
-                    } else {
-                        sharedPreferencesManager.insertFailedDeleteRequest(deleteRequest)
+                        removeDeleteRequest(deleteRequest)
                     }
                 } catch (e: Exception) {
-                    sharedPreferencesManager.insertFailedDeleteRequest(deleteRequest)
+
                 }
             }
         }
+    }
+
+    fun cashDeleteRequest(deleteRequest: DeleteTaskRequest) {
+        sharedPreferencesManager.insertFailedDeleteRequest(deleteRequest)
+    }
+
+    fun makeDeleteRequest(serverID: String): DeleteTaskRequest? {
+        val user = getUser()
+        if (user?.token != null) {
+            return DeleteTaskRequest(
+                user.token,
+                serverID
+            )
+        }
+        return null
+    }
+
+    fun removeDeleteRequest(deleteRequest: DeleteTaskRequest) {
+        sharedPreferencesManager.removeFailedDeleteRequest(deleteRequest)
     }
 
     fun getUserToken(): String? {

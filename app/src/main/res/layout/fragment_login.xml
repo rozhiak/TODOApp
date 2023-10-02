@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".activities.StarterActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +22,7 @@
             app:srcCompat="@drawable/login_back_shape" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/appCompatTextView"
+            android:id="@+id/tv_slogan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ordibehesht"
@@ -52,7 +52,6 @@
                 android:src="@drawable/icon_for_login" />
 
         </androidx.cardview.widget.CardView>
-
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/hint_tv"
