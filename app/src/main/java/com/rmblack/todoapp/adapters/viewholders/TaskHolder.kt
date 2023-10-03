@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.adapters.viewholders
 
+import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.View
@@ -10,8 +11,13 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
+import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
+import com.rmblack.todoapp.adapters.TaskAdapter
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import com.suke.widget.SwitchButton
@@ -23,12 +29,10 @@ const val TASK = 0
 const val REMAINING_DAYS_LABLE = 1
 
 open class TaskHolder(
-    private val token: String?,
     private val editClickListener: EditClickListener,
-    val recyclerView: RecyclerView,
+    private val recyclerView: RecyclerView,
     binding: ViewBinding,
-
-) :RecyclerView.ViewHolder(binding.root) {
+    ) :RecyclerView.ViewHolder(binding.root) {
 
     interface EditClickListener {
         fun onEditClick(task: Task)
@@ -151,6 +155,74 @@ open class TaskHolder(
             rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
         } else {
             rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+        }
+    }
+
+    fun setUpDelete(
+        pos: Int,
+        task: Task,
+        adapter: TaskAdapter,
+        deleteBtn: AppCompatImageView,
+        viewModel: TasksViewModel,
+        activity: Activity,
+    ) {
+        deleteBtn.setOnClickListener {
+            var visibility = viewModel.detailsVisibility[pos]
+            val deleteReq = viewModel.makeDeleteRequest(task.serverID)
+            if (deleteReq != null) {
+                viewModel.cashDeleteRequest(deleteReq)
+            }
+            viewModel.deleteTask(task, pos)
+            adapter.notifyItemRemoved(pos)
+            val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
+                for (b in viewModel.detailsVisibility) {
+                    if (b) {
+                        visibility = false
+                        break
+                    }
+                }
+                viewModel.insertTask(task)
+                viewModel.insertVisibility(pos, visibility)
+                recyclerView.post {
+                    recyclerView.smoothScrollToPosition(pos)
+                }
+                if (deleteReq != null) {
+                    viewModel.removeDeleteRequest(deleteReq)
+                }
+            }
+            snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    super.onDismissed(transientBottomBar, event)
+                    if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
+                        viewModel.deleteTaskFromServer(deleteReq)
+                    }
+                }
+            })
+        }
+    }
+
+    fun setEachTaskClick(
+        pos: Int,
+        adapter: TaskAdapter,
+        rootCard: CardView,
+        viewModel: TasksViewModel
+    ) {
+        rootCard.setOnClickListener {
+            if (pos in viewModel.detailsVisibility.indices && !viewModel.detailsVisibility[pos]) {
+                for (i in viewModel.tasks.value.indices) {
+                    if (i != pos && viewModel.detailsVisibility[i]) {
+                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
+                        adapter.notifyItemChanged(i)
+                    }
+                }
+            }
+            if (pos in viewModel.detailsVisibility.indices) {
+                viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
+            }
+            adapter.notifyItemChanged(pos)
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(pos)
+            }
         }
     }
 

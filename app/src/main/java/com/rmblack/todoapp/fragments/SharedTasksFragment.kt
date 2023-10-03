@@ -169,7 +169,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun createSharedTasksAdapter() =
-        SharedTasksAdapter(viewModel.getUserToken(), viewModel, this, requireActivity())
+        SharedTasksAdapter(viewModel, this, requireActivity())
 
     class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

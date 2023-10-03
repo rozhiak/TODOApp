@@ -24,14 +24,12 @@ import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 
 class PrivateTaskHolder(
-    token: String?,
     private val binding: PrivateTasksRvItemBinding,
     private val viewModel: TasksViewModel,
     private val activity: Activity,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView,
 ) : TaskHolder(
-    token,
     editClickListener,
     recyclerView,
     binding
@@ -39,7 +37,7 @@ class PrivateTaskHolder(
     fun bind(
         tasks: List<Task?>,
         pos: Int,
-        adapter: PrivateTaskListAdapter
+        adapter: TaskAdapter
     ) {
         val task = tasks[pos]
         task?.let {
@@ -59,7 +57,7 @@ class PrivateTaskHolder(
                 }
                 setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
                 setDoneUi(it, doneCheckBox)
-                setEachTaskClick(pos, adapter, rootCard)
+                setEachTaskClick(pos, adapter, rootCard, viewModel)
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
                 setBackground(viewModel, pos, rootConstraint)
@@ -68,88 +66,16 @@ class PrivateTaskHolder(
             }
         }
     }
-
-    private fun setUpDelete(
-        pos: Int,
-        task: Task,
-        adapter: PrivateTaskListAdapter,
-        deleteBtn: AppCompatImageView,
-        viewModel: TasksViewModel,
-        activity: Activity,
-    ) {
-        deleteBtn.setOnClickListener {
-            var visibility = viewModel.detailsVisibility[pos]
-            val deleteReq = viewModel.makeDeleteRequest(task.serverID)
-            if (deleteReq != null) {
-                viewModel.cashDeleteRequest(deleteReq)
-            }
-            viewModel.deleteTask(task, pos)
-            adapter.notifyItemRemoved(pos)
-            val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
-                for (b in viewModel.detailsVisibility) {
-                    if (b) {
-                        visibility = false
-                        break
-                    }
-                }
-                viewModel.insertTask(task)
-                viewModel.insertVisibility(pos, visibility)
-                recyclerView.post {
-                    recyclerView.smoothScrollToPosition(pos)
-                }
-                if (deleteReq != null) {
-                    viewModel.removeDeleteRequest(deleteReq)
-                }
-            }
-            snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
-                        viewModel.deleteTaskFromServer(deleteReq)
-                    }
-                }
-            })
-        }
-    }
-
-    private fun setEachTaskClick(
-        pos: Int,
-        adapter: PrivateTaskListAdapter,
-        rootCard: CardView
-    ) {
-        rootCard.setOnClickListener {
-            if (pos in viewModel.detailsVisibility.indices && !viewModel.detailsVisibility[pos]) {
-                for (i in viewModel.detailsVisibility.indices) {
-                    if (i != pos && viewModel.detailsVisibility[i]) {
-                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
-                        adapter.notifyItemChanged(i)
-                    }
-                }
-            }
-            if (pos in viewModel.detailsVisibility.indices) {
-                viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
-            }
-            adapter.notifyItemChanged(pos)
-            recyclerView.post {
-                recyclerView.smoothScrollToPosition(pos)
-            }
-        }
-    }
 }
 
 class PrivateTaskListAdapter(
-    private val token: String?,
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity
-) : RecyclerView.Adapter<ViewHolder>() {
-
-    private lateinit var recyclerView: RecyclerView
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        this.recyclerView = recyclerView
-    }
+) : TaskAdapter(
+    viewModel,
+    editClickListener,
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -158,7 +84,7 @@ class PrivateTaskListAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-            PrivateTaskHolder(token , binding, viewModel ,activity ,editClickListener, recyclerView)
+            PrivateTaskHolder(binding, viewModel ,activity ,editClickListener, recyclerView)
         }
     }
 
@@ -170,13 +96,4 @@ class PrivateTaskListAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position >= 0 && viewModel.tasks.value[position] != null) {
-            TASK
-        } else {
-            REMAINING_DAYS_LABLE
-        }
-    }
-
-    override fun getItemCount() = viewModel.tasks.value.size
 }

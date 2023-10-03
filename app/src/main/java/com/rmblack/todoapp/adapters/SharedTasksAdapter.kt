@@ -1,38 +1,25 @@
 package com.rmblack.todoapp.adapters
 
 import android.app.Activity
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
-import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.databinding.SharedTasksRvItemBinding
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import com.rmblack.todoapp.viewmodels.TasksViewModel
-import com.suke.widget.SwitchButton
 
 class SharedTaskHolder(
-    token: String?,
     private val binding: SharedTasksRvItemBinding,
     private val viewModel: TasksViewModel,
     private val activity: Activity,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
 ) : TaskHolder(
-    token,
     editClickListener,
     recyclerView,
     binding
@@ -40,7 +27,7 @@ class SharedTaskHolder(
     fun bind(
         tasks: List<Task?>,
         pos: Int,
-        adapter: SharedTasksAdapter
+        adapter: TaskAdapter
     ) {
         val task = tasks[pos]
         task?.let {
@@ -60,7 +47,7 @@ class SharedTaskHolder(
                 }
                 setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
                 setDoneUi(it, doneCheckBox)
-                setEachTaskClick(pos, adapter, rootCard)
+                setEachTaskClick(pos, adapter, rootCard, viewModel)
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
                 setBackground(viewModel, pos, rootConstraint)
@@ -70,88 +57,16 @@ class SharedTaskHolder(
             }
         }
     }
-
-    private fun setUpDelete(
-        pos: Int,
-        task: Task,
-        adapter: SharedTasksAdapter,
-        deleteBtn: AppCompatImageView,
-        viewModel: TasksViewModel,
-        activity: Activity
-    ) {
-        deleteBtn.setOnClickListener {
-            var visibility = viewModel.detailsVisibility[pos]
-            val deleteReq = viewModel.makeDeleteRequest(task.serverID)
-            if (deleteReq != null) {
-                viewModel.cashDeleteRequest(deleteReq)
-            }
-            viewModel.deleteTask(task, pos)
-            adapter.notifyItemRemoved(pos)
-            val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
-                for (b in viewModel.detailsVisibility) {
-                    if (b) {
-                        visibility = false
-                        break
-                    }
-                }
-                viewModel.insertTask(task)
-                viewModel.insertVisibility(pos, visibility)
-                recyclerView.post {
-                    recyclerView.smoothScrollToPosition(pos)
-                }
-                if (deleteReq != null) {
-                    viewModel.removeDeleteRequest(deleteReq)
-                }
-            }
-            snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    super.onDismissed(transientBottomBar, event)
-                    if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
-                        viewModel.deleteTaskFromServer(deleteReq)
-                    }
-                }
-            })
-        }
-    }
-
-    private fun setEachTaskClick(
-        pos: Int,
-        adapter: SharedTasksAdapter,
-        rootCard: CardView
-    ) {
-        rootCard.setOnClickListener {
-            if (pos in viewModel.detailsVisibility.indices && !viewModel.detailsVisibility[pos]) {
-                for (i in viewModel.tasks.value.indices) {
-                    if (i != pos && viewModel.detailsVisibility[i]) {
-                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
-                        adapter.notifyItemChanged(i)
-                    }
-                }
-            }
-            if (pos in viewModel.detailsVisibility.indices) {
-                viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
-            }
-            adapter.notifyItemChanged(pos)
-            recyclerView.post {
-                recyclerView.smoothScrollToPosition(pos)
-            }
-        }
-    }
 }
 
 class SharedTasksAdapter(
-    private val token: String?,
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity
-) : RecyclerView.Adapter<ViewHolder>() {
-
-    private lateinit var recyclerView: RecyclerView
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        this.recyclerView = recyclerView
-    }
+) : TaskAdapter(
+    viewModel,
+    editClickListener,
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -160,7 +75,7 @@ class SharedTasksAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
-            SharedTaskHolder(token, binding, viewModel, activity, editClickListener, recyclerView)
+            SharedTaskHolder(binding, viewModel, activity, editClickListener, recyclerView)
         }
     }
 
@@ -172,13 +87,4 @@ class SharedTasksAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position >= 0 && viewModel.tasks.value[position] != null) {
-            TASK
-        } else {
-            REMAINING_DAYS_LABLE
-        }
-    }
-
-    override fun getItemCount() = viewModel.tasks.value.size
 }
