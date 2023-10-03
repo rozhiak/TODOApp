@@ -172,8 +172,7 @@ open class TaskHolder(
             if (deleteReq != null) {
                 viewModel.cashDeleteRequest(deleteReq)
             }
-            viewModel.deleteTask(task, pos)
-            adapter.notifyItemRemoved(pos)
+            val isDateLableRemoved = viewModel.deleteTask(task, pos, adapter)
             val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
                 for (b in viewModel.detailsVisibility) {
                     if (b) {
@@ -182,7 +181,7 @@ open class TaskHolder(
                     }
                 }
                 viewModel.insertTask(task)
-                viewModel.insertVisibility(pos, visibility)
+                viewModel.insertVisibility(pos, visibility, isDateLableRemoved)
                 recyclerView.post {
                     recyclerView.smoothScrollToPosition(pos)
                 }

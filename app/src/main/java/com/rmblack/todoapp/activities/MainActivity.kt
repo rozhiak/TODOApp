@@ -78,7 +78,11 @@ class MainActivity : AppCompatActivity() {
     private fun showToday() {
         val today = PersianCalendar()
         binding.dayOfMonth.text = PersianNum.convert(today.dayOfMonth.toString())
-        binding.dayOfWeek.text = today.weekDayName
+        if (today.dayOfWeek == 3) {
+            binding.dayOfWeek.text = "سه شنبه"
+        } else {
+            binding.dayOfWeek.text = today.weekDayName
+        }
         binding.monthOfYear.text = today.monthName
     }
 

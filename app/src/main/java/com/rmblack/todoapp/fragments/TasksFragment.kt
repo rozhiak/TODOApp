@@ -58,11 +58,35 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
             binding.refreshLayout.isEnabled = false
         } else {
             binding.refreshLayout.setOnRefreshListener {
+
+//                val formerOpenTaskIndex = viewModel.detailsVisibility.indexOf(true)
+//                var lastOpenTaskID : UUID? = null
+//                if (formerOpenTaskIndex != -1) {
+//                    lastOpenTaskID = viewModel.tasks.value[formerOpenTaskIndex]?.id
+//                }
+//                println("old Insex " + formerOpenTaskIndex)
+
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = Utilities.syncTasksWithServer(userToken, requireContext())
                         response.onSuccess {
                             binding.refreshLayout.isRefreshing = false
+//                            if (lastOpenTaskID != null) {
+//                                val newIndex = viewModel.tasks.value.indexOfFirst { task ->
+//                                    task?.id == lastOpenTaskID
+//                                }
+//                                println("new index " + newIndex)
+//                                if (newIndex == -1) {
+//                                    viewModel.updateVisibility(formerOpenTaskIndex, false)
+//                                    binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
+//                                } else if (newIndex != formerOpenTaskIndex) {
+//                                    viewModel.updateVisibility(formerOpenTaskIndex, false)
+//                                    binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
+//                                    viewModel.updateVisibility(newIndex, true)
+//                                    binding.tasksRv.adapter?.notifyItemChanged(newIndex)
+//                                }
+//                            }
+
                         }
                         response.onFailure { e ->
                             if (e is UnknownHostException) {
@@ -103,8 +127,14 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                     if (deleteReq != null) {
                         viewModel.cashDeleteRequest(deleteReq)
                     }
-                    viewModel.deleteTask(viewModel.tasks.value[position], position)
-                    binding.tasksRv.adapter?.notifyItemRemoved(position)
+                    var isDateLableRemoved = false
+                    binding.tasksRv.adapter?.let {adapter ->
+                        isDateLableRemoved = viewModel.deleteTask(
+                            viewModel.tasks.value[position],
+                            position,
+                            adapter
+                        )
+                    }
                     val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
                         for (b in viewModel.detailsVisibility) {
                             if (b) {
@@ -113,7 +143,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                             }
                         }
                         viewModel.insertTask(deletedTask)
-                        viewModel.insertVisibility(position, visibility)
+                        viewModel.insertVisibility(position, visibility, isDateLableRemoved)
                         binding.tasksRv.post {
                             binding.tasksRv.smoothScrollToPosition(position)
                         }

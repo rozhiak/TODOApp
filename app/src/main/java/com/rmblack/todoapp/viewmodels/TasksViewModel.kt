@@ -2,6 +2,8 @@ package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.RecyclerView
+import com.rmblack.todoapp.adapters.TaskAdapter
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
@@ -62,11 +64,11 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
     }
 
-    fun insertVisibility(pos: Int, b: Boolean) {
+    fun insertVisibility(pos: Int, b: Boolean, withLableVisibility: Boolean) {
         //If there had been a date lable before deleted task, the visibility for lable
         // is deleted so it is needed to add false to reach to the desired size
-        while (pos > _detailsVisibility.size) {
-            _detailsVisibility.add(false)
+        if (withLableVisibility) {
+            _detailsVisibility.add(pos - 1, false)
         }
         _detailsVisibility.add(pos, b)
     }
@@ -75,16 +77,20 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         if (pos in detailsVisibility.indices) _detailsVisibility.removeAt(pos)
     }
 
-    fun deleteTask(task: Task?, position: Int) {
+    fun deleteTask(task: Task?, position: Int, adapter: RecyclerView.Adapter<*>): Boolean {
         //Extra deletion is for date labels
+        var res = false
         _detailsVisibility.removeAt(position)
-        if (position + 1 < tasks.value.size) {
+
+        if (position + 1 < tasks.value.size) { //if it is not the last task in list
             if (tasks.value[position - 1] == null && tasks.value[position + 1] == null) {
                 _detailsVisibility.removeAt(position - 1)
+                res = true
             }
         } else {
             if (tasks.value[position - 1] == null) {
                 _detailsVisibility.removeAt(position - 1)
+                res = true
             }
         }
 
@@ -93,6 +99,8 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         }
 
         removeRelatedCashedRequests(task)
+
+        return res
     }
 
     private fun removeRelatedCashedRequests(task: Task?) {
