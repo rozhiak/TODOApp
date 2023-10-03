@@ -20,6 +20,7 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
@@ -58,35 +59,34 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
             binding.refreshLayout.isEnabled = false
         } else {
             binding.refreshLayout.setOnRefreshListener {
-
-//                val formerOpenTaskIndex = viewModel.detailsVisibility.indexOf(true)
-//                var lastOpenTaskID : UUID? = null
-//                if (formerOpenTaskIndex != -1) {
-//                    lastOpenTaskID = viewModel.tasks.value[formerOpenTaskIndex]?.id
-//                }
-//                println("old Insex " + formerOpenTaskIndex)
+                val formerOpenTaskIndex = viewModel.detailsVisibility.indexOf(true)
+                var lastOpenTaskID : UUID? = null
+                if (formerOpenTaskIndex != -1) {
+                    lastOpenTaskID = viewModel.tasks.value[formerOpenTaskIndex]?.id
+                }
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = Utilities.syncTasksWithServer(userToken, requireContext())
                         response.onSuccess {
                             binding.refreshLayout.isRefreshing = false
-//                            if (lastOpenTaskID != null) {
-//                                val newIndex = viewModel.tasks.value.indexOfFirst { task ->
-//                                    task?.id == lastOpenTaskID
-//                                }
-//                                println("new index " + newIndex)
-//                                if (newIndex == -1) {
-//                                    viewModel.updateVisibility(formerOpenTaskIndex, false)
-//                                    binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
-//                                } else if (newIndex != formerOpenTaskIndex) {
-//                                    viewModel.updateVisibility(formerOpenTaskIndex, false)
-//                                    binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
-//                                    viewModel.updateVisibility(newIndex, true)
-//                                    binding.tasksRv.adapter?.notifyItemChanged(newIndex)
-//                                }
-//                            }
-
+                            if (lastOpenTaskID != null ) {
+                                var newIndex: Int
+                                viewModel.tasks.collect {tasks ->
+                                    newIndex = tasks.indexOfFirst { it?.id == lastOpenTaskID }
+                                    if (newIndex == -1) {
+                                        viewModel.updateVisibility(formerOpenTaskIndex, false)
+                                        binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
+                                        lastOpenTaskID = null
+                                    } else if (newIndex != formerOpenTaskIndex) {
+                                        viewModel.updateVisibility(formerOpenTaskIndex, false)
+                                        binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
+                                        viewModel.updateVisibility(newIndex, true)
+                                        binding.tasksRv.adapter?.notifyItemChanged(newIndex)
+                                        lastOpenTaskID = null
+                                    }
+                                }
+                            }
                         }
                         response.onFailure { e ->
                             if (e is UnknownHostException) {

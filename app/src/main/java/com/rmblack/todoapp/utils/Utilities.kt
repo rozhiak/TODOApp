@@ -108,7 +108,6 @@ class Utilities {
 
             for (deleteReq in failedDeleteRequests) {
                 try {
-                    println(deleteReq)
                     val response = apiRepository.deleteTask(deleteReq)
                     if (response.code() == 200 || response.code() == 404)
                         sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
@@ -125,7 +124,6 @@ class Utilities {
             if (failedAddRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
             } else if (failedEditRequests.isNotEmpty()) {
-                println(sharedPreferencesManager.getFailedEditRequests())
                 isThereAnyFailedRequest = true
             } else if (failedDeleteRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
