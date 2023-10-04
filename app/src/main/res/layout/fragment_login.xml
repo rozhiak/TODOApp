@@ -91,6 +91,9 @@
             app:layout_constraintEnd_toEndOf="@+id/phone_field" />
 
         <com.google.android.material.textfield.TextInputLayout
+            app:endIconTint="@color/green"
+            app:endIconMode="clear_text"
+            app:counterTextColor="@color/grey"
             android:id="@+id/phone_field"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -98,10 +101,13 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="260dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="11"
             app:layout_constraintBottom_toTopOf="@+id/progress_btn"
             app:layout_constraintTop_toBottomOf="@+id/hint_tv">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:maxLength="11"
                 android:id="@+id/phone_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -112,6 +118,9 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:layoutDirection="rtl"
+            app:endIconTint="@color/green"
+            app:endIconMode="clear_text"
             android:visibility="gone"
             android:gravity="bottom"
             android:id="@+id/name_field"
