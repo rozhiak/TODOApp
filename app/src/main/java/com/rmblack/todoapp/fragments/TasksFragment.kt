@@ -59,7 +59,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
             binding.refreshLayout.isEnabled = false
         } else {
             binding.refreshLayout.setOnRefreshListener {
-                val formerOpenTaskIndex = viewModel.detailsVisibility.indexOf(true)
+                var formerOpenTaskIndex = viewModel.detailsVisibility.indexOf(true)
                 var lastOpenTaskID : UUID? = null
                 if (formerOpenTaskIndex != -1) {
                     lastOpenTaskID = viewModel.tasks.value[formerOpenTaskIndex]?.id
@@ -70,24 +70,26 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                         val response = Utilities.syncTasksWithServer(userToken, requireContext())
                         response.onSuccess {
                             binding.refreshLayout.isRefreshing = false
-                            if (lastOpenTaskID != null ) {
-                                var newIndex: Int
-                                viewModel.tasks.collect {tasks ->
-                                    newIndex = tasks.indexOfFirst { it?.id == lastOpenTaskID }
+                            viewModel.tasks.collect {tasks ->
+                                val newIndex: Int = tasks.indexOfFirst { it?.id == lastOpenTaskID }
+                                if (formerOpenTaskIndex != -1) {
                                     if (newIndex == -1) {
                                         viewModel.updateVisibility(formerOpenTaskIndex, false)
                                         binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
                                         lastOpenTaskID = null
+                                        formerOpenTaskIndex = -1
                                     } else if (newIndex != formerOpenTaskIndex) {
                                         viewModel.updateVisibility(formerOpenTaskIndex, false)
                                         binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
                                         viewModel.updateVisibility(newIndex, true)
                                         binding.tasksRv.adapter?.notifyItemChanged(newIndex)
                                         lastOpenTaskID = null
+                                        formerOpenTaskIndex = -1
                                     }
                                 }
                             }
                         }
+
                         response.onFailure { e ->
                             if (e is UnknownHostException) {
                                 Utilities.makeWarningSnack(
