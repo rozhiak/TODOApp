@@ -87,6 +87,10 @@ class PrivateTasksFragment : TasksFragment() {
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
                     if (tasks.size != 1) setUpNoTaskIconAndText(tasks.isNotEmpty())
+                    for (d in viewModel.detailsVisibility) {
+                        println(d)
+                    }
+                    println("==========================")
                 }
             }
         }
