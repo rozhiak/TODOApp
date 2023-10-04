@@ -9,6 +9,11 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_marginTop="16dp"
+        app:endIconTint="@color/green"
+        app:endIconMode="clear_text"
+        app:counterTextColor="@color/grey"
+        app:counterEnabled="true"
+        app:counterMaxLength="11"
         android:id="@+id/phone_field"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
@@ -21,6 +26,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_et"
+            android:maxLength="11"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iranian_ans"
@@ -34,6 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:backgroundTint="@color/green"
         app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/phone_field"
