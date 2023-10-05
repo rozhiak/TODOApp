@@ -159,7 +159,12 @@ class Utilities {
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            taskRepository.addTask(pServerTask.convertToLocalTask())
+                            val failedRequestIndex = sharedPreferencesManager.getFailedDeleteRequests().indexOfFirst {deleteReq ->
+                                deleteReq.task_id == pServerTask.id
+                            }
+                            if (failedRequestIndex == -1) {
+                                taskRepository.addTask(pServerTask.convertToLocalTask())
+                            }
                         }
                     }
 
@@ -174,7 +179,12 @@ class Utilities {
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            taskRepository.addTask(sServerTask.convertToLocalTask())
+                            val failedRequestIndex = sharedPreferencesManager.getFailedDeleteRequests().indexOfFirst {deleteReq ->
+                                deleteReq.task_id == sServerTask.id
+                            }
+                            if (failedRequestIndex == -1) {
+                                taskRepository.addTask(sServerTask.convertToLocalTask())
+                            }
                         }
                     }
                 }
