@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -18,10 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
-import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
-import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -64,13 +64,27 @@ class SharedTasksFragment : TasksFragment() {
 
         if (viewModel.getUser()?.token != null) {
             if (viewModel.getConnectedPhone() == "") {
-                binding.manageConnectionBtn.rotation = 180f
-                binding.manageUserConnectionContainer.visibility = View.VISIBLE
                 fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
             } else {
-                binding.manageUserConnectionContainer.visibility = View.GONE
                 fm.beginTransaction().hide(firstFragment).show(secondFragment).commit()
             }
+        } else {
+            binding.manageUserConnectionContainer.visibility = View.GONE
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.tasks.take(2).collect { tasks ->
+                    if (tasks.size != 1) setUpConnectionManagerVisibility()
+                }
+            }
+        }
+    }
+
+    private fun setUpConnectionManagerVisibility() {
+        if (viewModel.getConnectedPhone() == "" && viewModel.tasks.value.size < 2) {
+            binding.manageConnectionBtn.rotation = 180f
+            binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {
             binding.manageUserConnectionContainer.visibility = View.GONE
         }

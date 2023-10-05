@@ -1,17 +1,17 @@
 package com.rmblack.todoapp.fragments
 
+import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
@@ -20,8 +20,8 @@ import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.net.UnknownHostException
+
 
 class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
@@ -66,7 +66,15 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
                 binding.connectProgressBtn.startAnimation()
                 viewModel.connectUserToSharedList(phone.toString(), this)
             } else {
-                //TODO Phone format is not correct
+                val timer = object : CountDownTimer(1000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        binding.phoneEt.setTextColor(Color.parseColor("#D05D8A"))
+                    }
+                    override fun onFinish() {
+                        binding.phoneEt.setTextColor(Color.WHITE)
+                    }
+                }
+                timer.start()
             }
         }
     }
@@ -95,7 +103,11 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onFailure {e ->
                 if (e is UnknownHostException) {
-                    //TODO say to user: Couldn't sync data due to network connection issue
+                    Utilities.makeWarningSnack(
+                        requireActivity(),
+                        binding.root,
+                        "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
+                    )
                 }
             }
         }
