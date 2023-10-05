@@ -51,6 +51,27 @@ class MainActivity : AppCompatActivity() {
         setUpUI()
         wireUpBottomNav()
         showToday()
+        setUpProfileBtn()
+    }
+
+    private fun setUpProfileBtn() {
+        val userToken = viewModel.getUserFromSharedPreferences()?.token
+        if (userToken == null) {
+            binding.ivProfile.setImageResource(R.drawable.ic_login)
+            binding.ivProfile.setOnClickListener {
+                goToStarterActivity()
+            }
+        } else {
+            binding.ivProfile.setImageResource(R.drawable.ic_person)
+            binding.ivProfile.setOnClickListener {
+                //TODO show profile content
+            }
+        }
+    }
+
+    private fun goToStarterActivity() {
+        val intent = Intent(this, StarterActivity::class.java)
+        startActivity(intent)
     }
 
     private fun checkLoginState() {

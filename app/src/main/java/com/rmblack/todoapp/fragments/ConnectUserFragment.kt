@@ -126,16 +126,31 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
         binding.connectProgressBtn.revertAnimation()
         when (errorCode) {
             CONNECTION_ERROR_CODE -> {
-                //TODO say to user: connection error
+                Utilities.makeWarningSnack(
+                    requireActivity(),
+                    binding.root,
+                    "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                )
             }
             404 -> {
-                //phone number not found
-            }
+                Utilities.makeWarningSnack(
+                    requireActivity(),
+                    binding.root,
+                    "شماره همراه مورد نظر شما یافت نشد."
+                )            }
             403 -> {
-                //invalid token
+                Utilities.makeWarningSnack(
+                    requireActivity(),
+                    binding.root,
+                    "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
+                )
             }
             400 -> {
-                //same giver and receiver
+                Utilities.makeWarningSnack(
+                    requireActivity(),
+                    binding.root,
+                    "نمی توانید شماره خودتان را در این قسمت وارد کنید."
+                )
             }
         }
     }
