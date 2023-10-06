@@ -5,10 +5,14 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -64,7 +68,28 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.ivProfile.setImageResource(R.drawable.ic_person)
             binding.ivProfile.setOnClickListener {
-                //TODO show profile content
+                val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val popupView = inflater.inflate(R.layout.profile_pop_up, binding.root, false)
+
+                if (popupView.isVisible) {
+                    binding.ivProfile.setImageResource(R.drawable.ic_person_selected)
+                }
+
+                val popupWindow = PopupWindow(
+                    popupView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    true
+                )
+
+                popupWindow.elevation = 60.0f
+
+                // Show the PopupWindow at a specific location relative to your button
+                popupWindow.showAsDropDown(binding.ivProfile, -470, 25, 0)
+
+                popupWindow.setOnDismissListener {
+                    binding.ivProfile.setImageResource(R.drawable.ic_person)
+                }
             }
         }
     }

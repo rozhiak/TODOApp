@@ -88,7 +88,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 if (user?.token != null) {
                     viewModel.updateTask { oldTask ->
                         if (pos == 0 && oldTask.composer == "") {
-
+                            //TODO add name to task
                         }
                         oldTask.copy(
                             isShared = pos == 0,

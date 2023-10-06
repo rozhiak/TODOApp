@@ -19,7 +19,7 @@
     <color name="main_back_color">#19E2FFF3</color>
     <color name="selected_item_color">#19E2FFF3</color>
     <color name="dark_bottom_navigation">#2d2d2d</color>
-    <color name="grey">#666666</color>
+    <color name="grey">#808080</color>
     <color name="edit_card_green">#D2009F71</color>
 
 </resources>
