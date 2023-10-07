@@ -66,7 +66,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                 }
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         val response = Utilities.syncTasksWithServer(userToken, requireContext())
                         response.onSuccess {
                             binding.refreshLayout.isRefreshing = false
@@ -101,7 +100,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                                 binding.refreshLayout.isRefreshing = false
                             }
                         }
-                    }
                 }
             }
         }

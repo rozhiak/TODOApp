@@ -3,13 +3,16 @@ package com.rmblack.todoapp.fragments
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Editable
 import android.text.Selection
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.get
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -20,6 +23,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
@@ -87,9 +91,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
                 if (user?.token != null) {
                     viewModel.updateTask { oldTask ->
-                        if (pos == 0 && oldTask.composer == "") {
-                            //TODO add name to task
-                        }
                         oldTask.copy(
                             isShared = pos == 0,
                             title = binding.etTitle.text.toString(),
@@ -100,7 +101,19 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     resetCursorsPosition()
                 } else {
                     binding.segmentedBtn.isEnabled = false
-                    //TODO: Say to user that he/she should log in.
+                    //
+                    val timer = object : CountDownTimer(1000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                            binding.ivWarning.visibility = View.VISIBLE
+                            binding.tvWarning.visibility = View.VISIBLE
+                        }
+                        override fun onFinish() {
+                            binding.ivWarning.visibility = View.GONE
+                            binding.tvWarning.visibility = View.GONE
+                        }
+                    }
+                    timer.start()
+                    //
                 }
             }
 
@@ -140,6 +153,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
 
+        //TODO : change color of text in dark mood
         val picker = PersianDatePickerDialog(context)
             .setPositiveButtonString("باشه")
             .setNegativeButton("بیخیال")

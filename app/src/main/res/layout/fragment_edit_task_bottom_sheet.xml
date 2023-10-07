@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/root_constraint"
     android:layoutDirection="ltr"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bottom_sheet_background"
@@ -167,12 +168,38 @@
     </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:visibility="gone"
+        android:id="@+id/iv_warning"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="16dp"
+        android:tint="@color/urgent_red"
+        app:layout_constraintEnd_toEndOf="@+id/segmented_btn"
+        app:layout_constraintTop_toBottomOf="@+id/segmented_btn"
+        app:srcCompat="@drawable/ic_warning" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_warning"
+        android:textColor="@color/urgent_red"
+        android:visibility="gone"
+        android:layout_marginEnd="8dp"
+        android:layout_width="0dp"
+        android:lineSpacingExtra="3dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iranian_ans"
+        android:text="برای استفاده از بخش اشتراکی ، ابتدا باید وارد حساب کاربری شوید."
+        android:textSize="15sp"
+        app:layout_constraintEnd_toStartOf="@+id/iv_warning"
+        app:layout_constraintStart_toStartOf="@+id/segmented_btn"
+        app:layout_constraintTop_toTopOf="@+id/iv_warning" />
+
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_marginTop="32dp"
         android:id="@+id/description_iv"
         android:layout_width="23dp"
         android:layout_height="23dp"
         app:layout_constraintEnd_toEndOf="@+id/segmented_btn"
-        app:layout_constraintTop_toBottomOf="@+id/segmented_btn"
+        app:layout_constraintTop_toBottomOf="@+id/iv_warning"
         app:srcCompat="@drawable/ic_description" />
 
     <androidx.appcompat.widget.AppCompatEditText
