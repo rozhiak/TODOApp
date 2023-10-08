@@ -100,20 +100,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     }
                     resetCursorsPosition()
                 } else {
-                    binding.segmentedBtn.isEnabled = false
-                    //
-                    val timer = object : CountDownTimer(1000, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
-                            binding.ivWarning.visibility = View.VISIBLE
-                            binding.tvWarning.visibility = View.VISIBLE
-                        }
-                        override fun onFinish() {
-                            binding.ivWarning.visibility = View.GONE
-                            binding.tvWarning.visibility = View.GONE
-                        }
-                    }
-                    timer.start()
-                    //
+                    binding.segmentedBtn.visibility = View.GONE
                 }
             }
 
