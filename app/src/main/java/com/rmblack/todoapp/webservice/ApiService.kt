@@ -1,7 +1,6 @@
 package com.rmblack.todoapp.webservice
 
 import com.rmblack.todoapp.models.StringResponse
-import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
@@ -9,9 +8,11 @@ import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
+import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
+import com.rmblack.todoapp.models.server.success.UpdateUserResponse
 import com.rmblack.todoapp.models.server.success.UserResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -55,4 +56,8 @@ interface ApiService {
     @Headers("accept: application/json", "Content-Type: application/json")
     @POST("users/disconnect/")
     suspend fun disconnectUser(@Body request: DisconnectUserRequest): Response<UserResponse>
+
+    @Headers("Accept: application/json", "Content-Type: application/json")
+    @POST("users/update/")
+    suspend fun updateUser(@Body request: UpdateUserRequest): Response<UpdateUserResponse>
 }

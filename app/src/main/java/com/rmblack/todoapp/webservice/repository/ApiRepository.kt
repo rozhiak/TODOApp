@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.webservice.repository
 
+import androidx.room.Update
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
@@ -8,6 +9,7 @@ import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
+import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.webservice.ApiService
 import retrofit2.Retrofit
@@ -32,6 +34,8 @@ class ApiRepository {
     suspend fun connectUser(body: ConnectUserRequest) = getInstance().connectUser(body)
 
     suspend fun disconnectUser(body: DisconnectUserRequest) = getInstance().disconnectUser(body)
+
+    suspend fun updateUser(body: UpdateUserRequest) = getInstance().updateUser(body)
 
     companion object {
         private var apiService: ApiService? = null

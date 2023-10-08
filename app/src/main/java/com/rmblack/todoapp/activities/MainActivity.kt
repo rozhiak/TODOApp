@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aminography.primecalendar.persian.PersianCalendar
+import com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.rmblack.todoapp.R
@@ -30,7 +31,9 @@ import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.MainViewModel
+import com.rmblack.todoapp.viewmodels.SAME_USER_NAME
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 import java.util.UUID
 
 const val newlyAddedTaskServerID = "newly added"
@@ -73,12 +76,54 @@ class MainActivity : AppCompatActivity() {
 
                 setUserName(popupView)
 
+                changeUserName(popupView)
+
+
                 popupWindow.elevation = 60.0f
                 popupWindow.showAsDropDown(binding.ivProfile, -470, 25, 0)
 
                 popupWindow.setOnDismissListener {
                     binding.ivProfile.setImageResource(R.drawable.ic_person)
                 }
+            }
+        }
+    }
+
+    private fun changeUserName(popupView: View) {
+        val saveBTN = popupView.findViewById<CircularProgressButton>(R.id.save_btn)
+        saveBTN.setOnClickListener {
+            val nameEt = popupView.findViewById<TextInputEditText>(R.id.name_et)
+            if (nameEt.text.toString() != "") {
+                saveBTN.startAnimation {
+                    lifecycleScope.launch {
+                        val res = viewModel.updateUser(
+                            nameEt.text.toString()
+                        )
+                        res.onSuccess {
+                            //TODO update tasks composer name
+                            saveBTN.revertAnimation()
+                        }
+                        res.onFailure {
+                            println(it)
+                            saveBTN.revertAnimation()
+                            when (it) {
+                                is MainViewModel.UpdateUserException -> {
+                                    if (it.intValue == 404) {
+                                        //TODO not found -> در فرآیند لاگین مشکلی پیش آمده
+                                    } else if (it.intValue == SAME_USER_NAME) {
+                                        //TODO new and old user name are same
+                                    }
+                                }
+
+                                is UnknownHostException -> {
+                                    //TODO Connection error
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                //TODO say to user: name is empty
             }
         }
     }

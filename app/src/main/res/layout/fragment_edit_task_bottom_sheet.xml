@@ -121,6 +121,7 @@
         app:sb_checked_color="@color/urgent_red" />
 
     <com.addisonelliott.segmentedbutton.SegmentedButtonGroup
+        android:visibility="gone"
         android:id="@+id/segmented_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

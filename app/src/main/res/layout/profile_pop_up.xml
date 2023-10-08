@@ -38,11 +38,12 @@
                 android:fontFamily="@font/iranian_ans"
                 android:hint="نام کاربری"
                 android:inputType="textPersonName"
-                 />
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
+            android:id="@+id/save_btn"
             android:layout_width="0dp"
             android:textColor="@color/green"
             android:layout_height="40dp"
