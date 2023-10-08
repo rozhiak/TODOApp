@@ -73,10 +73,8 @@ class SharedTasksFragment : TasksFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.tasks.take(2).collect { tasks ->
-                    if (tasks.size != 1) setUpConnectionManagerVisibility()
-                }
+            viewModel.tasks.take(2).collect { tasks ->
+                if (tasks.size != 1) setUpConnectionManagerVisibility()
             }
         }
     }

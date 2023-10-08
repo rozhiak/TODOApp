@@ -94,7 +94,8 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                                 Utilities.makeWarningSnack(
                                     requireActivity(),
                                     binding.root,
-                                "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید.")
+                                "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                                )
                                 binding.refreshLayout.isRefreshing = false
                             } else {
                                 binding.refreshLayout.isRefreshing = false

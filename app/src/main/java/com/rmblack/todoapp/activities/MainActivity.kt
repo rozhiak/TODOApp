@@ -100,11 +100,27 @@ class MainActivity : AppCompatActivity() {
                             nameEt.text.toString()
                         )
                         res.onSuccess {
-                            //TODO update tasks composer name
+                            //TODO say to user : changes applied
                             saveBTN.revertAnimation()
+                            viewModel.getUserFromSharedPreferences()?.let { token ->
+                                val result = Utilities.syncTasksWithServer(
+                                    token.token,
+                                    this@MainActivity
+                                )
+                                result.onFailure { e ->
+                                    when(e) {
+                                        is UnknownHostException -> {
+                                            Utilities.makeWarningSnack(
+                                                this@MainActivity,
+                                                binding.root,
+                                                "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                         res.onFailure {
-                            println(it)
                             saveBTN.revertAnimation()
                             when (it) {
                                 is MainViewModel.UpdateUserException -> {
@@ -116,7 +132,12 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 is UnknownHostException -> {
-                                    //TODO Connection error
+                                    //TODO snack take place behind the keyboard
+                                    Utilities.makeWarningSnack(
+                                        this@MainActivity,
+                                        binding.root,
+                                        "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                                    )
                                 }
                             }
                         }
@@ -239,7 +260,7 @@ class MainActivity : AppCompatActivity() {
                 isUrgent = false,
                 isDone = false,
                 isShared = binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment,
-                composer = "user",
+                composer = "",
                 groupId = "123",
             )
 
