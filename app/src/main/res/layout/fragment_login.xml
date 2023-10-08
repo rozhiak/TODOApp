@@ -80,6 +80,7 @@
             app:srcCompat="@drawable/ic_bottom" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:lineSpacingExtra="3dp"
             android:id="@+id/error_hint_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -3,6 +3,7 @@ package com.rmblack.todoapp.fragments
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -83,14 +84,35 @@ class VerificationFragment : Fragment() {
 
     private fun setOnClickListeners() {
         binding.progressBtn.setOnClickListener {
+            binding.tvError.text = ""
             if (isCodeCompleted()) {
                 viewModel.updateVerificationLoadingState(true)
                 viewModel.validateUser(binding.verifyCodeEditText.text)
                 collectVerifyRequestCode()
             } else {
-                //TODO verification code is not completed by user
+                showError()
             }
         }
+    }
+
+    private fun showError() {
+        val timer = object : CountDownTimer(2300, 400) {
+            var onError = false
+            override fun onTick(millisUntilFinished: Long) {
+                onError = if (onError) {
+                    binding.verifyCodeEditText.resetCodeItemLineDrawable()
+                    false
+                } else {
+                    binding.verifyCodeEditText.setCodeItemErrorLineDrawable()
+                    true
+                }
+            }
+
+            override fun onFinish() {
+                binding.verifyCodeEditText.resetCodeItemLineDrawable()
+            }
+        }
+        timer.start()
     }
 
     private fun collectVerifyRequestCode() {
@@ -103,10 +125,10 @@ class VerificationFragment : Fragment() {
                         startActivity(intent)
                     }
                     404 -> {
-                        //Not found
+                        binding.tvError.text = "◌ حساب کاربر یافت نشد."
                     }
                     CONNECTION_ERROR_CODE -> {
-                        //TODO say to user: connection error
+                        binding.tvError.text = "◌ مشکل در اتصال به اینترنت"
                     }
                 }
                 viewModel.resetVerifyRequestCode()

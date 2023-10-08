@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
@@ -68,23 +69,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.ivProfile.setImageResource(R.drawable.ic_person)
             binding.ivProfile.setOnClickListener {
-                val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                val popupView = inflater.inflate(R.layout.profile_pop_up, binding.root, false)
+                val (popupView, popupWindow) = createWindow()
 
-                if (popupView.isVisible) {
-                    binding.ivProfile.setImageResource(R.drawable.ic_person_selected)
-                }
-
-                val popupWindow = PopupWindow(
-                    popupView,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    true
-                )
+                setUserName(popupView)
 
                 popupWindow.elevation = 60.0f
-
-                // Show the PopupWindow at a specific location relative to your button
                 popupWindow.showAsDropDown(binding.ivProfile, -470, 25, 0)
 
                 popupWindow.setOnDismissListener {
@@ -92,6 +81,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun createWindow(): Pair<View, PopupWindow> {
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView = inflater.inflate(R.layout.profile_pop_up, binding.root, false)
+
+        if (popupView.isVisible) {
+            binding.ivProfile.setImageResource(R.drawable.ic_person_selected)
+        }
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
+        return Pair(popupView, popupWindow)
+    }
+
+    private fun setUserName(popupView: View) {
+        val nameEt = popupView.findViewById<TextInputEditText>(R.id.name_et)
+        nameEt.setText(viewModel.getUserFromSharedPreferences()?.name ?: "")
     }
 
     private fun goToStarterActivity() {

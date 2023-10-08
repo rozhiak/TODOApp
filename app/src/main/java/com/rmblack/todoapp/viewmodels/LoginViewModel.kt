@@ -160,24 +160,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     }
 
     private suspend fun syncTasksWithServer(token: String) {
-//        val allServerTasks = token.let { apiRepository.getAllTasks(it).body()?.data }
         val privateLocalTasks = taskRepository.getPrivateTasks().toList()
-//        val sharedLocalTasks = taskRepository.getSharedTasks().toList()
-
-//        if (allServerTasks != null) {
-//            for(pTask in allServerTasks.private) {
-//                if (!checkIfContains(privateLocalTasks, pTask.id)) {
-//                    val task = pTask.convertToLocalTask()
-//                    taskRepository.addTask(task)
-//                }
-//            }
-//            for(sTask in allServerTasks.shared) {
-//                if (!checkIfContains(sharedLocalTasks, sTask.id)) {
-//                    val task = sTask.convertToLocalTask()
-//                    taskRepository.addTask(task)
-//                }
-//            }
-//        }
 
         for (pTask in privateLocalTasks) {
             if (pTask.serverID == "") {
@@ -212,15 +195,6 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     private fun updateServerID(id: UUID, serverID: String) {
         taskRepository.updateServerID(id, serverID)
     }
-
-//    private fun checkIfContains(localTasks: List<Task>, serverID: String): Boolean {
-//        for (eachTask in localTasks) {
-//            if (serverID == eachTask.serverID) {
-//                return true
-//            }
-//        }
-//        return false
-//    }
 
     fun changeEntranceState(state: Boolean) {
         sharedPreferencesManager.saveEntranceState(state)

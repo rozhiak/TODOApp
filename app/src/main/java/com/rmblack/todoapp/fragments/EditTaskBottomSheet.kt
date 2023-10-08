@@ -151,7 +151,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
             .setBackgroundColor(Color.parseColor("#eefaf5"))
             .setPickerBackgroundColor(Color.parseColor("#eefaf5"))
-            .setAllButtonsTextSize(16)
+            .setAllButtonsTextSize(17)
             .setListener(object : PersianPickerListener {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {
                     viewModel.updateTask {

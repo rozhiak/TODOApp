@@ -35,6 +35,7 @@ import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
+import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -206,7 +207,6 @@ class LoginFragment : Fragment() {
         binding.progressBtn.showProgress {
             progressColor = Color.WHITE
             buttonText = "کمی صبر...   "
-
         }
     }
 
@@ -220,7 +220,7 @@ class LoginFragment : Fragment() {
                 } else if(code == 404) {
                     bringPhoneUp()
                 } else if (code == CONNECTION_ERROR_CODE) {
-                    //TODO say to user: connection error
+                    binding.errorHintTv.text = "◌ مشکل در اتصال به اینترنت"
                 }
                 viewModel.resetLoginRequestCode()
             }
@@ -238,7 +238,7 @@ class LoginFragment : Fragment() {
                     //User already exist -this situation must not happen
                     //because we are calling login before any thing
                 } else if (code == CONNECTION_ERROR_CODE)  {
-                    //TODO say to user: connection error
+                    binding.errorHintTv.text = "◌ مشکل در اتصال به اینترنت"
                 }
                 viewModel.resetNewUserRequestCode()
             }

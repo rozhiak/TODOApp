@@ -77,6 +77,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/verification_hint_lable" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_marginEnd="10dp"
+        android:id="@+id/tv_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/iranian_ans"
+        android:textColor="@color/urgent_red"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/verifyCodeEditText"
+        app:layout_constraintTop_toBottomOf="@+id/verifyCodeEditText" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/progress_btn"
         android:layout_width="match_parent"
