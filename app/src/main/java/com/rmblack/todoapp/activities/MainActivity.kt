@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -8,6 +9,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -35,6 +37,7 @@ import com.rmblack.todoapp.viewmodels.SAME_USER_NAME
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
+
 
 const val newlyAddedTaskServerID = "newly added"
 
@@ -89,9 +92,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun hideKeyboard(view: View) {
+        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
     private fun changeUserName(popupView: View) {
         val saveBTN = popupView.findViewById<CircularProgressButton>(R.id.save_btn)
-        saveBTN.setOnClickListener {
+        saveBTN.setOnClickListener { saveBtnView ->
+            hideKeyboard(saveBtnView)
             val nameEt = popupView.findViewById<TextInputEditText>(R.id.name_et)
             if (nameEt.text.toString() != "") {
                 saveBTN.startAnimation {
@@ -100,13 +109,20 @@ class MainActivity : AppCompatActivity() {
                             nameEt.text.toString()
                         )
                         res.onSuccess {
-                            //TODO say to user : changes applied
                             saveBTN.revertAnimation()
                             viewModel.getUserFromSharedPreferences()?.let { token ->
                                 val result = Utilities.syncTasksWithServer(
                                     token.token,
                                     this@MainActivity
                                 )
+                                result.onSuccess {
+                                    //TODO say to user : changes applied
+                                    Utilities.makeWarningSnack(
+                                        this@MainActivity,
+                                        binding.root,
+                                        "تغییرات با موفقیت لحاظ شد."
+                                    )
+                                }
                                 result.onFailure { e ->
                                     when(e) {
                                         is UnknownHostException -> {
@@ -125,14 +141,21 @@ class MainActivity : AppCompatActivity() {
                             when (it) {
                                 is MainViewModel.UpdateUserException -> {
                                     if (it.intValue == 404) {
-                                        //TODO not found -> در فرآیند لاگین مشکلی پیش آمده
+                                        Utilities.makeWarningSnack(
+                                            this@MainActivity,
+                                            binding.root,
+                                            "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
+                                        )
                                     } else if (it.intValue == SAME_USER_NAME) {
-                                        //TODO new and old user name are same
+                                        Utilities.makeWarningSnack(
+                                            this@MainActivity,
+                                            binding.root,
+                                            "نام جدید با نام فعلی نمی تواند یکسان باشد."
+                                        )
                                     }
                                 }
 
                                 is UnknownHostException -> {
-                                    //TODO snack take place behind the keyboard
                                     Utilities.makeWarningSnack(
                                         this@MainActivity,
                                         binding.root,
@@ -144,7 +167,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                //TODO say to user: name is empty
+                Utilities.makeWarningSnack(
+                    this@MainActivity,
+                    binding.root,
+                    "نام کاربری نمی تواند خالی باشد."
+                )
             }
         }
     }

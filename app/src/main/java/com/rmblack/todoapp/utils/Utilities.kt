@@ -27,7 +27,6 @@ const val CONNECTION_ERROR_CODE = 0
 class Utilities {
 
     companion object {
-
         fun makeDeleteSnackBar(activity: Activity, container: View, onUndo: () -> Unit): Snackbar {
             val snackBar = Snackbar.make(container, "", Snackbar.LENGTH_LONG)
             val customSnackView: View =

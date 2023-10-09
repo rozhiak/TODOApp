@@ -21,5 +21,7 @@
     <color name="dark_bottom_navigation">#2d2d2d</color>
     <color name="grey">#808080</color>
     <color name="edit_card_green">#D2009F71</color>
+    <color name="black_for_dark">@color/white</color>
+
 
 </resources>

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- my colors -->
+    <color name="grey">@color/white</color>
+    <color name="black_for_dark"> #1E1E1E</color>
 
 </resources>
