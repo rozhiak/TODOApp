@@ -1,27 +1,17 @@
 package com.rmblack.todoapp.adapters
 
 import android.app.Activity
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
-import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
-import com.suke.widget.SwitchButton
 
 class PrivateTaskHolder(
     private val binding: PrivateTasksRvItemBinding,
@@ -60,7 +50,7 @@ class PrivateTaskHolder(
                 setEachTaskClick(pos, adapter, rootCard, viewModel)
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
-                setBackground(viewModel, pos, rootConstraint)
+                setBackground(viewModel, pos, rootConstraint, activity.resources)
                 setUpDelete(pos, it, adapter, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
             }

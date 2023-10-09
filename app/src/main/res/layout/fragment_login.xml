@@ -9,7 +9,7 @@
     tools:context=".activities.StarterActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/black_for_dark"
+        android:background="@color/dynamic_background_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
-            android:backgroundTint="@color/black_for_dark"
+            android:backgroundTint="@color/dynamic_background_color"
             android:id="@+id/icon_card"
             android:layout_width="130dp"
             android:layout_height="130dp"

@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.get
 import androidx.fragment.app.setFragmentResult
@@ -149,8 +151,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             .setInitDate(persianPickerDate, true)
             .setActionTextColor(Color.parseColor("#5DD0A3"))
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
-            .setBackgroundColor(Color.parseColor("#eefaf5"))
-            .setPickerBackgroundColor(Color.parseColor("#eefaf5"))
+            .setBackgroundColor(ResourcesCompat.getColor(resources, R.color.bottom_sheet_back_color, null))
+            .setPickerBackgroundColor(ResourcesCompat.getColor(resources, R.color.bottom_sheet_back_color, null))
             .setAllButtonsTextSize(17)
             .setListener(object : PersianPickerListener {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {

@@ -109,14 +109,13 @@ class MainActivity : AppCompatActivity() {
                             nameEt.text.toString()
                         )
                         res.onSuccess {
-                            saveBTN.revertAnimation()
                             viewModel.getUserFromSharedPreferences()?.let { token ->
                                 val result = Utilities.syncTasksWithServer(
                                     token.token,
                                     this@MainActivity
                                 )
                                 result.onSuccess {
-                                    //TODO say to user : changes applied
+                                    saveBTN.revertAnimation()
                                     Utilities.makeWarningSnack(
                                         this@MainActivity,
                                         binding.root,
@@ -124,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 }
                                 result.onFailure { e ->
+                                    saveBTN.revertAnimation()
                                     when(e) {
                                         is UnknownHostException -> {
                                             Utilities.makeWarningSnack(

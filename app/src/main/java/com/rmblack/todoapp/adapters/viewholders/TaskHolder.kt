@@ -2,6 +2,7 @@ package com.rmblack.todoapp.adapters.viewholders
 
 import android.app.Activity
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Color
 import android.view.View
 import androidx.appcompat.widget.AppCompatCheckBox
@@ -9,20 +10,17 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.TaskAdapter
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
-import com.rmblack.todoapp.webservice.repository.ApiRepository
 import com.suke.widget.SwitchButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 const val TASK = 0
 
@@ -149,12 +147,17 @@ open class TaskHolder(
     fun setBackground(
         viewModel: TasksViewModel,
         pos: Int,
-        rootConstraint: ConstraintLayout
+        rootConstraint: ConstraintLayout,
+        resources: Resources
     ) {
         if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
-            rootConstraint.setBackgroundColor(Color.parseColor("#f0fcf7"))
+            rootConstraint.setBackgroundColor(
+                ResourcesCompat.getColor(resources, R.color.expanded_task_back_color, null)
+            )
         } else {
-            rootConstraint.setBackgroundColor(Color.parseColor("#19E2FFF3"))
+            rootConstraint.setBackgroundColor(
+                ResourcesCompat.getColor(resources, R.color.collapsed_task_back_color, null)
+            )
         }
     }
 

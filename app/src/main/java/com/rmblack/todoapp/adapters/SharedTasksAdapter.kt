@@ -50,7 +50,7 @@ class SharedTaskHolder(
                 setEachTaskClick(pos, adapter, rootCard, viewModel)
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
-                setBackground(viewModel, pos, rootConstraint)
+                setBackground(viewModel, pos, rootConstraint, activity.resources)
                 setUpDelete(pos, it, adapter, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
                 composerNameTv.text = it.composer
