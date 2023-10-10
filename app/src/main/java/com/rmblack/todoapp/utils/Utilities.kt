@@ -15,12 +15,15 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.requests.AddTaskRequest
+import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.models.server.success.Tasks
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import retrofit2.Response
 import java.lang.Exception
+import java.util.UUID
 
 const val CONNECTION_ERROR_CODE = 0
 

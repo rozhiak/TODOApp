@@ -162,6 +162,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun editTaskInServer(editedTask: Task) {
+        //TODO check if there is a add cashed request for it, change the add request
         val user = getUser()
         if (user?.token != null) {
             val editRequest = EditTaskRequest(
@@ -196,6 +197,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun deleteTaskFromServer(deleteRequest: DeleteTaskRequest) {
+        //TODO check if there is a add cashed request just delete the add request
         val user = getUser()
         if (user?.token != null) {
             deleteJob = CoroutineScope(Dispatchers.IO).launch {

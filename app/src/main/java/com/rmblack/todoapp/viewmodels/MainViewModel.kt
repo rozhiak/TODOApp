@@ -26,6 +26,17 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
 
     private val apiRepository = ApiRepository()
 
+    fun removeNoTitleTasks() {
+        viewModelScope.launch {
+            val tasks = taskRepository.getTasks()
+            for (t in tasks) {
+                if (t.title == "") {
+                    taskRepository.deleteTask(t)
+                }
+            }
+        }
+    }
+
     suspend fun addTask(task: Task) {
         taskRepository.addTask(task)
     }

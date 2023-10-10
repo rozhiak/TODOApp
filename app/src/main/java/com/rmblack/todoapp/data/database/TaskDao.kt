@@ -13,7 +13,7 @@ import java.util.UUID
 @Dao
 interface TaskDao {
     @Query("SELECT * FROM task")
-    fun getTasks(): Flow<List<Task>>
+    suspend fun getTasks(): List<Task>
 
     @Query("SELECT * FROM task WHERE isShared = 0")
     fun getPrivateTasksFlow(): Flow<List<Task>>

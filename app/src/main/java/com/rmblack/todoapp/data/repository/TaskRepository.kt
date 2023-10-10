@@ -25,7 +25,7 @@ class TaskRepository private constructor(
         )
         .build()
 
-    fun getTasks(): Flow<List<Task>> = database.taskDao().getTasks()
+    suspend fun getTasks(): List<Task> = database.taskDao().getTasks()
 
     fun getTask(id: UUID) = database.taskDao().getTask(id)
 

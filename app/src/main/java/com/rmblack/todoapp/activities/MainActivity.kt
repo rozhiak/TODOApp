@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPreferencesManager = SharedPreferencesManager(this)
         viewModel = ViewModelProvider(this, MainViewModelFactory(sharedPreferencesManager))[MainViewModel::class.java]
+        viewModel.removeNoTitleTasks()
 
         checkLoginState()
 
@@ -287,7 +288,7 @@ class MainActivity : AppCompatActivity() {
                 isUrgent = false,
                 isDone = false,
                 isShared = binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment,
-                composer = "",
+                composer = viewModel.getUserFromSharedPreferences()?.name ?: "",
                 groupId = "123",
             )
 

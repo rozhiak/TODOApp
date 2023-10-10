@@ -47,6 +47,7 @@
                 android:textDirection="rtl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:hint="بدون عنوان"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/iranian_ans"
                 android:textColor="@color/green"
@@ -73,7 +74,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
-                android:text="علیرضا"
                 app:layout_constraintBottom_toBottomOf="@+id/title_tv"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/title_tv" />
