@@ -142,7 +142,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
 
-        //TODO : change color of text in dark mood
         val picker = PersianDatePickerDialog(context)
             .setPositiveButtonString("باشه")
             .setNegativeButton("بیخیال")
