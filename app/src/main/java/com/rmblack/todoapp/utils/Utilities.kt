@@ -100,7 +100,7 @@ class Utilities {
 
             for (editReq in failedEditRequests) {
                 try {
-                    val response = apiRepository.editTask(editReq)
+                    val response = apiRepository.editTask(editReq.convertToServerEditModel())
                     if (response.code() == 200 || response.code() == 404)
                         sharedPreferencesManager.removeFailedEditRequest(editReq)
                 } catch (e: Exception) {

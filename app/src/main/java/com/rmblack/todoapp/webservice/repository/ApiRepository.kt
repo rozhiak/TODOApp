@@ -9,6 +9,7 @@ import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
+import com.rmblack.todoapp.models.server.requests.ServerEditTaskRequest
 import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.webservice.ApiService
@@ -23,7 +24,7 @@ class ApiRepository {
 
     suspend fun deleteTask(body: DeleteTaskRequest) = getInstance().deleteTask(body)
 
-    suspend fun editTask(body: EditTaskRequest) = getInstance().editTask(body)
+    suspend fun editTask(body: ServerEditTaskRequest) = getInstance().editTask(body)
 
     suspend fun loginUser(body: LoginRequest) = getInstance().loginUser(body)
 

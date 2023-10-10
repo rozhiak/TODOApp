@@ -3,7 +3,6 @@ package com.rmblack.todoapp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
-import com.rmblack.todoapp.adapters.TaskAdapter
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
@@ -98,27 +97,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
             taskRepository.deleteTask(task)
         }
 
-        removeRelatedCashedRequests(task)
-
         return res
-    }
-
-    private fun removeRelatedCashedRequests(task: Task?) {
-        task?.let {
-            val addRequests = sharedPreferencesManager.getFailedAddRequests()
-            for (addReq in addRequests) {
-                if (addReq.localTaskID == task.id) {
-                    sharedPreferencesManager.removeFailedAddRequest(addReq)
-                }
-            }
-
-            val editRequests = sharedPreferencesManager.getFailedEditRequests()
-            for (editReq in editRequests) {
-                if (editReq.task_id == task.serverID) {
-                    sharedPreferencesManager.removeFailedEditRequest(editReq)
-                }
-            }
-        }
     }
 
     fun insertTask(task: Task) {
@@ -162,59 +141,82 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun editTaskInServer(editedTask: Task) {
-        //TODO check if there is a add cashed request for it, change the add request
-        val user = getUser()
-        if (user?.token != null) {
-            val editRequest = EditTaskRequest(
-                user.token,
-                editedTask.serverID,
-                editedTask.title,
-                editedTask.deadLine.timeInMillis.toString(),
-                editedTask.isUrgent,
-                editedTask.isDone,
-                editedTask.isShared
-            )
+        val addRequests = sharedPreferencesManager.getFailedAddRequests()
+        val index = addRequests.indexOfFirst { req ->
+            req.localTaskID == editedTask.id
+        }
+        if (index != -1) {
+            sharedPreferencesManager.removeFailedAddRequest(addRequests[index])
+            addTaskToServer(editedTask)
+        } else {
+            val user = getUser()
+            if (user?.token != null) {
+                val editRequest = EditTaskRequest(
+                    user.token,
+                    editedTask.serverID,
+                    editedTask.title,
+                    editedTask.deadLine.timeInMillis.toString(),
+                    editedTask.isUrgent,
+                    editedTask.isDone,
+                    editedTask.isShared,
+                    editedTask.id
+                )
 
-            editJob = CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = apiRepository.editTask(editRequest)
-                    if (response.isSuccessful) {
+                editJob = CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = apiRepository.editTask(editRequest.convertToServerEditModel())
+                        if (response.isSuccessful) {
 
-                    } else {
-                        if (response.code() == 403) {
-                            //invalid token or access denied
-                        } else if (response.code() == 404) {
-                            //Task not found
                         } else {
-                            sharedPreferencesManager.insertFailedEditRequest(editRequest)
+                            if (response.code() == 403) {
+                                //invalid token or access denied
+                            } else if (response.code() == 404) {
+                                //Task not found
+                            } else {
+                                sharedPreferencesManager.insertFailedEditRequest(editRequest)
+                            }
                         }
+                    } catch (e: Exception) {
+                        sharedPreferencesManager.insertFailedEditRequest(editRequest)
                     }
-                } catch (e: Exception) {
-                    sharedPreferencesManager.insertFailedEditRequest(editRequest)
                 }
             }
         }
     }
 
-    fun deleteTaskFromServer(deleteRequest: DeleteTaskRequest) {
-        //TODO check if there is a add cashed request just delete the add request
-        val user = getUser()
-        if (user?.token != null) {
-            deleteJob = CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = apiRepository.deleteTask(deleteRequest)
-                    if (response.isSuccessful) {
-                        removeDeleteRequest(deleteRequest)
-                    } else if (response.code() == 403) {
-                        //Invalid token or access denied
-                        removeDeleteRequest(deleteRequest)
-                    } else if (response.code() == 404) {
-                        //task not found
-                        removeDeleteRequest(deleteRequest)
-                    }
-                } catch (e: Exception) {
+    fun deleteTaskFromServer(deleteRequest: DeleteTaskRequest, taskToDelete: Task) {
+        val addRequests = sharedPreferencesManager.getFailedAddRequests()
+        val addIndex = addRequests.indexOfFirst { req ->
+            req.localTaskID == taskToDelete.id
+        }
+        if (addIndex != -1) {
+            sharedPreferencesManager.removeFailedAddRequest(addRequests[addIndex])
+        } else {
+            val user = getUser()
+            if (user?.token != null) {
+                deleteJob = CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = apiRepository.deleteTask(deleteRequest)
+                        if (response.isSuccessful) {
+                            removeDeleteRequest(deleteRequest)
+                        } else if (response.code() == 403) {
+                            //Invalid token or access denied
+                            removeDeleteRequest(deleteRequest)
+                        } else if (response.code() == 404) {
+                            //task not found
+                            removeDeleteRequest(deleteRequest)
+                        }
+                    } catch (e: Exception) {
 
+                    }
                 }
+            }
+        }
+
+        val editRequests = sharedPreferencesManager.getFailedEditRequests()
+        for (req in editRequests) {
+            if (req.localTaskId == taskToDelete.id) {
+                sharedPreferencesManager.removeFailedEditRequest(req)
             }
         }
     }

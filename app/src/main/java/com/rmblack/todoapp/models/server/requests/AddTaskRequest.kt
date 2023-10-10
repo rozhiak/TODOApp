@@ -35,7 +35,7 @@ data class ServerAddTaskRequest(
     val deadline: String,
     val is_urgent: Boolean,
     val is_done: Boolean,
-    val is_shared: Boolean,
+    val is_shared: Boolean
 )
 
 

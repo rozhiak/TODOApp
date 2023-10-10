@@ -139,8 +139,10 @@ open class TaskHolder(
         doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, isDone ->
-            viewModel.updateDoneState(isDone, task.id)
-            viewModel.editTaskInServer(task.copy(isDone = isDone))
+            if (isDone != task.isDone) {
+                viewModel.updateDoneState(isDone, task.id)
+                viewModel.editTaskInServer(task.copy(isDone = isDone))
+            }
         }
     }
 
@@ -196,7 +198,7 @@ open class TaskHolder(
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
                     if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
-                        viewModel.deleteTaskFromServer(deleteReq)
+                        viewModel.deleteTaskFromServer(deleteReq, task)
                     }
                 }
             })

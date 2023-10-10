@@ -8,6 +8,7 @@ import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
+import com.rmblack.todoapp.models.server.requests.ServerEditTaskRequest
 import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
@@ -31,7 +32,7 @@ interface ApiService {
 
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/edit/")
-    suspend fun editTask(@Body body: EditTaskRequest): Response<TaskResponse>
+    suspend fun editTask(@Body body: ServerEditTaskRequest): Response<TaskResponse>
 
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/delete/")

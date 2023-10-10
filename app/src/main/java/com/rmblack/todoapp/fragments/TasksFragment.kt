@@ -157,7 +157,7 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                             super.onDismissed(transientBottomBar, event)
                             if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
-                                viewModel.deleteTaskFromServer(deleteReq)
+                                viewModel.deleteTaskFromServer(deleteReq, deletedTask)
                             }
                         }
                     })
