@@ -66,7 +66,7 @@ class PrivateTasksFragment : TasksFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
                     if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
-                        //Moving ro shared list.
+//                        Moving ro shared list.
                         setUpForTaskMoving()
                     } else if (editedTaskId != null) {
                         setUpForNewOrEditTask(tasks, editedTaskId, isNewTask)
