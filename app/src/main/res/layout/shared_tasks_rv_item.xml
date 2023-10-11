@@ -82,6 +82,7 @@
                 android:id="@+id/dead_line_iv"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
+                android:tint="@color/title_black"
                 app:srcCompat="@drawable/ic_hourglass"
                 app:layout_constraintEnd_toEndOf="@+id/title_tv"
                 app:layout_constraintTop_toBottomOf="@+id/title_tv" />
@@ -91,6 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:textSize="15sp"
                 android:text="۱۴۰۲/۰۵/۲۴"
                 android:textColor="@color/title_black"
                 app:layout_constraintBottom_toBottomOf="@+id/dead_line_iv"

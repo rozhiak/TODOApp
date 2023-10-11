@@ -152,7 +152,7 @@ open class TaskHolder(
         rootConstraint: ConstraintLayout,
         resources: Resources
     ) {
-        if (pos in viewModel.detailsVisibility.indices && viewModel.detailsVisibility[pos]) {
+        if (viewModel.tasks.value[pos]?.detailsVisibility == true) {
             rootConstraint.setBackgroundColor(
                 ResourcesCompat.getColor(resources, R.color.expanded_task_back_color, null)
             )
@@ -166,27 +166,17 @@ open class TaskHolder(
     fun setUpDelete(
         pos: Int,
         task: Task,
-        adapter: TaskAdapter,
         deleteBtn: AppCompatImageView,
         viewModel: TasksViewModel,
         activity: Activity,
     ) {
         deleteBtn.setOnClickListener {
-            var visibility = viewModel.detailsVisibility[pos]
             val deleteReq = viewModel.makeDeleteRequest(task.serverID)
             if (deleteReq != null) {
                 viewModel.cashDeleteRequest(deleteReq)
             }
-            val isDateLableRemoved = viewModel.deleteTask(task, pos, adapter)
             val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
-                for (b in viewModel.detailsVisibility) {
-                    if (b) {
-                        visibility = false
-                        break
-                    }
-                }
                 viewModel.insertTask(task)
-                viewModel.insertVisibility(pos, visibility, isDateLableRemoved)
                 recyclerView.post {
                     recyclerView.smoothScrollToPosition(pos)
                 }
@@ -212,18 +202,28 @@ open class TaskHolder(
         viewModel: TasksViewModel
     ) {
         rootCard.setOnClickListener {
-            if (pos in viewModel.detailsVisibility.indices && !viewModel.detailsVisibility[pos]) {
+            if (viewModel.tasks.value[pos]?.detailsVisibility == false) {
                 for (i in viewModel.tasks.value.indices) {
-                    if (i != pos && viewModel.detailsVisibility[i]) {
-                        viewModel.updateVisibility(i, !viewModel.detailsVisibility[i])
+                    if (i != pos && viewModel.tasks.value[i]?.detailsVisibility == true) {
+                        val oldVis = viewModel.tasks.value[i]?.detailsVisibility ?: false
+                        viewModel.tasks.value[i]?.detailsVisibility = !oldVis
                         adapter.notifyItemChanged(i)
+                        viewModel.tasks.value[i]?.id?.let { id ->
+                            viewModel.updateDetailsVisibility(!oldVis,
+                                id
+                            )
+                        }
                     }
                 }
             }
-            if (pos in viewModel.detailsVisibility.indices) {
-                viewModel.updateVisibility(pos, !viewModel.detailsVisibility[pos])
-            }
+            val oldVis = viewModel.tasks.value[pos]?.detailsVisibility ?: false
+            viewModel.tasks.value[pos]?.detailsVisibility = !oldVis
             adapter.notifyItemChanged(pos)
+            viewModel.tasks.value[pos]?.id?.let {id ->
+                viewModel.updateDetailsVisibility(!oldVis,
+                    id
+                )
+            }
             recyclerView.post {
                 recyclerView.smoothScrollToPosition(pos)
             }

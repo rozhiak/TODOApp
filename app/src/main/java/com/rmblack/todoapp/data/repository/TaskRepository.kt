@@ -68,6 +68,12 @@ class TaskRepository private constructor(
         }
     }
 
+    fun updateDetailsVisibility(id: UUID, isVisible: Boolean) {
+        coroutineScope.launch {
+            database.taskDao().updateDetailsVisibility(isVisible, id)
+        }
+    }
+
     suspend fun addTask(task: Task) = database.taskDao().insert(task)
 
     companion object {

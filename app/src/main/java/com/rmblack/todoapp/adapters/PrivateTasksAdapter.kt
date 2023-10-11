@@ -34,24 +34,22 @@ class PrivateTaskHolder(
             binding.apply {
                 configUrgentSwitch(viewModel, it, urgentSwitch)
                 configDoneCheckBox(viewModel, it, doneCheckBox)
-                if (pos in viewModel.detailsVisibility.indices) {
-                    setDetailsVisibility(
-                        viewModel.detailsVisibility[pos],
-                        descriptionLable,
-                        descriptionTv,
-                        urgentLable,
-                        urgentSwitch,
-                        editCard,
-                        deleteBtn
-                    )
-                }
+                setDetailsVisibility(
+                    viewModel.tasks.value[pos]?.detailsVisibility ?: false,
+                    descriptionLable,
+                    descriptionTv,
+                    urgentLable,
+                    urgentSwitch,
+                    editCard,
+                    deleteBtn
+                )
                 setUrgentUi(it, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
                 setDoneUi(it, doneCheckBox)
                 setEachTaskClick(pos, adapter, rootCard, viewModel)
                 setTaskDetails(it, titleTv, deadLineTv, descriptionTv, descriptionLable)
                 setEditClick(it, editCard)
                 setBackground(viewModel, pos, rootConstraint, activity.resources)
-                setUpDelete(pos, it, adapter, deleteBtn, viewModel, activity)
+                setUpDelete(pos, it, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
             }
         }

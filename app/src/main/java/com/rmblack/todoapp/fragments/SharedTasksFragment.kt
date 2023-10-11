@@ -142,16 +142,9 @@ class SharedTasksFragment : TasksFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.tasks.collect { tasks ->
-                    if (viewModel.detailsVisibility.size != viewModel.tasks.value.size) {
-                        setUpForTaskMoving()
-                    } else if (editedTaskId != null) {
-                        setUpForNewOrEditTask(tasks, editedTaskId, isNewTask)
-                    }
+                    setUpForNewOrEditTask(tasks, editedTaskId, isNewTask)
                     editedTaskId = null
                     isNewTask = null
-                    while (viewModel.detailsVisibility.size > viewModel.tasks.value.size) {
-                        setUpIfLabeledTaskMoved()
-                    }
 
                     val layoutManager = binding.tasksRv.layoutManager as LinearLayoutManager
                     val firstVisibleItem = layoutManager.getChildAt(0)

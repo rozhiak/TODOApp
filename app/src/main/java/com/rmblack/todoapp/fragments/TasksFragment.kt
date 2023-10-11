@@ -59,34 +59,11 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
             binding.refreshLayout.isEnabled = false
         } else {
             binding.refreshLayout.setOnRefreshListener {
-                var formerOpenTaskIndex = viewModel.detailsVisibility.indexOf(true)
-                var lastOpenTaskID : UUID? = null
-                if (formerOpenTaskIndex != -1) {
-                    lastOpenTaskID = viewModel.tasks.value[formerOpenTaskIndex]?.id
-                }
 
                 viewLifecycleOwner.lifecycleScope.launch {
                         val response = Utilities.syncTasksWithServer(userToken, requireContext())
                         response.onSuccess {
                             binding.refreshLayout.isRefreshing = false
-                            viewModel.tasks.collect {tasks ->
-                                val newIndex: Int = tasks.indexOfFirst { it?.id == lastOpenTaskID }
-                                if (formerOpenTaskIndex != -1) {
-                                    if (newIndex == -1) {
-                                        viewModel.updateVisibility(formerOpenTaskIndex, false)
-                                        binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
-                                        lastOpenTaskID = null
-                                        formerOpenTaskIndex = -1
-                                    } else if (newIndex != formerOpenTaskIndex) {
-                                        viewModel.updateVisibility(formerOpenTaskIndex, false)
-                                        binding.tasksRv.adapter?.notifyItemChanged(formerOpenTaskIndex)
-                                        viewModel.updateVisibility(newIndex, true)
-                                        binding.tasksRv.adapter?.notifyItemChanged(newIndex)
-                                        lastOpenTaskID = null
-                                        formerOpenTaskIndex = -1
-                                    }
-                                }
-                            }
                         }
 
                         response.onFailure { e ->
@@ -121,7 +98,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
-                var visibility = viewModel.detailsVisibility[position]
                 val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
                     val deleteReq = viewModel.makeDeleteRequest(deletedTask.serverID)
@@ -130,21 +106,12 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                     }
                     var isDateLableRemoved = false
                     binding.tasksRv.adapter?.let {adapter ->
-                        isDateLableRemoved = viewModel.deleteTask(
+                        viewModel.deleteTask(
                             viewModel.tasks.value[position],
-                            position,
-                            adapter
                         )
                     }
                     val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
-                        for (b in viewModel.detailsVisibility) {
-                            if (b) {
-                                visibility = false
-                                break
-                            }
-                        }
                         viewModel.insertTask(deletedTask)
-                        viewModel.insertVisibility(position, visibility, isDateLableRemoved)
                         binding.tasksRv.post {
                             binding.tasksRv.smoothScrollToPosition(position)
                         }
@@ -226,25 +193,15 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         }
     }
 
-    protected fun setUpIfLabeledTaskMoved() {
-        val firstFalseIndex = viewModel.detailsVisibility.indexOfFirst { !it }
-        viewModel.deleteVisibility(firstFalseIndex)
-    }
-
     protected fun setUpForNewOrEditTask(
         tasks: List<Task?>,
         editedTaskId: UUID?,
         isNewTask: Boolean?
     ) {
         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
-        val oldIndex = viewModel.detailsVisibility.indexOfFirst { it }
-        if (oldIndex != editedTaskIndex) {
-            if (oldIndex != -1 && editedTaskIndex != -1) viewModel.updateVisibility(oldIndex, false)
-            if (editedTaskIndex != -1) {
-                viewModel.updateVisibility(editedTaskIndex, true)
-                binding.tasksRv.post {
-                    binding.tasksRv.smoothScrollToPosition(editedTaskIndex)
-                }
+        if (editedTaskIndex != -1) {
+            binding.tasksRv.post {
+                binding.tasksRv.smoothScrollToPosition(editedTaskIndex)
             }
         }
         if (isNewTask != null && editedTaskIndex != -1) {
@@ -254,11 +211,6 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                 tasks[editedTaskIndex]?.let { viewModel.editTaskInServer(it) }
             }
         }
-    }
-
-    protected fun setUpForTaskMoving() {
-        val movedTaskIndex = viewModel.detailsVisibility.indexOfFirst { it }
-        viewModel.deleteVisibility(movedTaskIndex)
     }
 
     override fun onEditClick(task: Task) {

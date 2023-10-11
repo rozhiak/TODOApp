@@ -157,7 +157,9 @@ class Utilities {
                         if (index >= 0) {
                             val localTask = privateLocalTasksPair[index].first
                             if (!pServerTask.checkEquality(localTask)) {
-                                taskRepository.updateTask(pServerTask.convertToLocalTaskWithLocalID(localTask.id))
+                                taskRepository.updateTask(pServerTask.convertToLocalTaskWithLocalID(
+                                    localTask.id, localTask.detailsVisibility)
+                                )
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
@@ -177,7 +179,9 @@ class Utilities {
                         if (index >= 0) {
                             val localTask = sharedLocalTasksPair[index].first
                             if (!sServerTask.checkEquality(localTask)) {
-                                taskRepository.updateTask(sServerTask.convertToLocalTaskWithLocalID(localTask.id))
+                                taskRepository.updateTask(sServerTask.convertToLocalTaskWithLocalID(
+                                    localTask.id, localTask.detailsVisibility)
+                                )
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {

@@ -18,5 +18,6 @@ data class Task(
     val isShared: Boolean,
     val composer: String,
     val groupId: String,
-    val serverID: String = ""
+    val serverID: String = "",
+    var detailsVisibility : Boolean
 )

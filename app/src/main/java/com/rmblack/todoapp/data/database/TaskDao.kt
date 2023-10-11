@@ -30,6 +30,9 @@ interface TaskDao {
     @Query("SELECT * FROM Task WHERE id=(:id)")
     fun getTask(id: UUID): Task
 
+    @Query("UPDATE task SET detailsVisibility = :isVisible WHERE id = :id")
+    suspend fun updateDetailsVisibility(isVisible: Boolean, id: UUID)
+
     @Update
     suspend fun updateTask(task: Task)
 

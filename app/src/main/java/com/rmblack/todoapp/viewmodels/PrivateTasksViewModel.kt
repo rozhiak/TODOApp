@@ -23,10 +23,6 @@ class PrivateTasksViewModel(sharedPreferencesManager: SharedPreferencesManager):
                     }
                 }
 
-                while (_detailsVisibility.size < tasksWithDatePositionNull.size) {
-                    _detailsVisibility.add(false)
-                }
-
                 _tasks.value = tasksWithDatePositionNull.toList()
             }
         }

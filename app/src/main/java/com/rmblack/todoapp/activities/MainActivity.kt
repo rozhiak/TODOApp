@@ -290,6 +290,7 @@ class MainActivity : AppCompatActivity() {
                 isShared = binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment,
                 composer = viewModel.getUserFromSharedPreferences()?.name ?: "",
                 groupId = "123",
+                detailsVisibility = false
             )
 
             val editTaskBottomSheet = EditTaskBottomSheet()

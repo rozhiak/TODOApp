@@ -8,5 +8,5 @@
     <color name="hint_text_color">#C4FFFFFF</color>
     <color name="expanded_task_back_color">#4D5A56</color>
     <color name="segmented_btn_back_color">#5E6E69</color>
-
+    <color name="title_black">#D8FFFFFF</color>
 </resources>
