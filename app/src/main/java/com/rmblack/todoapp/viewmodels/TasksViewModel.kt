@@ -158,6 +158,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                     user.token,
                     editedTask.serverID,
                     editedTask.title,
+                    editedTask.description,
                     editedTask.deadLine.timeInMillis.toString(),
                     editedTask.isUrgent,
                     editedTask.isDone,
