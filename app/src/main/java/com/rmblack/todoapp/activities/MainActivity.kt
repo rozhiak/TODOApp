@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, MainViewModelFactory(sharedPreferencesManager))[MainViewModel::class.java]
         viewModel.removeNoTitleTasks()
 
+
         checkLoginState()
 
         super.onCreate(savedInstanceState)
@@ -325,6 +326,11 @@ class MainActivity : AppCompatActivity() {
                 child.translationY = translationY
             return true
         }
+    }
+
+    override fun onStop() {
+        viewModel.collapseExpandedTask()
+        super.onStop()
     }
 
     class MainViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {

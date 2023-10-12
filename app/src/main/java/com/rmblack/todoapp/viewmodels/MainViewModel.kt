@@ -26,6 +26,17 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
 
     private val apiRepository = ApiRepository()
 
+    fun collapseExpandedTask() {
+        viewModelScope.launch {
+            val tasks = taskRepository.getTasks()
+            for (t in tasks) {
+                if (t.detailsVisibility) {
+                    taskRepository.updateDetailsVisibility(t.id, false)
+                }
+            }
+        }
+    }
+
     fun removeNoTitleTasks() {
         viewModelScope.launch {
             val tasks = taskRepository.getTasks()

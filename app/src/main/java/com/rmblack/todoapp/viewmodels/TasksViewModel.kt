@@ -32,11 +32,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
 
-//    protected val _detailsVisibility: ArrayList<Boolean> = ArrayList()
-//
-//    val detailsVisibility: List<Boolean>
-//        get() = _detailsVisibility.toList()
-
     //Server properties
     private var addJob: Job? = null
 
@@ -61,46 +56,12 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     private fun updateServerID(id: UUID, serverID: String) {
         taskRepository.updateServerID(id, serverID)
     }
-//
-//    fun updateVisibility(index: Int, visibility: Boolean) {
-//        if (index < _detailsVisibility.size) _detailsVisibility[index] = visibility
-//    }
 
-//    fun insertVisibility(pos: Int, b: Boolean, withLableVisibility: Boolean) {
-//        //If there had been a date lable before deleted task, the visibility for lable
-//        // is deleted so it is needed to add false to reach to the desired size
-//        if (withLableVisibility) {
-//            _detailsVisibility.add(pos - 1, false)
-//        }
-//        _detailsVisibility.add(pos, b)
-//    }
-//
-//    fun deleteVisibility(pos: Int) {
-//        if (pos in detailsVisibility.indices) _detailsVisibility.removeAt(pos)
-//    }
 
     fun deleteTask(task: Task?) {
-        //Extra deletion is for date labels
-//        var res = false
-//        _detailsVisibility.removeAt(position)
-
-//        if (position + 1 < tasks.value.size) { //if it is not the last task in list
-//            if (tasks.value[position - 1] == null && tasks.value[position + 1] == null) {
-////                _detailsVisibility.removeAt(position - 1)
-//                res = true
-//            }
-//        } else {
-//            if (tasks.value[position - 1] == null) {
-////                _detailsVisibility.removeAt(position - 1)
-//                res = true
-//            }
-//        }
-
         viewModelScope.launch {
             taskRepository.deleteTask(task)
         }
-
-//        return res
     }
 
     fun insertTask(task: Task) {
@@ -257,11 +218,13 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         return sharedPreferencesManager.getConnectedPhone() ?: ""
     }
 
+
+
     override fun onCleared() {
-        super.onCleared()
         addJob?.cancel()
         editJob?.cancel()
         deleteJob?.cancel()
+        super.onCleared()
     }
 
 }
