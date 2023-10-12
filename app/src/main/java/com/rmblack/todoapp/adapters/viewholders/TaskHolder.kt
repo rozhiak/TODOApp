@@ -171,9 +171,11 @@ open class TaskHolder(
         activity: Activity,
     ) {
         deleteBtn.setOnClickListener {
+            viewModel.deleteTask(task)
+
             val deleteReq = viewModel.makeDeleteRequest(task.serverID)
             if (deleteReq != null) {
-                viewModel.cashDeleteRequest(deleteReq)
+                    viewModel.cashDeleteRequest(deleteReq)
             }
             val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
                 viewModel.insertTask(task)

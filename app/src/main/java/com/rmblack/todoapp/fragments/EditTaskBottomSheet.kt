@@ -150,6 +150,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             .setInitDate(persianPickerDate, true)
             .setActionTextColor(Color.parseColor("#5DD0A3"))
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
+            .setTitleColor(ResourcesCompat.getColor(resources, R.color.title_black, null))
             .setBackgroundColor(ResourcesCompat.getColor(resources, R.color.bottom_sheet_back_color, null))
             .setPickerBackgroundColor(ResourcesCompat.getColor(resources, R.color.bottom_sheet_back_color, null))
             .setAllButtonsTextSize(17)

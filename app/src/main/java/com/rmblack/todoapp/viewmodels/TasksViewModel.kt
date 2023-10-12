@@ -150,38 +150,41 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun deleteTaskFromServer(deleteRequest: DeleteTaskRequest, taskToDelete: Task) {
-        val addRequests = sharedPreferencesManager.getFailedAddRequests()
-        val addIndex = addRequests.indexOfFirst { req ->
-            req.localTaskID == taskToDelete.id
-        }
-        if (addIndex != -1) {
-            sharedPreferencesManager.removeFailedAddRequest(addRequests[addIndex])
-        } else {
-            val user = getUser()
-            if (user?.token != null) {
-                deleteJob = CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val response = apiRepository.deleteTask(deleteRequest)
-                        if (response.isSuccessful) {
-                            removeDeleteRequest(deleteRequest)
-                        } else if (response.code() == 403) {
-                            //Invalid token or access denied
-                            removeDeleteRequest(deleteRequest)
-                        } else if (response.code() == 404) {
-                            //task not found
-                            removeDeleteRequest(deleteRequest)
-                        }
-                    } catch (e: Exception) {
+        val user = getUser()
+        if (user?.token != null) {
+            val addRequests = sharedPreferencesManager.getFailedAddRequests()
+            val addIndex = addRequests.indexOfFirst { req ->
+                req.localTaskID == taskToDelete.id
+            }
+            if (addIndex != -1) {
+                sharedPreferencesManager.removeFailedAddRequest(addRequests[addIndex])
+            } else {
+                val user = getUser()
+                if (user?.token != null) {
+                    deleteJob = CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val response = apiRepository.deleteTask(deleteRequest)
+                            if (response.isSuccessful) {
+                                removeDeleteRequest(deleteRequest)
+                            } else if (response.code() == 403) {
+                                //Invalid token or access denied
+                                removeDeleteRequest(deleteRequest)
+                            } else if (response.code() == 404) {
+                                //task not found
+                                removeDeleteRequest(deleteRequest)
+                            }
+                        } catch (e: Exception) {
 
+                        }
                     }
                 }
             }
-        }
 
-        val editRequests = sharedPreferencesManager.getFailedEditRequests()
-        for (req in editRequests) {
-            if (req.localTaskId == taskToDelete.id) {
-                sharedPreferencesManager.removeFailedEditRequest(req)
+            val editRequests = sharedPreferencesManager.getFailedEditRequests()
+            for (req in editRequests) {
+                if (req.localTaskId == taskToDelete.id) {
+                    sharedPreferencesManager.removeFailedEditRequest(req)
+                }
             }
         }
     }

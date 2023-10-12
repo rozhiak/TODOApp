@@ -104,12 +104,9 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
                     if (deleteReq != null) {
                         viewModel.cashDeleteRequest(deleteReq)
                     }
-                    var isDateLableRemoved = false
-                    binding.tasksRv.adapter?.let {adapter ->
-                        viewModel.deleteTask(
-                            viewModel.tasks.value[position],
-                        )
-                    }
+                    viewModel.deleteTask(
+                        viewModel.tasks.value[position],
+                    )
                     val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
                         viewModel.insertTask(deletedTask)
                         binding.tasksRv.post {
