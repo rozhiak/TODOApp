@@ -32,6 +32,8 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
 
+    private var lastExpandedID : UUID? = null
+
     //Server properties
     private var addJob: Job? = null
 
@@ -57,6 +59,20 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         taskRepository.updateServerID(id, serverID)
     }
 
+    fun collapseExpandedTask() {
+        for (t in tasks.value) {
+            if (t?.detailsVisibility == true) {
+                taskRepository.updateDetailsVisibility(t.id, false)
+                lastExpandedID = t.id
+                return
+            }
+        }
+        lastExpandedID = null
+    }
+
+    fun resetLastExpandedTask() {
+        lastExpandedID?.let { id -> taskRepository.updateDetailsVisibility(id, true) }
+    }
 
     fun deleteTask(task: Task?) {
         viewModelScope.launch {
@@ -135,6 +151,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                         } else {
                             if (response.code() == 403) {
                                 //invalid token or access denied
+
                             } else if (response.code() == 404) {
                                 //Task not found
                             } else {
@@ -220,8 +237,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     fun getConnectedPhone(): String {
         return sharedPreferencesManager.getConnectedPhone() ?: ""
     }
-
-
 
     override fun onCleared() {
         addJob?.cancel()

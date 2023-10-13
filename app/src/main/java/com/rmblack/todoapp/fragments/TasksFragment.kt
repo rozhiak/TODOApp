@@ -20,6 +20,7 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
@@ -44,6 +45,11 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         _binding = FragmentTasksBinding.inflate(inflater, container, false)
         binding.tasksRv.layoutManager = LinearLayoutManager(context)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.resetLastExpandedTask()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -219,9 +225,14 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
     }
 
+    override fun onStop() {
+        viewModel.collapseExpandedTask()
+        super.onStop()
+    }
+
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
 }

@@ -37,7 +37,6 @@ class PrivateTasksFragment : TasksFragment() {
         )[PrivateTasksViewModel::class.java]
 
         return super.onCreateView(inflater, container, savedInstanceState)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
