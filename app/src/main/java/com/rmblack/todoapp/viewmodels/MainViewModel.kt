@@ -11,11 +11,16 @@ import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.webservice.repository.ApiRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.userAgent
 import retrofit2.Response
 import java.lang.Exception
 import java.net.UnknownHostException
+import java.util.concurrent.Flow
 import kotlin.Result.Companion.failure
 
 const val SAME_USER_NAME = 1
@@ -25,6 +30,16 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
     private val taskRepository = TaskRepository.get()
 
     private val apiRepository = ApiRepository()
+
+    private val _isSyncing = MutableStateFlow(false)
+
+    val isSyncing get() = _isSyncing.asStateFlow()
+
+    fun updateSyncState(state: Boolean) {
+       _isSyncing.update {
+           state
+       }
+    }
 
     fun removeNoTitleTasks() {
         viewModelScope.launch {
@@ -93,7 +108,13 @@ class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManag
         val user = getUserFromSharedPreferences()
         if (user != null) {
             viewModelScope.launch {
-                Utilities.syncTasksWithServer(user.token, context)
+                val res = Utilities.syncTasksWithServer(user.token, context)
+                res.onSuccess {
+                    updateSyncState(false)
+                }
+                res.onFailure {
+                    updateSyncState(false)
+                }
             }
         }
     }

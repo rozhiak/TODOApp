@@ -9,6 +9,7 @@ import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.viewmodels.TasksViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 open class TaskAdapter(
     private val viewModel: TasksViewModel,
@@ -25,7 +26,7 @@ open class TaskAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-        return TaskHolder(editClickListener, recyclerView, binding)
+        return TaskHolder(null, MutableStateFlow(false), editClickListener, recyclerView, binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {}

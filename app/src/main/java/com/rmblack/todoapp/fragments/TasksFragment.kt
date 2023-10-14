@@ -20,13 +20,14 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
 
-open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
+open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(), TaskHolder.EditClickListener {
 
     protected lateinit var viewModel: TasksViewModel
 
@@ -56,6 +57,16 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
         super.onViewCreated(view, savedInstanceState)
         setUpSwipeToDelete()
         setUpRefreshLayout()
+        setUpSyncing()
+    }
+
+    private fun setUpSyncing() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            isSyncing.collect {
+                viewModel.updateSyncState(it)
+                binding.refreshLayout.isRefreshing = it
+            }
+        }
     }
 
     private fun setUpRefreshLayout() {
@@ -65,25 +76,27 @@ open class TasksFragment: Fragment(), TaskHolder.EditClickListener {
             binding.refreshLayout.isEnabled = false
         } else {
             binding.refreshLayout.setOnRefreshListener {
-
                 viewLifecycleOwner.lifecycleScope.launch {
-                        val response = Utilities.syncTasksWithServer(userToken, requireContext())
-                        response.onSuccess {
+                    viewModel.updateSyncState(true)
+                    val response = Utilities.syncTasksWithServer(userToken, requireContext())
+                    response.onSuccess {
+                        viewModel.updateSyncState(false)
+                        binding.refreshLayout.isRefreshing = false
+                    }
+
+                    response.onFailure { e ->
+                        viewModel.updateSyncState(false)
+                        if (e is UnknownHostException) {
+                            Utilities.makeWarningSnack(
+                                requireActivity(),
+                                binding.root,
+                            "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                            )
+                            binding.refreshLayout.isRefreshing = false
+                        } else {
                             binding.refreshLayout.isRefreshing = false
                         }
-
-                        response.onFailure { e ->
-                            if (e is UnknownHostException) {
-                                Utilities.makeWarningSnack(
-                                    requireActivity(),
-                                    binding.root,
-                                "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
-                                )
-                                binding.refreshLayout.isRefreshing = false
-                            } else {
-                                binding.refreshLayout.isRefreshing = false
-                            }
-                        }
+                    }
                 }
             }
         }

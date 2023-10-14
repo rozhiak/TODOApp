@@ -19,11 +19,12 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import com.rmblack.todoapp.webservice.repository.ApiRepository
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 
-class PrivateTasksFragment : TasksFragment() {
+class PrivateTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSyncing) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,7 +86,7 @@ class PrivateTasksFragment : TasksFragment() {
     }
 
     private fun createPrivateTasksAdapter(): PrivateTaskListAdapter =
-        PrivateTaskListAdapter(viewModel, this, requireActivity())
+        PrivateTaskListAdapter(viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity())
 
 
     class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {

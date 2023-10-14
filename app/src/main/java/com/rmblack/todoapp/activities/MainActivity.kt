@@ -49,7 +49,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPreferencesManager = SharedPreferencesManager(this)
-        viewModel = ViewModelProvider(this, MainViewModelFactory(sharedPreferencesManager))[MainViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(sharedPreferencesManager)
+        )[MainViewModel::class.java]
         viewModel.removeNoTitleTasks()
 
 
@@ -60,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel.updateSyncState(true)
         viewModel.syncTasksWithServer(this)
         setUpUI()
         wireUpBottomNav()
@@ -243,8 +247,8 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
 
-        val firstFragment: Fragment = PrivateTasksFragment()
-        val secondFragment: Fragment = SharedTasksFragment()
+        val firstFragment: Fragment = PrivateTasksFragment(viewModel.isSyncing)
+        val secondFragment: Fragment = SharedTasksFragment(viewModel.isSyncing)
         val fm = supportFragmentManager
 
         fm.beginTransaction().add(R.id.main_fragment_container, secondFragment, "2").hide(secondFragment).commit()

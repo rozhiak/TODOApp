@@ -21,11 +21,12 @@ import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class SharedTasksFragment : TasksFragment() {
+class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSyncing) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -174,7 +175,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun createSharedTasksAdapter() =
-        SharedTasksAdapter(viewModel, this, requireActivity())
+        SharedTasksAdapter(viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity())
 
     class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -17,11 +17,22 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.UUID
 
 open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+
+    private val _isSyncing = MutableStateFlow(false)
+
+    val isSyncing get() = _isSyncing.asStateFlow()
+
+    fun updateSyncState(state: Boolean) {
+        _isSyncing.update {
+            state
+        }
+    }
 
     private val apiRepository = ApiRepository()
 

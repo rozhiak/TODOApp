@@ -21,12 +21,19 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 const val TASK = 0
 
 const val REMAINING_DAYS_LABLE = 1
 
 open class TaskHolder(
+    private val scope: CoroutineScope?,
+    private val isSyncing: StateFlow<Boolean>,
     private val editClickListener: EditClickListener,
     private val recyclerView: RecyclerView,
     binding: ViewBinding,
@@ -56,6 +63,11 @@ open class TaskHolder(
         doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.isChecked = task.isDone
+        scope?.launch {
+            isSyncing.collect {
+                doneCheckBox.isEnabled = !it
+            }
+        }
     }
 
     open fun setTaskDetails(
@@ -93,6 +105,12 @@ open class TaskHolder(
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
             urgentSwitch.isChecked = false
+        }
+
+        scope?.launch {
+            isSyncing.collect {
+                urgentSwitch.isEnabled = !it
+            }
         }
     }
 
