@@ -64,10 +64,8 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
     private fun setUpClickListeners() {
         binding.connectProgressBtn.setOnClickListener {
-            hideKeyboard()
             val phone = binding.phoneEt.text ?: ""
             if (phone.length == 11) {
-
                 binding.connectProgressBtn.startAnimation()
                 viewModel.connectUserToSharedList(phone.toString(), this)
             } else {
