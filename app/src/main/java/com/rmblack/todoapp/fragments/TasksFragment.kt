@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
@@ -70,8 +71,8 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
     }
 
     private fun setUpRefreshLayout() {
+        binding.refreshLayout.setColorSchemeResources(R.color.urgent_red)
         val userToken = viewModel.getUserToken()
-
         if (userToken == null) {
             binding.refreshLayout.isEnabled = false
         } else {

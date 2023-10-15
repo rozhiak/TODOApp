@@ -43,13 +43,13 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 
         _binding = FragmentConnectionStatusBinding.inflate(inflater, container, false)
 
-        val sharedPropertiesManager = SharedPreferencesManager(requireContext())
+        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
 
         activity = requireActivity()
 
         viewModel = ViewModelProvider(
             activity as FragmentActivity,
-            ConnectUserFragment.ConnectUserViewModelFactory(sharedPropertiesManager)
+            ConnectUserFragment.ConnectUserViewModelFactory(sharedPreferencesManager)
         )[ConnectUserViewModel::class.java]
 
         return binding.root

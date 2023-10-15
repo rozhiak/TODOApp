@@ -91,6 +91,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/dead_line_iv" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:textDirection="rtl"
                 android:layout_marginTop="35dp"
                 android:id="@+id/description_tv"
                 android:layout_width="0dp"

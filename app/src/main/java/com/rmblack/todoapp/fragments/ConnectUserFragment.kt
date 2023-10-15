@@ -1,17 +1,20 @@
 package com.rmblack.todoapp.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
@@ -61,8 +64,10 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
     private fun setUpClickListeners() {
         binding.connectProgressBtn.setOnClickListener {
+            hideKeyboard()
             val phone = binding.phoneEt.text ?: ""
             if (phone.length == 11) {
+
                 binding.connectProgressBtn.startAnimation()
                 viewModel.connectUserToSharedList(phone.toString(), this)
             } else {
@@ -77,6 +82,10 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
                 timer.start()
             }
         }
+    }
+    private fun hideKeyboard() {
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     class ConnectUserViewModelFactory(

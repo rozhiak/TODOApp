@@ -1,11 +1,13 @@
 package com.rmblack.todoapp.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -16,6 +18,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.internal.ViewUtils
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
@@ -47,6 +51,11 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
         setUpRecyclerview()
         setUpClickListeners()
         setUpConnectionManagementSection()
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     private fun setUpConnectionManagementSection() {
@@ -110,6 +119,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
                     binding.manageUserConnectionContainer.visibility = View.VISIBLE
                     binding.manageConnectionBtn.rotation = 180f
                 } else {
+                    hideKeyboard()
                     binding.manageUserConnectionContainer.startAnimation(slideOutAnimation)
                     binding.manageUserConnectionContainer.visibility = View.GONE
                     binding.manageConnectionBtn.rotation = 0f

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    app:swipeRefreshLayoutProgressSpinnerBackgroundColor="@color/green"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_back_color"
     xmlns:android="http://schemas.android.com/apk/res/android"

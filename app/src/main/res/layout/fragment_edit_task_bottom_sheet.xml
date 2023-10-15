@@ -9,11 +9,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:scaleType="fitXY"
         android:id="@+id/collapse_btn"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="40dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="10dp"
+        android:padding="8dp"
+        android:layout_marginEnd="20dp"
         android:tint="@color/green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,6 +28,7 @@
         android:layout_marginStart="24dp"
         android:backgroundTint="@color/green"
         app:cardCornerRadius="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/collapse_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/collapse_btn">
 
@@ -45,7 +48,7 @@
         android:id="@+id/et_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="24dp"
         android:background="@drawable/custom_edit_text"
         android:fontFamily="@font/iranian_ans"
@@ -161,7 +164,7 @@
             android:padding="10dp"
             app:drawableGravity="top"
             app:selectedTextColor="@color/white"
-            app:text="خصوصی"
+            app:text="شخصی"
             app:textColor="#81000000" />
 
     </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
