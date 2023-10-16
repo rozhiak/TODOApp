@@ -33,6 +33,12 @@ class ConnectUserViewModel(
                     val response = apiRepository.connectUser(connectUserRequest)
                     if (response.isSuccessful) {
                         connectCallback.onConnectUserSuccess()
+                    } else if(response.code() == 500){
+                        val disconnectReq = DisconnectUserRequest(
+                            getUserToken()
+                        )
+                        apiRepository.disconnectUser(disconnectReq)
+                        connectUserToSharedList(phoneNumber, connectCallback)
                     } else {
                         connectCallback.onConnectUserFailure(response.code())
                     }
@@ -81,5 +87,4 @@ class ConnectUserViewModel(
     fun getConnectedPhone(): String {
         return sharedPreferencesManager.getConnectedPhone() ?: ""
     }
-
 }

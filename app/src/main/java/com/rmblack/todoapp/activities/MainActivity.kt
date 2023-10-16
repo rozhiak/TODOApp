@@ -87,7 +87,6 @@ class MainActivity : AppCompatActivity() {
 
                 changeUserName(popupView)
 
-
                 popupWindow.elevation = 60.0f
                 popupWindow.showAsDropDown(binding.ivProfile, -470, 25, 0)
 

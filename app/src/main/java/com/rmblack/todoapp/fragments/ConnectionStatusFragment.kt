@@ -9,20 +9,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 
 class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
-
-    private var syncTasksJob : Job? = null
 
     private lateinit var activity: Activity
 
@@ -73,11 +71,19 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     }
 
     override fun onSuccess() {
-        binding.disconnectProgressBtn.revertAnimation()
-
-        syncTasksJob = viewLifecycleOwner.lifecycleScope.launch {
+        val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+            response.onSuccess {
+                requireActivity().runOnUiThread {
+                    if (_binding != null) binding.disconnectProgressBtn.revertAnimation()
+                }
+                showConnectUserFragment()
+            }
+
             response.onFailure {e ->
+                requireActivity().runOnUiThread {
+                    if (_binding != null) binding.disconnectProgressBtn.revertAnimation()
+                }
                 if (e is UnknownHostException) {
                     Utilities.makeWarningSnack(
                         activity,
@@ -85,16 +91,25 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
                         "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
                     )
                 }
+                showConnectUserFragment()
             }
+
         }
 
-        val fragmentContainerView = activity.findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
+        job.invokeOnCompletion {
+            job.cancel()
+        }
+
+        viewModel.saveConnectedPhone("")
+    }
+
+    private fun showConnectUserFragment() {
+        val fragmentContainerView =
+            activity.findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
         val fragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(fragmentContainerView.id, ConnectUserFragment())
         transaction.commit()
-
-        viewModel.saveConnectedPhone("")
     }
 
     override fun onFailure(errorCode: Int) {
@@ -121,7 +136,6 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-        syncTasksJob?.cancel()
     }
 
 }

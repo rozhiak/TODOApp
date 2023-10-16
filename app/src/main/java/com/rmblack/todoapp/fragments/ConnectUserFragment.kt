@@ -21,6 +21,8 @@ import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
@@ -31,8 +33,6 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
     private lateinit var viewModel : ConnectUserViewModel
 
     private var _binding : FragmentConnectUserBinding? = null
-
-    private var syncTasksJob : Job? = null
 
     val binding
         get() = checkNotNull(_binding) {
@@ -72,10 +72,10 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
             } else {
                 val timer = object : CountDownTimer(1000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
-                        binding.phoneEt.setTextColor(Color.parseColor("#D05D8A"))
+                        binding.phoneEt.setTextColor(resources.getColor(R.color.urgent_red, null))
                     }
                     override fun onFinish() {
-                        binding.phoneEt.setTextColor(Color.WHITE)
+                        binding.phoneEt.setTextColor(resources.getColor(R.color.green, null))
                     }
                 }
                 timer.start()
@@ -100,16 +100,24 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
     override fun onDestroy() {
         _binding = null
-        syncTasksJob?.cancel()
         super.onDestroy()
     }
 
     override fun onConnectUserSuccess() {
-        binding.connectProgressBtn.revertAnimation()
-
-        syncTasksJob = viewLifecycleOwner.lifecycleScope.launch {
+        val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+            response.onSuccess {
+                requireActivity().runOnUiThread {
+                    if (_binding != null) binding.connectProgressBtn.revertAnimation()
+                }
+                showConnectionStatusFragment()
+            }
+
             response.onFailure {e ->
+                requireActivity().runOnUiThread {
+                    if (_binding != null) binding.connectProgressBtn.revertAnimation()
+                }
+
                 if (e is UnknownHostException) {
                     Utilities.makeWarningSnack(
                         requireActivity(),
@@ -117,17 +125,27 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
                         "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
                     )
                 }
+
+                showConnectionStatusFragment()
             }
+
         }
 
-        val fragmentContainerView = requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
+        job.invokeOnCompletion {
+            job.cancel()
+        }
+
+        val phone = binding.phoneEt.text
+        viewModel.saveConnectedPhone(phone.toString())
+    }
+
+    private fun showConnectionStatusFragment() {
+        val fragmentContainerView =
+            requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
         val fragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(fragmentContainerView.id, ConnectionStatusFragment())
         transaction.commit()
-
-        val phone = binding.phoneEt.text
-        viewModel.saveConnectedPhone(phone.toString())
     }
 
     override fun onConnectUserFailure(errorCode: Int) {
