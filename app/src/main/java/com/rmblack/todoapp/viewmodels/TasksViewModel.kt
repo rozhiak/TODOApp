@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.UUID
 
-open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+open class TasksViewModel(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
     private val _isSyncing = MutableStateFlow(false)
 
@@ -142,35 +142,55 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         } else {
             val user = getUser()
             if (user?.token != null) {
-                val editRequest = EditTaskRequest(
-                    user.token,
-                    editedTask.serverID,
-                    editedTask.title,
-                    editedTask.description,
-                    editedTask.deadLine.timeInMillis.toString(),
-                    editedTask.isUrgent,
-                    editedTask.isDone,
-                    editedTask.isShared,
-                    editedTask.id
-                )
+                val editRequests = sharedPreferencesManager.getFailedEditRequests()
+                val editIndex = editRequests.indexOfFirst {req ->
+                    req.localTaskId == editedTask.id
+                }
+                val editRequest = if (editIndex == -1) {
+                    val req = EditTaskRequest(
+                        user.token,
+                        editedTask.serverID,
+                        editedTask.title,
+                        editedTask.description,
+                        editedTask.deadLine.timeInMillis.toString(),
+                        editedTask.isUrgent,
+                        editedTask.isDone,
+                        editedTask.isShared,
+                        editedTask.id
+                    )
+                    sharedPreferencesManager.insertFailedEditRequest(req)
+                    req
+                } else {
+                    val editReq = editRequests[editIndex]
+                    val newEditReq = editReq.copy(
+                        title = editedTask.title,
+                        description = editedTask.description,
+                        deadline = editedTask.deadLine.timeInMillis.toString(),
+                        is_shared = editedTask.isShared,
+                        is_done = editedTask.isDone,
+                        is_urgent = editedTask.isUrgent,
+                    )
+                    sharedPreferencesManager.removeFailedEditRequest(editReq)
+                    sharedPreferencesManager.insertFailedEditRequest(newEditReq)
+                    newEditReq
+                }
 
                 editJob = CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val response = apiRepository.editTask(editRequest.convertToServerEditModel())
                         if (response.isSuccessful) {
-
+                            sharedPreferencesManager.removeFailedEditRequest(editRequest)
                         } else {
                             if (response.code() == 403) {
                                 //invalid token or access denied
-
+                                sharedPreferencesManager.removeFailedEditRequest(editRequest)
                             } else if (response.code() == 404) {
                                 //Task not found
-                            } else {
-                                sharedPreferencesManager.insertFailedEditRequest(editRequest)
+                                sharedPreferencesManager.removeFailedEditRequest(editRequest)
                             }
                         }
-                    } catch (e: Exception) {
-                        sharedPreferencesManager.insertFailedEditRequest(editRequest)
+                    } catch (_: Exception) {
+
                     }
                 }
             }
@@ -187,23 +207,20 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
             if (addIndex != -1) {
                 sharedPreferencesManager.removeFailedAddRequest(addRequests[addIndex])
             } else {
-                val user = getUser()
-                if (user?.token != null) {
-                    deleteJob = CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val response = apiRepository.deleteTask(deleteRequest)
-                            if (response.isSuccessful) {
-                                removeDeleteRequest(deleteRequest)
-                            } else if (response.code() == 403) {
-                                //Invalid token or access denied
-                                removeDeleteRequest(deleteRequest)
-                            } else if (response.code() == 404) {
-                                //task not found
-                                removeDeleteRequest(deleteRequest)
-                            }
-                        } catch (e: Exception) {
-
+                deleteJob = CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = apiRepository.deleteTask(deleteRequest)
+                        if (response.isSuccessful) {
+                            removeDeleteRequest(deleteRequest)
+                        } else if (response.code() == 403) {
+                            //Invalid token or access denied
+                            removeDeleteRequest(deleteRequest)
+                        } else if (response.code() == 404) {
+                            //task not found
+                            removeDeleteRequest(deleteRequest)
                         }
+                    } catch (_: Exception) {
+
                     }
                 }
             }

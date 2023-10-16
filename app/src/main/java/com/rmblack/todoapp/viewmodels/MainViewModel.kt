@@ -25,7 +25,7 @@ import kotlin.Result.Companion.failure
 
 const val SAME_USER_NAME = 1
 
-class MainViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
+class MainViewModel( val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
 
     private val taskRepository = TaskRepository.get()
 
