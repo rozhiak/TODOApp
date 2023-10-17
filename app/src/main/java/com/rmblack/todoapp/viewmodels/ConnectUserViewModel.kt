@@ -9,6 +9,10 @@ import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.webservice.repository.ApiRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.UnknownHostException
@@ -18,6 +22,28 @@ class ConnectUserViewModel(
 ) : ViewModel() {
 
     private val apiRepository = ApiRepository()
+
+    private val _connectLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    val connectLoading: StateFlow<Boolean>
+        get() = _connectLoading.asStateFlow()
+
+    private val _disconnectLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    val disconnectLoading: StateFlow<Boolean>
+        get() = _disconnectLoading.asStateFlow()
+
+    fun setConnectLoadingState(state: Boolean) {
+        _connectLoading.update {
+            state
+        }
+    }
+
+    fun setDisconnectLoadingState(state: Boolean) {
+        _disconnectLoading.update {
+            state
+        }
+    }
 
     fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
         val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->

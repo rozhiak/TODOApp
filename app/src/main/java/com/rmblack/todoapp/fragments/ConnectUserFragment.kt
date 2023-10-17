@@ -1,20 +1,18 @@
 package com.rmblack.todoapp.fragments
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
@@ -23,7 +21,6 @@ import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 
@@ -60,6 +57,19 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpClickListeners()
+        setUpLoadingState()
+    }
+
+    private fun setUpLoadingState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.connectLoading.collect {
+                if (it) {
+                    binding.connectProgressBtn.startAnimation()
+                } else {
+                    binding.connectProgressBtn.revertAnimation()
+                }
+            }
+        }
     }
 
     private fun setUpClickListeners() {
@@ -67,7 +77,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
             val phone = binding.phoneEt.text ?: ""
             if (phone.length == 11) {
                 hideKeyboard()
-                binding.connectProgressBtn.startAnimation()
+                viewModel.setConnectLoadingState(true)
                 viewModel.connectUserToSharedList(phone.toString(), this)
             } else {
                 val timer = object : CountDownTimer(1000, 1000) {
@@ -111,14 +121,14 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onSuccess {
                 requireActivity().runOnUiThread {
-                    if (_binding != null) binding.connectProgressBtn.revertAnimation()
+                    if (_binding != null) viewModel.setConnectLoadingState(false)
                 }
                 showConnectionStatusFragment()
             }
 
             response.onFailure {e ->
                 requireActivity().runOnUiThread {
-                    if (_binding != null) binding.connectProgressBtn.revertAnimation()
+                    if (_binding != null) viewModel.setConnectLoadingState(false)
                 }
 
                 if (e is UnknownHostException) {
@@ -145,11 +155,13 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
         val fragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(fragmentContainerView.id, ConnectionStatusFragment())
-        transaction.commit()
+        try {
+            transaction.commit()
+        } catch (ignored: IllegalStateException) {}
     }
 
     override fun onConnectUserFailure(errorCode: Int) {
-        binding.connectProgressBtn.revertAnimation()
+        viewModel.setConnectLoadingState(false)
         when (errorCode) {
             CONNECTION_ERROR_CODE -> {
                 Utilities.makeWarningSnack(
@@ -179,6 +191,18 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
                 )
             }
         }
+    }
+
+    override fun onPause() {
+        if (viewModel.connectLoading.value) {
+            viewModel.setConnectLoadingState(false)
+            Toast.makeText(
+                requireContext(),
+                "لطفا حین اتصال به هم لیستی جدید ، برنامه را ترک نکنید.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        super.onPause()
     }
 
 }

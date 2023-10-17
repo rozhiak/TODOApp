@@ -1,14 +1,17 @@
 package com.rmblack.todoapp.fragments
 
+import android.R.attr.name
 import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
@@ -19,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
+
 
 class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 
@@ -57,11 +61,24 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
         super.onViewCreated(view, savedInstanceState)
         setDetails()
         setClickListeners()
+        setUpLoadingState()
+    }
+
+    private fun setUpLoadingState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.disconnectLoading.collect {
+                if (it) {
+                    binding.disconnectProgressBtn.startAnimation()
+                } else {
+                    binding.disconnectProgressBtn.revertAnimation()
+                }
+            }
+        }
     }
 
     private fun setClickListeners() {
         binding.disconnectProgressBtn.setOnClickListener {
-            binding.disconnectProgressBtn.startAnimation()
+            viewModel.setDisconnectLoadingState(true)
             viewModel.disconnectUserFromSharedList(this)
         }
     }
@@ -77,14 +94,14 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onSuccess {
                 requireActivity().runOnUiThread {
-                    if (_binding != null) binding.disconnectProgressBtn.revertAnimation()
+                    if (_binding != null) viewModel.setDisconnectLoadingState(false)
                 }
                 showConnectUserFragment()
             }
 
             response.onFailure {e ->
                 requireActivity().runOnUiThread {
-                    if (_binding != null) binding.disconnectProgressBtn.revertAnimation()
+                    if (_binding != null) viewModel.setDisconnectLoadingState(false)
                 }
                 if (e is UnknownHostException) {
                     Utilities.makeWarningSnack(
@@ -109,11 +126,13 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
         val fragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(fragmentContainerView.id, ConnectUserFragment())
-        transaction.commit()
+        try {
+            transaction.commit()
+        } catch (ignored: IllegalStateException) {}
     }
 
     override fun onFailure(errorCode: Int) {
-        binding.disconnectProgressBtn.revertAnimation()
+        viewModel.setDisconnectLoadingState(false)
         when (errorCode) {
             CONNECTION_ERROR_CODE -> {
                 Utilities.makeWarningSnack(
@@ -131,6 +150,17 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
                 )
             }
         }
+    }
+
+    override fun onPause() {
+        if (viewModel.disconnectLoading.value) {
+            viewModel.setDisconnectLoadingState(false)
+            Toast.makeText(
+                requireContext(),
+                "لطفا حین قطع اتصال از هم لیستی ، برنامه را ترک نکنید.",
+                Toast.LENGTH_LONG).show()
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {
