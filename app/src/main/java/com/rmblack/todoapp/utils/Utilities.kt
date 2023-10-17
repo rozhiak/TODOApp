@@ -27,6 +27,8 @@ import java.util.UUID
 
 const val CONNECTION_ERROR_CODE = 0
 
+const val UNKNOWN_ERROR_CODE =  7
+
 class Utilities {
 
     companion object {

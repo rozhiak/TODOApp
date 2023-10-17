@@ -8,6 +8,7 @@ import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
+import com.rmblack.todoapp.utils.UNKNOWN_ERROR_CODE
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,11 +47,25 @@ class ConnectUserViewModel(
     }
 
     fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
-        val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
-            ConnectUserRequest(
-                token,
-                phoneNumber
-            )
+        val cachedReq = sharedPreferencesManager.getCachedConnectRequest()
+        val connectUserRequest = if (cachedReq == null) {
+            val req = sharedPreferencesManager.getUser()?.token?.let {token ->
+                ConnectUserRequest(
+                    token,
+                    phoneNumber
+                )
+            }
+            sharedPreferencesManager.cacheConnectRequest(req)
+            req
+        } else {
+            val req = if (cachedReq.new_phone_number == phoneNumber) {
+                cachedReq
+            } else {
+                val copy = cachedReq.copy(new_phone_number = phoneNumber)
+                sharedPreferencesManager.cacheConnectRequest(copy)
+                copy
+            }
+            req
         }
 
         viewModelScope.launch {
@@ -58,7 +73,8 @@ class ConnectUserViewModel(
                 try {
                     val response = apiRepository.connectUser(connectUserRequest)
                     if (response.isSuccessful) {
-                        connectCallback.onConnectUserSuccess()
+                        removeCachedConnectRequest()
+                        connectCallback.onConnectUserSuccess(connectUserRequest.new_phone_number)
                     } else if(response.code() == 500){
                         val disconnectReq = DisconnectUserRequest(
                             getUserToken()
@@ -70,11 +86,17 @@ class ConnectUserViewModel(
                     }
                 } catch (e: Exception) {
                     if (e is UnknownHostException) {
-                        connectCallback.onConnectUserFailure(0)
+                        connectCallback.onConnectUserFailure(CONNECTION_ERROR_CODE)
+                    } else {
+                        connectCallback.onConnectUserFailure(UNKNOWN_ERROR_CODE)
                     }
                 }
             }
         }
+    }
+
+    fun removeCachedConnectRequest() {
+        sharedPreferencesManager.removeConnectRequest()
     }
 
     fun disconnectUserFromSharedList(disconnectCallback: DisconnectUserCallback) {
@@ -84,11 +106,14 @@ class ConnectUserViewModel(
             )
         }
 
+        sharedPreferencesManager.cacheDisconnectRequest(disconnectUserRequest)
+
         viewModelScope.launch {
             if (disconnectUserRequest != null) {
                 try {
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
+                        sharedPreferencesManager.removeDisconnectRequest()
                         disconnectCallback.onSuccess()
                     } else {
                         disconnectCallback.onFailure(response.code())
@@ -96,10 +121,16 @@ class ConnectUserViewModel(
                 } catch (e:Exception) {
                     if (e is UnknownHostException) {
                         disconnectCallback.onFailure(CONNECTION_ERROR_CODE)
+                    } else {
+                        disconnectCallback.onFailure(UNKNOWN_ERROR_CODE)
                     }
                 }
             }
         }
+    }
+
+    fun removeCachedDisconnectRequest( ) {
+        sharedPreferencesManager.removeDisconnectRequest()
     }
 
     fun getUserToken() : String {
@@ -112,5 +143,13 @@ class ConnectUserViewModel(
 
     fun getConnectedPhone(): String {
         return sharedPreferencesManager.getConnectedPhone() ?: ""
+    }
+
+    fun getCachedConnectUser(): ConnectUserRequest? {
+        return sharedPreferencesManager.getCachedConnectRequest()
+    }
+
+    fun getCachedDisconnectRequest(): DisconnectUserRequest? {
+        return sharedPreferencesManager.getCachedDisconnectRequest()
     }
 }

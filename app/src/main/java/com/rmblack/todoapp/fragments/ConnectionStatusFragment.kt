@@ -59,9 +59,18 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        performCachedReq()
         setDetails()
         setClickListeners()
         setUpLoadingState()
+    }
+
+    private fun performCachedReq() {
+        val cachedReq = viewModel.getCachedDisconnectRequest()
+        if (cachedReq != null) {
+            viewModel.setDisconnectLoadingState(true)
+            viewModel.disconnectUserFromSharedList(this)
+        }
     }
 
     private fun setUpLoadingState() {
@@ -112,7 +121,6 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
                 }
                 showConnectUserFragment()
             }
-
         }
 
         job.invokeOnCompletion {
@@ -143,6 +151,7 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
             }
 
             403 -> {
+                viewModel.removeCachedDisconnectRequest()
                 Utilities.makeWarningSnack(
                     activity,
                     binding.root,
@@ -150,17 +159,6 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
                 )
             }
         }
-    }
-
-    override fun onPause() {
-        if (viewModel.disconnectLoading.value) {
-            viewModel.setDisconnectLoadingState(false)
-            Toast.makeText(
-                requireContext(),
-                "لطفا حین قطع اتصال از هم لیستی ، برنامه را ترک نکنید.",
-                Toast.LENGTH_LONG).show()
-        }
-        super.onPause()
     }
 
     override fun onDestroy() {

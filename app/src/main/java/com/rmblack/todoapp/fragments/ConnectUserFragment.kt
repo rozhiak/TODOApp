@@ -56,8 +56,18 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        performCachedReq()
         setUpClickListeners()
         setUpLoadingState()
+    }
+
+    private fun performCachedReq() {
+        val cachedReq = viewModel.getCachedConnectUser()
+        if (cachedReq != null) {
+            viewModel.setConnectLoadingState(true)
+            binding.phoneEt.setText(cachedReq.new_phone_number)
+            viewModel.connectUserToSharedList(cachedReq.new_phone_number, this)
+        }
     }
 
     private fun setUpLoadingState() {
@@ -113,9 +123,8 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
         super.onDestroy()
     }
 
-    override fun onConnectUserSuccess() {
-        val phone = binding.phoneEt.text
-        viewModel.saveConnectedPhone(phone.toString())
+    override fun onConnectUserSuccess(phone: String) {
+        viewModel.saveConnectedPhone(phone)
 
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
@@ -171,12 +180,15 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
                 )
             }
             404 -> {
+                viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
                     requireActivity(),
                     binding.root,
                     "شماره همراه مورد نظر شما یافت نشد."
-                )            }
+                )
+            }
             403 -> {
+                viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
                     requireActivity(),
                     binding.root,
@@ -184,6 +196,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
                 )
             }
             400 -> {
+                viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
                     requireActivity(),
                     binding.root,
@@ -192,22 +205,9 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
             }
         }
     }
-
-    override fun onPause() {
-        if (viewModel.connectLoading.value) {
-            viewModel.setConnectLoadingState(false)
-            Toast.makeText(
-                requireContext(),
-                "لطفا حین اتصال به هم لیستی جدید ، برنامه را ترک نکنید.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-        super.onPause()
-    }
-
 }
 
 interface ConnectUserCallback {
-    fun onConnectUserSuccess()
+    fun onConnectUserSuccess(phone: String)
     fun onConnectUserFailure(errorCode: Int)
 }
