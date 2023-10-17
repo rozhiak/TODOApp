@@ -71,6 +71,8 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     }
 
     override fun onSuccess() {
+        viewModel.saveConnectedPhone("")
+
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onSuccess {
@@ -99,8 +101,6 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
         job.invokeOnCompletion {
             job.cancel()
         }
-
-        viewModel.saveConnectedPhone("")
     }
 
     private fun showConnectUserFragment() {

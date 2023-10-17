@@ -104,6 +104,9 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
     }
 
     override fun onConnectUserSuccess() {
+        val phone = binding.phoneEt.text
+        viewModel.saveConnectedPhone(phone.toString())
+
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onSuccess {
@@ -134,9 +137,6 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
         job.invokeOnCompletion {
             job.cancel()
         }
-
-        val phone = binding.phoneEt.text
-        viewModel.saveConnectedPhone(phone.toString())
     }
 
     private fun showConnectionStatusFragment() {
