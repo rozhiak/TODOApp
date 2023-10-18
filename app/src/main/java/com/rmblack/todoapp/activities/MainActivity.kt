@@ -63,8 +63,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.updateSyncState(true)
-        viewModel.syncTasksWithServer(this)
+        val user = viewModel.getUserFromSharedPreferences()
+        if (user?.token != null) {
+            viewModel.updateSyncState(true)
+            viewModel.syncTasksWithServer(this)
+        }
         setUpUI()
         wireUpBottomNav()
         showToday()

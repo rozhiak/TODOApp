@@ -70,7 +70,7 @@
         app:BottomSelectedIcon="@color/green"
         app:BottomUnSelectedIcon="@color/grey"
         app:ItemSpaceSize="28dp"
-        app:TextColor="@color/black"
+        app:TextColor="@color/title_black"
         app:TextFont="@font/iranian_ans"
         app:TextSize="12sp"
         app:ViewCount="Four"

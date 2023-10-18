@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
@@ -138,6 +139,8 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                 if (response.code() == 200) {
                     response.body()?.user?.token?.let { syncTasksWithServer(it) }
                     saveUserInSharedPreferences(response)
+                    //TODO here perform a web request and get connected phone and also save it in shared preferences
+//                    sharedPreferencesManager.saveConnectedPhone("")
                     changeEntranceState(true)
                     _verifyRequestCode.update {
                         response.code()
@@ -163,7 +166,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         val privateLocalTasks = taskRepository.getPrivateTasks().toList()
 
         for (pTask in privateLocalTasks) {
-            if (pTask.serverID == "") {
+            if (pTask.serverID == newlyAddedTaskServerID) {
                 val addRequest = AddTaskRequest(
                     token,
                     pTask.title,
@@ -178,6 +181,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
                 try {
                     val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
+                    println(response)
                     if (response.isSuccessful) {
                         response.body()?.data?.id?.let { updateServerID(pTask.id, it) }
                     } else {
