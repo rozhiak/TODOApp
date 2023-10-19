@@ -12,6 +12,7 @@ import com.rmblack.todoapp.models.server.requests.ServerEditTaskRequest
 import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.requests.ValidateUserRequest
 import com.rmblack.todoapp.models.server.success.AllTasksResponse
+import com.rmblack.todoapp.models.server.success.ConnectedPhonesResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.models.server.success.UpdateUserResponse
 import com.rmblack.todoapp.models.server.success.UserResponse
@@ -61,4 +62,7 @@ interface ApiService {
     @Headers("Accept: application/json", "Content-Type: application/json")
     @POST("users/update/")
     suspend fun updateUser(@Body request: UpdateUserRequest): Response<UpdateUserResponse>
+
+    @GET("users/connected_users/")
+    suspend fun getConnectedPhones(@Query("token") token: String): Response<ConnectedPhonesResponse>
 }

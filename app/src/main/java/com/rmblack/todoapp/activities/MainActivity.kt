@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
         )[MainViewModel::class.java]
         viewModel.removeNoTitleTasks()
 
-
         checkLoginState()
 
         super.onCreate(savedInstanceState)

@@ -38,6 +38,8 @@ class ApiRepository {
 
     suspend fun updateUser(body: UpdateUserRequest) = getInstance().updateUser(body)
 
+    suspend fun getConnectedPhones(token: String) = getInstance().getConnectedPhones(token)
+
     companion object {
         private var apiService: ApiService? = null
         private fun getInstance() : ApiService {
