@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModel
@@ -124,7 +123,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
     }
 
     override fun onConnectUserSuccess(phone: String) {
-        viewModel.saveConnectedPhone(phone)
+        viewModel.saveConnectedPhones(phone)
 
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())

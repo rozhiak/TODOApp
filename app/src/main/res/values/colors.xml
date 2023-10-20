@@ -19,10 +19,10 @@
     <color name="main_back_color">#19E2FFF3</color>
     <color name="selected_item_color">#19E2FFF3</color>
     <color name="dark_bottom_navigation">#2d2d2d</color>
-    <color name="grey">#808080</color>
+    <color name="grey">#757575</color>
     <color name="edit_card_green">#D2009F71</color>
     <color name="dynamic_background_color">@color/white</color>
-    <color name="hint_text_color">#74000000</color>
+    <color name="hint_text_color">#63000000</color>
     <color name="collapsed_task_back_color">#19E2FFF3</color>
     <color name="expanded_task_back_color">#f0fcf7</color>
 

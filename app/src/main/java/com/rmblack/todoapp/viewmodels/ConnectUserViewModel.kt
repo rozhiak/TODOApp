@@ -137,12 +137,12 @@ class ConnectUserViewModel(
         return sharedPreferencesManager.getUser()?.token ?: ""
     }
 
-    fun saveConnectedPhone(phone: String) {
-        sharedPreferencesManager.saveConnectedPhone(phone)
+    fun saveConnectedPhones(phones: List<String>) {
+        sharedPreferencesManager.saveConnectedPhones(phones)
     }
 
-    fun getConnectedPhone(): String {
-        return sharedPreferencesManager.getConnectedPhone() ?: ""
+    fun getConnectedPhones(): List<String>? {
+        return sharedPreferencesManager.getConnectedPhone()
     }
 
     fun getCachedConnectUser(): ConnectUserRequest? {

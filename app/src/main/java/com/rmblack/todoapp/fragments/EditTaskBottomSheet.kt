@@ -211,7 +211,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 scope.launch {
                     delay(1300)
                     binding.etTitle.hint = "عنوان"
-                    binding.etTitle.setHintTextColor(Color.parseColor("#74000000"))
+                    binding.etTitle.setHintTextColor(ContextCompat.getColor(context, R.color.hint_text_color))
                 }
             } else {
                 dismiss()

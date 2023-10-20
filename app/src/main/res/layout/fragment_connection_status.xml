@@ -6,47 +6,47 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/you_are_tv"
+        android:id="@+id/list_mates_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginEnd="24sp"
         android:fontFamily="@font/iranian_ans"
-        android:text="متصل به شماره:"
+        android:text="هم لیستی ها:"
+        app:fontFamily="@font/iranian_ans"
+        android:textStyle="bold"
         android:textColor="@color/grey"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/connected_phone_tv"
+    <androidx.recyclerview.widget.RecyclerView
+        app:layout_constraintHeight_max="175dp"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/list_mates_rv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:textColor="@color/urgent_red"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/you_are_tv"
-        app:layout_constraintEnd_toStartOf="@+id/you_are_tv"
-        app:layout_constraintTop_toTopOf="@+id/you_are_tv" />
+        app:layout_constraintBottom_toTopOf="@+id/disconnect_btn_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_mates_tv" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/disconnect_btn_card"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginStart="16dp"
         android:backgroundTint="@color/green"
         app:cardCornerRadius="30dp"
-        app:layout_constraintBottom_toBottomOf="@+id/connected_phone_tv"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/connected_phone_tv">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
             android:id="@+id/disconnect_progress_btn"
-            android:layout_width="120dp"
+            android:layout_width="350dp"
             android:layout_height="match_parent"
             android:backgroundTint="@color/green"
             android:fontFamily="@font/iranian_ans"

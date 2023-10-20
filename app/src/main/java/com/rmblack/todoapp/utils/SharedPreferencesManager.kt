@@ -15,7 +15,7 @@ private const val USER_KEY = "USER_KEY"
 
 private const val ENTRANCE_STATE_KEY = "ENTRANCE_STATE_KEY"
 
-private const val CONNECTED_PHONE_KEY = "CONNECTED_PHONE_KEY"
+private const val CONNECTED_PHONES_KEY = "CONNECTED_PHONES_KEY"
 
 private const val FAILED_ADD_REQUESTS_KEY = "FAILED_ADD_REQUESTS_KEY"
 
@@ -184,12 +184,24 @@ class SharedPreferencesManager(private val context: Context) {
         return getSharedPreferences(context).getBoolean(ENTRANCE_STATE_KEY, false)
     }
 
-    fun saveConnectedPhone(phone: String) {
-        getEditor(context).putString(CONNECTED_PHONE_KEY ,phone).apply()
+    fun saveConnectedPhones(phones: List<String>) {
+        val serializedPhones = gson.toJson(phones)
+        getEditor(context).putString(CONNECTED_PHONES_KEY, serializedPhones).apply()
     }
 
-    fun getConnectedPhone(): String? {
-        return getSharedPreferences(context).getString(CONNECTED_PHONE_KEY, null)
+    //If it returned null => user is not connected and when it returned a list => user is connected
+    fun getConnectedPhone(): List<String>? {
+        val serializedPhones = getSharedPreferences(context).getString(CONNECTED_PHONES_KEY, null)
+        return if (serializedPhones != null) {
+            gson.fromJson(serializedPhones, object : TypeToken<List<String>>() {}.type)
+        } else {
+            null
+        }
+    }
+
+    //TODO when user disconnect from a list , use this method
+    fun removeConnectedPhones() {
+        getEditor(context).remove(CONNECTED_PHONES_KEY).apply()
     }
 
     companion object {

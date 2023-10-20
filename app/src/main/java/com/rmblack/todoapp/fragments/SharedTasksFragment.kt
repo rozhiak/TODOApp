@@ -10,7 +10,6 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -18,8 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.internal.ViewUtils
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
@@ -73,7 +70,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
         fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
 
         if (viewModel.getUser()?.token != null) {
-            if (viewModel.getConnectedPhone() == "") {
+            if (viewModel.getConnectedPhones() == "") {
                 fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
             } else {
                 fm.beginTransaction().hide(firstFragment).show(secondFragment).commit()
@@ -90,7 +87,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
     }
 
     private fun setUpConnectionManagerVisibility() {
-        if (viewModel.getConnectedPhone() == "" && viewModel.tasks.value.size < 2) {
+        if (viewModel.getConnectedPhones() == "" && viewModel.tasks.value.size < 2) {
             binding.manageConnectionBtn.rotation = 180f
             binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {

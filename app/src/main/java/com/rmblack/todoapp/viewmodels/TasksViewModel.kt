@@ -2,13 +2,10 @@ package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.RecyclerView
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
-import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
-import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.success.User
 import com.rmblack.todoapp.utils.SharedPreferencesManager
@@ -264,8 +261,8 @@ open class TasksViewModel(private val sharedPreferencesManager: SharedPreference
         return sharedPreferencesManager.getUser()
     }
 
-    fun getConnectedPhone(): String {
-        return sharedPreferencesManager.getConnectedPhone() ?: ""
+    fun getConnectedPhones(): List<String>? {
+        return sharedPreferencesManager.getConnectedPhone()
     }
 
     override fun onCleared() {
