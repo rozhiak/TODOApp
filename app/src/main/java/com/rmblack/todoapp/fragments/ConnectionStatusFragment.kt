@@ -95,7 +95,9 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     private fun setDetails() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.syncConnectedPhonesWithServer()
+        }
 
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.connectedPhones.collect {phones ->
                 if (phones.isEmpty()) {
 
