@@ -70,7 +70,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
         fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
 
         if (viewModel.getUser()?.token != null) {
-            if (viewModel.getConnectedPhones() == "") {
+            if (viewModel.getConnectedPhones() == null) {
                 fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
             } else {
                 fm.beginTransaction().hide(firstFragment).show(secondFragment).commit()
@@ -87,7 +87,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
     }
 
     private fun setUpConnectionManagerVisibility() {
-        if (viewModel.getConnectedPhones() == "" && viewModel.tasks.value.size < 2) {
+        if (viewModel.getConnectedPhones() == null && viewModel.tasks.value.size < 2) {
             binding.manageConnectionBtn.rotation = 180f
             binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {

@@ -34,6 +34,16 @@ class ConnectUserViewModel(
     val disconnectLoading: StateFlow<Boolean>
         get() = _disconnectLoading.asStateFlow()
 
+    private val _connectedPhones : MutableStateFlow<List<String>> =
+        MutableStateFlow(sharedPreferencesManager.getConnectedPhone() ?: listOf())
+
+    val connectedPhones: StateFlow<List<String>>
+        get() = _connectedPhones.asStateFlow()
+
+    fun setConnectedPhonesSF(phones: List<String>) {
+        _connectedPhones.update { phones }
+    }
+
     fun setConnectLoadingState(state: Boolean) {
         _connectLoading.update {
             state
@@ -74,7 +84,15 @@ class ConnectUserViewModel(
                     val response = apiRepository.connectUser(connectUserRequest)
                     if (response.isSuccessful) {
                         removeCachedConnectRequest()
-                        connectCallback.onConnectUserSuccess(connectUserRequest.new_phone_number)
+                        val phones = getConnectedPhonesFromServer()
+                        if (phones == null) {
+                            saveConnectedPhonesInSP(listOf(connectUserRequest.new_phone_number))
+                            setConnectedPhonesSF(listOf(connectUserRequest.new_phone_number))
+                        } else {
+                            saveConnectedPhonesInSP(phones)
+                            setConnectedPhonesSF(phones)
+                        }
+                        connectCallback.onConnectUserSuccess()
                     } else if(response.code() == 500){
                         val disconnectReq = DisconnectUserRequest(
                             getUserToken()
@@ -113,23 +131,42 @@ class ConnectUserViewModel(
                 try {
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
-                        sharedPreferencesManager.removeDisconnectRequest()
-                        disconnectCallback.onSuccess()
+                        removeConnectedPhonesFromSP()
+                        setConnectedPhonesSF(listOf())
+                        removeCachedDisconnectRequestFromSP()
+                        disconnectCallback.onSuccessDisconnection()
                     } else {
-                        disconnectCallback.onFailure(response.code())
+                        disconnectCallback.onFailureDisconnection(response.code())
                     }
                 } catch (e:Exception) {
                     if (e is UnknownHostException) {
-                        disconnectCallback.onFailure(CONNECTION_ERROR_CODE)
+                        disconnectCallback.onFailureDisconnection(CONNECTION_ERROR_CODE)
                     } else {
-                        disconnectCallback.onFailure(UNKNOWN_ERROR_CODE)
+                        disconnectCallback.onFailureDisconnection(UNKNOWN_ERROR_CODE)
                     }
                 }
             }
         }
     }
 
-    fun removeCachedDisconnectRequest( ) {
+    private fun removeConnectedPhonesFromSP() {
+        sharedPreferencesManager.removeConnectedPhones()
+    }
+
+    suspend fun getConnectedPhonesFromServer(): List<String>? {
+        return try {
+            val response = apiRepository.getConnectedPhones(getUserToken())
+            if (response.isSuccessful) {
+                response.body()?.data
+            } else {
+                null
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    fun removeCachedDisconnectRequestFromSP( ) {
         sharedPreferencesManager.removeDisconnectRequest()
     }
 
@@ -137,11 +174,11 @@ class ConnectUserViewModel(
         return sharedPreferencesManager.getUser()?.token ?: ""
     }
 
-    fun saveConnectedPhones(phones: List<String>) {
+    private fun saveConnectedPhonesInSP(phones: List<String>) {
         sharedPreferencesManager.saveConnectedPhones(phones)
     }
 
-    fun getConnectedPhones(): List<String>? {
+    fun getConnectedPhonesFromSP(): List<String>? {
         return sharedPreferencesManager.getConnectedPhone()
     }
 

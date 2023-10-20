@@ -10,7 +10,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.adapters.ConnectedPhonesAdapter
 import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
@@ -91,14 +93,20 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     }
 
     private fun setDetails() {
-//        val adapter = ConnectedPhonesAdapter(list)
-//        binding.listMatesRv.adapter = adapter
-//        binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.connectedPhones.collect {phones ->
+                if (phones.isEmpty()) {
+
+                } else  {
+                    val adapter = ConnectedPhonesAdapter(phones)
+                    binding.listMatesRv.adapter = adapter
+                    binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
+                }
+            }
+        }
     }
 
-    override fun onSuccess() {
-        viewModel.saveConnectedPhones("")
-
+    override fun onSuccessDisconnection() {
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onSuccess {
@@ -139,7 +147,7 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
         } catch (ignored: IllegalStateException) {}
     }
 
-    override fun onFailure(errorCode: Int) {
+    override fun onFailureDisconnection(errorCode: Int) {
         viewModel.setDisconnectLoadingState(false)
         when (errorCode) {
             CONNECTION_ERROR_CODE -> {
@@ -151,7 +159,7 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
             }
 
             403 -> {
-                viewModel.removeCachedDisconnectRequest()
+                viewModel.removeCachedDisconnectRequestFromSP()
                 Utilities.makeWarningSnack(
                     activity,
                     binding.root,
@@ -169,6 +177,6 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 }
 
 interface DisconnectUserCallback {
-    fun onSuccess()
-    fun onFailure(errorCode: Int)
+    fun onSuccessDisconnection()
+    fun onFailureDisconnection(errorCode: Int)
 }

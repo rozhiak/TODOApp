@@ -122,9 +122,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
         super.onDestroy()
     }
 
-    override fun onConnectUserSuccess(phone: String) {
-        viewModel.saveConnectedPhones(phone)
-
+    override fun onConnectUserSuccess() {
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
             response.onSuccess {
@@ -207,6 +205,6 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
 }
 
 interface ConnectUserCallback {
-    fun onConnectUserSuccess(phone: String)
+    fun onConnectUserSuccess()
     fun onConnectUserFailure(errorCode: Int)
 }
