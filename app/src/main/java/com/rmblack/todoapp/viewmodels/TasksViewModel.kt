@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.UUID
 
-open class TasksViewModel(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
     private val _isSyncing = MutableStateFlow(false)
 
@@ -33,7 +33,7 @@ open class TasksViewModel(private val sharedPreferencesManager: SharedPreference
         }
     }
 
-    private val apiRepository = ApiRepository()
+    val apiRepository = ApiRepository()
 
     val taskRepository = TaskRepository.get()
 
@@ -263,6 +263,33 @@ open class TasksViewModel(private val sharedPreferencesManager: SharedPreference
 
     fun getConnectedPhones(): List<String>? {
         return sharedPreferencesManager.getConnectedPhone()
+    }
+
+    suspend fun syncConnectedPhonesWithServer() {
+        val phones = getConnectedPhonesFromServer()
+        if (phones != null) {
+            saveConnectedPhonesInSP(phones)
+        }
+    }
+
+    private suspend fun getConnectedPhonesFromServer(): List<String>? {
+        if (getUserToken() != null) {
+            return try {
+                val response = apiRepository.getConnectedPhones(getUserToken()!!)
+                if (response.isSuccessful) {
+                    response.body()?.data
+                } else {
+                    null
+                }
+            } catch (_: Exception) {
+                null
+            }
+        }
+        return null
+    }
+
+    private fun saveConnectedPhonesInSP(phones: List<String>) {
+        sharedPreferencesManager.saveConnectedPhones(phones)
     }
 
     override fun onCleared() {

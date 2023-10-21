@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,6 +32,8 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
     protected lateinit var viewModel: TasksViewModel
 
     private var _binding: FragmentTasksBinding? = null
+
+    val connectionStatusFragment: Fragment = ConnectionStatusFragment()
 
     protected val binding
         get() = checkNotNull(_binding) {
@@ -98,6 +99,9 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
                             binding.refreshLayout.isRefreshing = false
                         }
                     }
+
+                    viewModel.syncConnectedPhonesWithServer()
+                    (connectionStatusFragment as RefreshCallback).onRefresh()
                 }
             }
         }

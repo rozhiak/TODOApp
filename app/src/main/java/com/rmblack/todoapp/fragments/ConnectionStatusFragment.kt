@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 
 
-class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
+class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallback {
 
     private lateinit var activity: Activity
 
@@ -73,6 +73,13 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
         }
     }
 
+    override fun onRefresh() {
+        val phones = viewModel.getConnectedPhonesFromSP()
+        if (phones != null) {
+            viewModel.setConnectedPhonesSF(phones)
+        }
+    }
+
     private fun setUpLoadingState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.disconnectLoading.collect {
@@ -93,10 +100,6 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
     }
 
     private fun setDetails() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.syncConnectedPhonesWithServer()
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.connectedPhones.collect {phones ->
                 if (phones.isEmpty()) {
@@ -183,4 +186,8 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback {
 interface DisconnectUserCallback {
     fun onSuccessDisconnection()
     fun onFailureDisconnection(errorCode: Int)
+}
+
+interface RefreshCallback {
+    fun onRefresh()
 }

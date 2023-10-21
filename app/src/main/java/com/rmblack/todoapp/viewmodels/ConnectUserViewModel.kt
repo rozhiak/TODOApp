@@ -153,13 +153,6 @@ class ConnectUserViewModel(
         sharedPreferencesManager.removeConnectedPhones()
     }
 
-    suspend fun syncConnectedPhonesWithServer() {
-        val phones = getConnectedPhonesFromServer()
-        if (phones != null) {
-            saveConnectedPhonesInSP(phones)
-            setConnectedPhonesSF(phones)
-        }
-    }
 
     private suspend fun getConnectedPhonesFromServer(): List<String>? {
         return try {

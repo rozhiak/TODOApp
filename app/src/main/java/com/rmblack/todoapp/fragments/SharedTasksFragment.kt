@@ -56,38 +56,45 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
     }
 
     private fun setUpConnectionManagementSection() {
-        if (viewModel.getUser()?.token == null) {
-            binding.manageConnectionBtn.visibility = View.GONE
-        } else {
-            binding.manageConnectionBtn.visibility = View.VISIBLE
-        }
-
-        val firstFragment: Fragment = ConnectUserFragment()
-        val secondFragment: Fragment = ConnectionStatusFragment()
-        val fm = childFragmentManager
-
-        fm.beginTransaction().add(R.id.manage_user_connection_container, secondFragment, "2").hide(secondFragment).commit()
-        fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
-
-        if (viewModel.getUser()?.token != null) {
-            if (viewModel.getConnectedPhones() == null) {
-                fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
-            } else {
-                fm.beginTransaction().hide(firstFragment).show(secondFragment).commit()
-            }
-        } else {
-            binding.manageUserConnectionContainer.visibility = View.GONE
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.tasks.take(2).collect { tasks ->
-                if (tasks.size != 1) setUpConnectionManagerVisibility()
+            if (viewModel.getUser()?.token == null) {
+                binding.manageConnectionBtn.visibility = View.GONE
+            } else {
+                binding.manageConnectionBtn.visibility = View.VISIBLE
+            }
+
+            binding.manageConnectionBtn.setImageResource(R.drawable.ic_sync)
+            binding.manageConnectionBtn.isClickable = false
+            viewModel.syncConnectedPhonesWithServer()
+            binding.manageConnectionBtn.isClickable = true
+            binding.manageConnectionBtn.setImageResource(R.drawable.ic_bottom)
+
+            val firstFragment: Fragment = ConnectUserFragment()
+            val fm = childFragmentManager
+
+            fm.beginTransaction().add(R.id.manage_user_connection_container, connectionStatusFragment, "2").hide(connectionStatusFragment).commit()
+            fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
+
+            if (viewModel.getUser()?.token != null) {
+                if (viewModel.getConnectedPhones().isNullOrEmpty()) {
+                    fm.beginTransaction().hide(connectionStatusFragment).show(firstFragment).commit()
+                } else {
+                    fm.beginTransaction().hide(firstFragment).show(connectionStatusFragment).commit()
+                }
+            } else {
+                binding.manageUserConnectionContainer.visibility = View.GONE
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.tasks.take(2).collect { tasks ->
+                    if (tasks.size != 1) setUpConnectionManagerVisibility()
+                }
             }
         }
     }
 
     private fun setUpConnectionManagerVisibility() {
-        if (viewModel.getConnectedPhones() == null && viewModel.tasks.value.size < 2) {
+        if (viewModel.getConnectedPhones().isNullOrEmpty() && viewModel.tasks.value.size < 2) {
             binding.manageConnectionBtn.rotation = 180f
             binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {
