@@ -139,8 +139,13 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                 if (response.code() == 200) {
                     response.body()?.user?.token?.let { syncTasksWithServer(it) }
                     saveUserInSharedPreferences(response)
-                    //TODO here perform a web request and get connected phone and also save it in shared preferences
-//                    sharedPreferencesManager.saveConnectedPhone("")
+                    response.body()?.user?.connectedPhones?.let {phones ->
+                        if (phones.isNotEmpty()) {
+                            sharedPreferencesManager.saveConnectedPhones(
+                                phones
+                            )
+                        }
+                    }
                     changeEntranceState(true)
                     _verifyRequestCode.update {
                         response.code()

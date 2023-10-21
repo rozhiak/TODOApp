@@ -10,6 +10,8 @@ class UserResponse (
 
 
 data class User(
+    @SerializedName("connected_users")
+    val connectedPhones: List<String>,
     val name: String,
     @SerializedName("phone_number")
     val phoneNumber: String,
