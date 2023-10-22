@@ -86,7 +86,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.tasks.take(2).collect { tasks ->
+                viewModel.tasks.take(1).collect { tasks ->
                     if (tasks.size != 1) setUpConnectionManagerVisibility()
                 }
             }

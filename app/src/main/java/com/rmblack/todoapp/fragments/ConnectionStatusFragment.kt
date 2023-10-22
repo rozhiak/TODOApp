@@ -74,10 +74,12 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
     }
 
     override fun onRefresh() {
-        val phones = viewModel.getConnectedPhonesFromSP()
-        if (phones != null) {
-            viewModel.setConnectedPhonesSF(phones)
-        }
+        try {
+            val phones = viewModel.getConnectedPhonesFromSP()
+            if (phones != null) {
+                viewModel.setConnectedPhonesSF(phones)
+            }
+        } catch (_: Exception) {}
     }
 
     private fun setUpLoadingState() {

@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class SharedTasksViewModel(sharedPreferencesManager: SharedPreferencesManager): TasksViewModel(sharedPreferencesManager) {
-
     init {
         viewModelScope.launch {
             taskRepository.getSharedTasksFlow().collect { tasks ->

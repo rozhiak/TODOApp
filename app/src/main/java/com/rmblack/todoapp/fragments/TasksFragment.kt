@@ -21,8 +21,6 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
