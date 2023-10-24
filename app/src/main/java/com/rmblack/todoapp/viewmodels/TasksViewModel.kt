@@ -33,7 +33,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         }
     }
 
-    val apiRepository = ApiRepository()
+    private val apiRepository = ApiRepository()
 
     val taskRepository = TaskRepository.get()
 

@@ -22,9 +22,7 @@ import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 const val TASK = 0
@@ -37,7 +35,7 @@ open class TaskHolder(
     private val editClickListener: EditClickListener,
     private val recyclerView: RecyclerView,
     binding: ViewBinding,
-    ) :RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     interface EditClickListener {
         fun onEditClick(task: Task)
@@ -50,8 +48,7 @@ open class TaskHolder(
     }
 
     fun setEditClick(
-        task: Task,
-        editCard: CardView
+        task: Task, editCard: CardView
     ) {
         editCard.setOnClickListener {
             editClickListener.onEditClick(task)
@@ -59,8 +56,7 @@ open class TaskHolder(
     }
 
     fun setDoneUi(
-        task: Task,
-        doneCheckBox: AppCompatCheckBox
+        task: Task, doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.isChecked = task.isDone
         scope?.launch {
@@ -141,9 +137,7 @@ open class TaskHolder(
     }
 
     fun configUrgentSwitch(
-        viewModel: TasksViewModel,
-        task: Task,
-        urgentSwitch: SwitchButton
+        viewModel: TasksViewModel, task: Task, urgentSwitch: SwitchButton
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, isUrgent ->
             viewModel.updateUrgentState(isUrgent, task.id)
@@ -152,9 +146,7 @@ open class TaskHolder(
     }
 
     fun configDoneCheckBox(
-        viewModel: TasksViewModel,
-        task: Task,
-        doneCheckBox: AppCompatCheckBox
+        viewModel: TasksViewModel, task: Task, doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, isDone ->
             if (isDone != task.isDone) {
@@ -165,10 +157,7 @@ open class TaskHolder(
     }
 
     fun setBackground(
-        viewModel: TasksViewModel,
-        pos: Int,
-        rootConstraint: ConstraintLayout,
-        resources: Resources
+        viewModel: TasksViewModel, pos: Int, rootConstraint: ConstraintLayout, resources: Resources
     ) {
         if (viewModel.tasks.value[pos]?.detailsVisibility == true) {
             rootConstraint.setBackgroundColor(
@@ -193,7 +182,7 @@ open class TaskHolder(
 
             val deleteReq = viewModel.makeDeleteRequest(task.serverID)
             if (deleteReq != null) {
-                    viewModel.cashDeleteRequest(deleteReq)
+                viewModel.cashDeleteRequest(deleteReq)
             }
             val snackBar = Utilities.makeDeleteSnackBar(activity, recyclerView) {
                 viewModel.insertTask(task)
@@ -216,10 +205,7 @@ open class TaskHolder(
     }
 
     fun setEachTaskClick(
-        pos: Int,
-        adapter: TaskAdapter,
-        rootCard: CardView,
-        viewModel: TasksViewModel
+        pos: Int, adapter: TaskAdapter, rootCard: CardView, viewModel: TasksViewModel
     ) {
         rootCard.setOnClickListener {
             if (viewModel.tasks.value[pos]?.detailsVisibility == false) {
@@ -229,8 +215,8 @@ open class TaskHolder(
                         viewModel.tasks.value[i]?.detailsVisibility = !oldVis
                         adapter.notifyItemChanged(i)
                         viewModel.tasks.value[i]?.id?.let { id ->
-                            viewModel.updateDetailsVisibility(!oldVis,
-                                id
+                            viewModel.updateDetailsVisibility(
+                                !oldVis, id
                             )
                         }
                     }
@@ -239,9 +225,9 @@ open class TaskHolder(
             val oldVis = viewModel.tasks.value[pos]?.detailsVisibility ?: false
             viewModel.tasks.value[pos]?.detailsVisibility = !oldVis
             adapter.notifyItemChanged(pos)
-            viewModel.tasks.value[pos]?.id?.let {id ->
-                viewModel.updateDetailsVisibility(!oldVis,
-                    id
+            viewModel.tasks.value[pos]?.id?.let { id ->
+                viewModel.updateDetailsVisibility(
+                    !oldVis, id
                 )
             }
             recyclerView.post {

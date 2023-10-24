@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
 
-
 const val newlyAddedTaskServerID = "newly added"
 
 class MainActivity : AppCompatActivity() {

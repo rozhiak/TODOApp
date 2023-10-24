@@ -7,14 +7,14 @@ import com.rmblack.todoapp.utils.PersianNum
 
 class RemainingDaysLableHolder(
     private val binding: RemainingDaysLableBinding,
-): RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(deadline: PersianCalendar) {
         binding.apply {
             val disInDays = kotlin.math.floor(calculateDateDistance(deadline)).toInt()
             if (disInDays == 0) {
                 remainingDaysLable.text = ""
                 remainingDaysTv.text = "امروز"
-            } else if(disInDays == 1) {
+            } else if (disInDays == 1) {
                 remainingDaysLable.text = ""
                 remainingDaysTv.text = "فردا"
             } else if (disInDays == -1) {
@@ -30,7 +30,7 @@ class RemainingDaysLableHolder(
         }
     }
 
-    private fun calculateDateDistance(calendarDate: PersianCalendar) : Double {
+    private fun calculateDateDistance(calendarDate: PersianCalendar): Double {
         val currentDate = PersianCalendar()
         val targetDate = PersianCalendar()
 
