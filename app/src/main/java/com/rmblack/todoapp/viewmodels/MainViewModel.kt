@@ -7,20 +7,14 @@ import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.success.User
-import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.userAgent
-import retrofit2.Response
 import java.lang.Exception
-import java.net.UnknownHostException
-import java.util.concurrent.Flow
 import kotlin.Result.Companion.failure
 
 const val SAME_USER_NAME = 1
@@ -56,7 +50,7 @@ class MainViewModel( val sharedPreferencesManager: SharedPreferencesManager): Vi
         taskRepository.addTask(task)
     }
 
-    suspend fun updateUser(newName: String): Result<Int> {
+    suspend fun updateUserInServer(newName: String): Result<Int> {
         val user = sharedPreferencesManager.getUser()
         if (user?.name != newName) {
             val updateUserRequest = UpdateUserRequest(

@@ -1,6 +1,5 @@
 package com.rmblack.todoapp.activities
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -49,9 +48,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPreferencesManager = SharedPreferencesManager(this)
+
         viewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(sharedPreferencesManager)
+            this, MainViewModelFactory(sharedPreferencesManager)
         )[MainViewModel::class.java]
         viewModel.removeNoTitleTasks()
 
@@ -62,15 +61,19 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        syncTasks()
+        setUpUI()
+        wireUpBottomNav()
+        showToday()
+        setUpProfileBtn()
+    }
+
+    private fun syncTasks() {
         val user = viewModel.getUserFromSharedPreferences()
         if (user?.token != null) {
             viewModel.updateSyncState(true)
             viewModel.syncTasksWithServer(this)
         }
-        setUpUI()
-        wireUpBottomNav()
-        showToday()
-        setUpProfileBtn()
     }
 
     private fun setUpProfileBtn() {
@@ -86,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                 val (popupView, popupWindow) = createWindow()
 
                 setUserName(popupView)
-
                 changeUserName(popupView)
 
                 popupWindow.elevation = 60.0f
@@ -111,76 +113,70 @@ class MainActivity : AppCompatActivity() {
             val nameEt = popupView.findViewById<TextInputEditText>(R.id.name_et)
             if (nameEt.text.toString() != "") {
                 saveBTN.startAnimation {
-                    lifecycleScope.launch {
-                        val res = viewModel.updateUser(
-                            nameEt.text.toString()
-                        )
-                        res.onSuccess {
-                            viewModel.getUserFromSharedPreferences()?.let { token ->
-                                val result = Utilities.syncTasksWithServer(
-                                    token.token,
-                                    this@MainActivity
-                                )
-                                result.onSuccess {
-                                    saveBTN.revertAnimation()
-                                    Utilities.makeWarningSnack(
-                                        this@MainActivity,
-                                        binding.root,
-                                        "تغییرات با موفقیت لحاظ شد."
-                                    )
-                                }
-                                result.onFailure { e ->
-                                    saveBTN.revertAnimation()
-                                    when(e) {
-                                        is UnknownHostException -> {
-                                            Utilities.makeWarningSnack(
-                                                this@MainActivity,
-                                                binding.root,
-                                                "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        res.onFailure {
-                            saveBTN.revertAnimation()
-                            when (it) {
-                                is MainViewModel.UpdateUserException -> {
-                                    if (it.intValue == 404) {
-                                        Utilities.makeWarningSnack(
-                                            this@MainActivity,
-                                            binding.root,
-                                            "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
-                                        )
-                                    } else if (it.intValue == SAME_USER_NAME) {
-                                        Utilities.makeWarningSnack(
-                                            this@MainActivity,
-                                            binding.root,
-                                            "نام جدید با نام فعلی نمی تواند یکسان باشد."
-                                        )
-                                    }
-                                }
-
-                                is UnknownHostException -> {
-                                    Utilities.makeWarningSnack(
-                                        this@MainActivity,
-                                        binding.root,
-                                        "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    performChangeNameRequest(nameEt, saveBTN)
                 }
             } else {
-                Utilities.makeWarningSnack(
-                    this@MainActivity,
-                    binding.root,
-                    "نام کاربری نمی تواند خالی باشد."
-                )
+                makeSnack("نام کاربری نمی تواند خالی باشد.")
             }
         }
+    }
+
+    private fun performChangeNameRequest(
+        nameEt: TextInputEditText,
+        saveBTN: CircularProgressButton
+    ) {
+        lifecycleScope.launch {
+            val res = viewModel.updateUserInServer(
+                nameEt.text.toString()
+            )
+            res.onSuccess {
+                syncTasksWithNewName(saveBTN)
+            }
+            res.onFailure {
+                saveBTN.revertAnimation()
+                when (it) {
+                    is MainViewModel.UpdateUserException -> {
+                        if (it.intValue == 404) {
+                            makeSnack("مشکلی در فرآیند ورودتان به برنامه پیش آمده")
+                        } else if (it.intValue == SAME_USER_NAME) {
+                            makeSnack("نام جدید با نام فعلی نمی تواند یکسان باشد.")
+                        }
+                    }
+
+                    is UnknownHostException -> {
+                        makeSnack("مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید.")
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun syncTasksWithNewName(saveBTN: CircularProgressButton) {
+        viewModel.getUserFromSharedPreferences()?.let { user ->
+            val result = Utilities.syncTasksWithServer(
+                user.token, this@MainActivity
+            )
+            result.onSuccess {
+                saveBTN.revertAnimation()
+                makeSnack("تغییرات با موفقیت لحاظ شد.")
+            }
+            result.onFailure { e ->
+                saveBTN.revertAnimation()
+                when (e) {
+                    is UnknownHostException -> {
+                        makeSnack("به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت.")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun makeSnack(
+        message: String
+    ) {
+        Utilities.makeWarningSnack(
+            this, binding.root, message
+        )
     }
 
     private fun createWindow(): Pair<View, PopupWindow> {
@@ -248,33 +244,32 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
 
-        val firstFragment: Fragment = PrivateTasksFragment(viewModel.isSyncing)
-        val secondFragment: Fragment = SharedTasksFragment(viewModel.isSyncing)
+        val privateTasksFragment: Fragment = PrivateTasksFragment(viewModel.isSyncing)
+        val sharedTasksFragment: Fragment = SharedTasksFragment(viewModel.isSyncing)
         val fm = supportFragmentManager
 
-        fm.beginTransaction().add(R.id.main_fragment_container, secondFragment, "2").hide(secondFragment).commit()
-        fm.beginTransaction().add(R.id.main_fragment_container, firstFragment, "1").commit()
+        fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment, "2")
+            .hide(sharedTasksFragment).commit()
+        fm.beginTransaction().add(R.id.main_fragment_container, privateTasksFragment, "1").commit()
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.privateTasksFragment -> {
-                    fm.beginTransaction().hide(secondFragment).show(firstFragment).commit()
+                    fm.beginTransaction().hide(sharedTasksFragment).show(privateTasksFragment)
+                        .commit()
                 }
+
                 R.id.sharedTasksFragment -> {
-                    fm.beginTransaction().hide(firstFragment).show(secondFragment).commit()
+                    fm.beginTransaction().hide(privateTasksFragment).show(sharedTasksFragment)
+                        .commit()
                 }
             }
             true
         }
 
         binding.fab.setOnClickListener {
-            if(binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment &&
-                viewModel.getUserFromSharedPreferences()?.token == null) {
-                Utilities.makeWarningSnack(
-                    this,
-                    binding.root,
-                    "برای استفاده از بخش اشتراکی باید ابتدا وارد حساب کاربری خود شوید."
-                )
+            if (binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment && viewModel.getUserFromSharedPreferences()?.token == null) {
+                makeSnack("برای استفاده از بخش اشتراکی باید ابتدا وارد حساب کاربری خود شوید.")
             } else {
                 showNewTask()
             }
@@ -283,7 +278,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showNewTask() {
         lifecycleScope.launch {
-
             val newTask = Task(
                 serverID = newlyAddedTaskServerID,
                 title = "",
@@ -295,7 +289,7 @@ class MainActivity : AppCompatActivity() {
                 isDone = false,
                 isShared = binding.bottomNavigationView.selectedItemId == R.id.sharedTasksFragment,
                 composer = viewModel.getUserFromSharedPreferences()?.name ?: "",
-                groupId = "123",
+                groupId = "",
                 detailsVisibility = false
             )
 
@@ -314,26 +308,22 @@ class MainActivity : AppCompatActivity() {
         CoordinatorLayout.Behavior<View>(context, attrs) {
 
         override fun layoutDependsOn(
-            parent: CoordinatorLayout,
-            child: View,
-            dependency: View
+            parent: CoordinatorLayout, child: View, dependency: View
         ): Boolean {
             return dependency is Snackbar.SnackbarLayout
         }
 
         override fun onDependentViewChanged(
-            parent: CoordinatorLayout,
-            child: View,
-            dependency: View
+            parent: CoordinatorLayout, child: View, dependency: View
         ): Boolean {
             val translationY = minOf(0f, dependency.translationY - dependency.height)
-            if (dependency.translationY != 0f)
-                child.translationY = translationY
+            if (dependency.translationY != 0f) child.translationY = translationY
             return true
         }
     }
 
-    class MainViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
+    class MainViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 return MainViewModel(sharedPreferencesManager) as T
