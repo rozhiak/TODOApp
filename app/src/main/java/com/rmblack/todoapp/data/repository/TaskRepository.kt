@@ -38,6 +38,8 @@ class TaskRepository private constructor(
     suspend fun getSharedTasks(): List<Task> = database.taskDao().getSharedTasks()
 
 
+
+
     fun updateTask(task: Task) {
         coroutineScope.launch {
             database.taskDao().updateTask(task)
@@ -59,6 +61,12 @@ class TaskRepository private constructor(
     fun deleteTask(task: Task?) {
         coroutineScope.launch {
             database.taskDao().delete(task)
+        }
+    }
+
+    fun deleteSharedTasks() {
+        coroutineScope.launch {
+            database.taskDao().deleteSharedTasks()
         }
     }
 

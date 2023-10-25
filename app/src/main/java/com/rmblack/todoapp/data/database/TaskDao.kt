@@ -45,6 +45,9 @@ interface TaskDao {
     @Query("UPDATE task SET serverID = :serverID WHERE id = :id")
     suspend fun updateServerID(id: UUID, serverID: String)
 
+    @Query("DELETE FROM task WHERE isShared = 1")
+    suspend fun deleteSharedTasks()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: Task)
 

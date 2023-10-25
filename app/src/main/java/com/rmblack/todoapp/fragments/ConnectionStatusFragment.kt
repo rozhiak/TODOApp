@@ -97,6 +97,7 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
     private fun setClickListeners() {
         binding.disconnectProgressBtn.setOnClickListener {
             viewModel.setDisconnectLoadingState(true)
+            viewModel.deleteSharedTasks()
             viewModel.disconnectUserFromSharedList(this)
         }
     }
@@ -116,33 +117,10 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
     }
 
     override fun onSuccessDisconnection() {
-        val job = CoroutineScope(Dispatchers.Default).launch {
-            val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
-            response.onSuccess {
-                requireActivity().runOnUiThread {
-                    if (_binding != null) viewModel.setDisconnectLoadingState(false)
-                }
-                showConnectUserFragment()
-            }
-
-            response.onFailure {e ->
-                requireActivity().runOnUiThread {
-                    if (_binding != null) viewModel.setDisconnectLoadingState(false)
-                }
-                if (e is UnknownHostException) {
-                    Utilities.makeWarningSnack(
-                        activity,
-                        requireParentFragment().requireView(),
-                        "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
-                    )
-                }
-                showConnectUserFragment()
-            }
+        requireActivity().runOnUiThread {
+            if (_binding != null) viewModel.setDisconnectLoadingState(false)
         }
-
-        job.invokeOnCompletion {
-            job.cancel()
-        }
+        showConnectUserFragment()
     }
 
     private fun showConnectUserFragment() {

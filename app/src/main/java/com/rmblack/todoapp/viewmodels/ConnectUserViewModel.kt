@@ -2,6 +2,7 @@ package com.rmblack.todoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.fragments.ConnectUserCallback
 import com.rmblack.todoapp.fragments.DisconnectUserCallback
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
@@ -21,6 +22,8 @@ import java.net.UnknownHostException
 class ConnectUserViewModel(
     private val sharedPreferencesManager: SharedPreferencesManager
 ) : ViewModel() {
+
+    val taskRepository = TaskRepository.get()
 
     private val apiRepository = ApiRepository()
 
@@ -189,5 +192,9 @@ class ConnectUserViewModel(
 
     fun getCachedDisconnectRequest(): DisconnectUserRequest? {
         return sharedPreferencesManager.getCachedDisconnectRequest()
+    }
+
+    fun deleteSharedTasks() {
+        taskRepository.deleteSharedTasks()
     }
 }
