@@ -69,17 +69,17 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
             binding.manageConnectionBtn.isClickable = true
             binding.manageConnectionBtn.setImageResource(R.drawable.ic_bottom)
 
-            val firstFragment: Fragment = ConnectUserFragment()
+            val connectUserFragment: Fragment = ConnectUserFragment()
             val fm = childFragmentManager
 
             fm.beginTransaction().add(R.id.manage_user_connection_container, connectionStatusFragment, "2").hide(connectionStatusFragment).commit()
-            fm.beginTransaction().add(R.id.manage_user_connection_container, firstFragment, "1").commit()
+            fm.beginTransaction().add(R.id.manage_user_connection_container, connectUserFragment, "1").commit()
 
             if (viewModel.getUser()?.token != null) {
                 if (viewModel.getConnectedPhones().isNullOrEmpty()) {
-                    fm.beginTransaction().hide(connectionStatusFragment).show(firstFragment).commit()
+                    fm.beginTransaction().hide(connectionStatusFragment).show(connectUserFragment).commit()
                 } else {
-                    fm.beginTransaction().hide(firstFragment).show(connectionStatusFragment).commit()
+                    fm.beginTransaction().hide(connectUserFragment).show(connectionStatusFragment).commit()
                 }
             } else {
                 binding.manageUserConnectionContainer.visibility = View.GONE
@@ -193,6 +193,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
 
     class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
                 SharedTasksViewModel(sharedPreferencesManager) as T
             } else {

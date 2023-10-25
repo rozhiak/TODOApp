@@ -152,14 +152,17 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun syncTasksWithNewName(saveBTN: CircularProgressButton) {
         viewModel.getUserFromSharedPreferences()?.let { user ->
+            viewModel.updateSyncState(true)
             val result = Utilities.syncTasksWithServer(
                 user.token, this@MainActivity
             )
             result.onSuccess {
+                viewModel.updateSyncState(false)
                 saveBTN.revertAnimation()
                 makeSnack("تغییرات با موفقیت لحاظ شد.")
             }
             result.onFailure { e ->
+                viewModel.updateSyncState(false)
                 saveBTN.revertAnimation()
                 when (e) {
                     is UnknownHostException -> {

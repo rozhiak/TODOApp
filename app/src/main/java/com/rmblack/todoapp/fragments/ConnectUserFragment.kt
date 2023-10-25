@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 
 
-class ConnectUserFragment: Fragment() , ConnectUserCallback{
+class ConnectUserFragment(): Fragment() , ConnectUserCallback{
 
     private lateinit var viewModel : ConnectUserViewModel
 
@@ -101,6 +101,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback{
             }
         }
     }
+
     private fun hideKeyboard() {
         val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)

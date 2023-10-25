@@ -62,7 +62,7 @@ class PrivateTaskHolder(
     }
 }
 
-class PrivateTaskListAdapter(
+class PrivateTasksAdapter(
     private val scope: CoroutineScope,
     private val isSyncing: StateFlow<Boolean>,
     private val viewModel: TasksViewModel,
@@ -72,7 +72,6 @@ class PrivateTaskListAdapter(
     viewModel,
     editClickListener,
 ) {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == REMAINING_DAYS_LABLE) {
@@ -91,5 +90,4 @@ class PrivateTaskListAdapter(
             viewModel.tasks.value[position+1]?.let { holder.bind(it.deadLine) }
         }
     }
-
 }

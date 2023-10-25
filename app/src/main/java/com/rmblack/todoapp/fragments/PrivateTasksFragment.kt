@@ -1,6 +1,5 @@
 package com.rmblack.todoapp.fragments
 
-import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +11,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.rmblack.todoapp.adapters.PrivateTaskListAdapter
-import com.rmblack.todoapp.databinding.FragmentTasksBinding
+import com.rmblack.todoapp.adapters.PrivateTasksAdapter
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
-import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -85,8 +81,8 @@ class PrivateTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSync
         }
     }
 
-    private fun createPrivateTasksAdapter(): PrivateTaskListAdapter =
-        PrivateTaskListAdapter(viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity())
+    private fun createPrivateTasksAdapter(): PrivateTasksAdapter =
+        PrivateTasksAdapter(viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity())
 
 
     class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {

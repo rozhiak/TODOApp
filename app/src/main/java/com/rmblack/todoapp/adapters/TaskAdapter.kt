@@ -40,5 +40,4 @@ open class TaskAdapter(
     }
 
     override fun getItemCount() = viewModel.tasks.value.size
-
 }

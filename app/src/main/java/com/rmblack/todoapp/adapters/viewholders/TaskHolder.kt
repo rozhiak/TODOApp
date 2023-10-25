@@ -56,7 +56,8 @@ open class TaskHolder(
     }
 
     fun setDoneUi(
-        task: Task, doneCheckBox: AppCompatCheckBox
+        task: Task,
+        doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.isChecked = task.isDone
         scope?.launch {
@@ -137,7 +138,8 @@ open class TaskHolder(
     }
 
     fun configUrgentSwitch(
-        viewModel: TasksViewModel, task: Task, urgentSwitch: SwitchButton
+        viewModel: TasksViewModel,
+        task: Task, urgentSwitch: SwitchButton
     ) {
         urgentSwitch.setOnCheckedChangeListener { _, isUrgent ->
             viewModel.updateUrgentState(isUrgent, task.id)
@@ -146,7 +148,8 @@ open class TaskHolder(
     }
 
     fun configDoneCheckBox(
-        viewModel: TasksViewModel, task: Task, doneCheckBox: AppCompatCheckBox
+        viewModel: TasksViewModel,
+        task: Task, doneCheckBox: AppCompatCheckBox
     ) {
         doneCheckBox.setOnCheckedChangeListener { _, isDone ->
             if (isDone != task.isDone) {
@@ -235,5 +238,4 @@ open class TaskHolder(
             }
         }
     }
-
 }

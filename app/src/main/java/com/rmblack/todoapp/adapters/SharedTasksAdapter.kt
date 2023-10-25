@@ -81,7 +81,15 @@ class SharedTasksAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
-            SharedTaskHolder(scope, isSyncing, binding, viewModel, activity, editClickListener, recyclerView)
+            SharedTaskHolder(
+                scope,
+                isSyncing,
+                binding,
+                viewModel,
+                activity,
+                editClickListener,
+                recyclerView
+            )
         }
     }
 
@@ -89,8 +97,7 @@ class SharedTasksAdapter(
         if (holder is SharedTaskHolder) {
             holder.bind(viewModel.tasks.value, position, this)
         } else if (holder is RemainingDaysLableHolder && position + 1 < viewModel.tasks.value.size) {
-            viewModel.tasks.value[position+1]?.let { holder.bind(it.deadLine) }
+            viewModel.tasks.value[position + 1]?.let { holder.bind(it.deadLine) }
         }
     }
-
 }
