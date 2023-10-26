@@ -20,12 +20,11 @@ import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.launch
 
-
-class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallback {
+class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCallback {
 
     private lateinit var activity: Activity
 
-    private lateinit var viewModel : ConnectUserViewModel
+    private lateinit var viewModel: ConnectUserViewModel
 
     private var _binding: FragmentConnectionStatusBinding? = null
 
@@ -76,13 +75,14 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
             if (phones != null) {
                 viewModel.setConnectedPhonesSF(phones)
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     private fun setUpLoadingState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.disconnectLoading.collect {
-                if (it) {
+            viewModel.disconnectLoading.collect { state ->
+                if (state) {
                     binding.disconnectProgressBtn.startAnimation()
                 } else {
                     binding.disconnectProgressBtn.revertAnimation()
@@ -101,10 +101,10 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
 
     private fun setDetails() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.connectedPhones.collect {phones ->
+            viewModel.connectedPhones.collect { phones ->
                 if (phones.isEmpty()) {
-
-                } else  {
+                    binding.noListMateTv.visibility = View.VISIBLE
+                } else {
                     val adapter = ConnectedPhonesAdapter(phones)
                     binding.listMatesRv.adapter = adapter
                     binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
@@ -128,7 +128,7 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
         transaction.replace(fragmentContainerView.id, ConnectUserFragment())
         try {
             transaction.commit()
-        } catch (ignored: IllegalStateException) {}
+        } catch (_: IllegalStateException) { }
     }
 
     override fun onFailureDisconnection(errorCode: Int) {

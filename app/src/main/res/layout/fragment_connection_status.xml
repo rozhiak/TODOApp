@@ -18,10 +18,26 @@
         android:text="هم لیستی ها:"
         app:fontFamily="@font/iranian_ans"
         android:textStyle="bold"
-        android:textColor="@color/grey"
+        android:textColor="@color/title_black"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/no_list_mate_tv"
+        android:visibility="gone"
+        android:layout_marginVertical="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/grey"
+        android:textSize="16sp"
+        app:fontFamily="@font/iranian_ans"
+        android:textStyle="bold"
+        android:text="هم لیستی ندارید  :("
+        app:layout_constraintBottom_toTopOf="@+id/disconnect_btn_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_mates_tv" />
 
     <androidx.recyclerview.widget.RecyclerView
         app:layout_constraintHeight_max="175dp"

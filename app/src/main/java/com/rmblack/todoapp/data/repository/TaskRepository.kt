@@ -11,11 +11,12 @@ import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 import java.util.UUID
 
-private const val DATABASE_NAME ="crime-database"
+private const val DATABASE_NAME = "crime-database"
 
 class TaskRepository private constructor(
     context: Context,
-    private val coroutineScope: CoroutineScope = GlobalScope) {
+    private val coroutineScope: CoroutineScope = GlobalScope
+) {
 
     private val database: TaskDatabase = Room
         .databaseBuilder(
@@ -36,9 +37,6 @@ class TaskRepository private constructor(
     suspend fun getPrivateTasks(): List<Task> = database.taskDao().getPrivateTasks()
 
     suspend fun getSharedTasks(): List<Task> = database.taskDao().getSharedTasks()
-
-
-
 
     fun updateTask(task: Task) {
         coroutineScope.launch {
@@ -94,9 +92,7 @@ class TaskRepository private constructor(
         }
 
         fun get(): TaskRepository {
-            return INSTANCE ?:
-            throw IllegalStateException("TaskRepository must be initialized")
+            return INSTANCE ?: throw IllegalStateException("TaskRepository must be initialized")
         }
     }
-
 }

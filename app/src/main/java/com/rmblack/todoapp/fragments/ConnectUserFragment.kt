@@ -21,11 +21,9 @@ import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.net.UnknownHostException
 
-
-class ConnectUserFragment(): Fragment() , ConnectUserCallback, RefreshCallback{
+class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
 
     private lateinit var viewModel : ConnectUserViewModel
 
@@ -154,7 +152,6 @@ class ConnectUserFragment(): Fragment() , ConnectUserCallback, RefreshCallback{
 
                 showConnectionStatusFragment()
             }
-
         }
 
         job.invokeOnCompletion {
@@ -170,7 +167,7 @@ class ConnectUserFragment(): Fragment() , ConnectUserCallback, RefreshCallback{
         transaction.replace(fragmentContainerView.id, ConnectionStatusFragment())
         try {
             transaction.commit()
-        } catch (ignored: IllegalStateException) {}
+        } catch (_: IllegalStateException) {}
     }
 
     override fun onConnectUserFailure(errorCode: Int) {

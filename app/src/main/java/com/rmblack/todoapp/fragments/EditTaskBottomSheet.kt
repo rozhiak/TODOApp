@@ -3,18 +3,15 @@ package com.rmblack.todoapp.fragments
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.Editable
 import android.text.Selection
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.get
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -25,7 +22,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.utils.SharedPreferencesManager
-import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
@@ -37,7 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
-
 
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
@@ -61,7 +56,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentEditTaskBottomSheetBinding.inflate(inflater, container, false)
         context = requireContext()
         return binding.root
@@ -69,7 +64,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setCollapseBtnListener()
+        setClickListeners()
         updateUi()
         syncUserInput()
     }
@@ -128,8 +123,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val etTitle: Editable? = binding.etTitle.text
         Selection.setSelection(etTitle, binding.etTitle.text?.length ?: 0)
 
-        val etDec: Editable? = binding.etDescription.text
-        Selection.setSelection(etDec, binding.etDescription.text?.length ?: 0)
+        val etDes: Editable? = binding.etDescription.text
+        Selection.setSelection(etDes, binding.etDescription.text?.length ?: 0)
     }
 
     private fun showDatePicker() {
@@ -143,33 +138,43 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         persianPickerDate.setDate(year, month, day)
 
         val picker = PersianDatePickerDialog(context)
-            .setPositiveButtonString("باشه")
-            .setNegativeButton("بیخیال")
-            .setTodayButton("امروز")
+            .setPositiveButtonString("تایید")
+            .setNegativeButton("لغو")
+            .setTodayButton("برو به امروز")
             .setTodayButtonVisible(true)
             .setInitDate(persianPickerDate, true)
             .setActionTextColor(Color.parseColor("#5DD0A3"))
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
             .setTitleColor(ResourcesCompat.getColor(resources, R.color.title_black, null))
-            .setBackgroundColor(ResourcesCompat.getColor(resources, R.color.bottom_sheet_back_color, null))
-            .setPickerBackgroundColor(ResourcesCompat.getColor(resources, R.color.bottom_sheet_back_color, null))
-            .setAllButtonsTextSize(17)
+            .setBackgroundColor(
+                ResourcesCompat.getColor(
+                    resources,
+                    R.color.bottom_sheet_back_color,
+                    null
+                )
+            )
+            .setPickerBackgroundColor(
+                ResourcesCompat.getColor(
+                    resources,
+                    R.color.bottom_sheet_back_color,
+                    null
+                )
+            )
+            .setAllButtonsTextSize(16)
             .setListener(object : PersianPickerListener {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {
-                    viewModel.updateTask {
+                    viewModel.updateTask { oldTask ->
                         val newDeadline = PersianCalendar()
                         newDeadline.year = persianPickerDate.persianYear
                         newDeadline.month = persianPickerDate.persianMonth - 1
                         newDeadline.dayOfMonth = persianPickerDate.persianDay
-                        it.copy(
+                        oldTask.copy(
                             deadLine = newDeadline,
                         )
                     }
                 }
 
-                override fun onDismissed() {
-
-                }
+                override fun onDismissed() {}
             })
 
         picker.show()
@@ -197,21 +202,27 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setCollapseBtnListener() {
+    private fun setClickListeners() {
         binding.saveBtn.setOnClickListener {
             if (binding.etTitle.text?.isBlank() == true || binding.etTitle.text?.isEmpty() == true) {
                 binding.etTitle.setHintTextColor(Color.parseColor("#D05D8A"))
                 binding.etTitle.hint = "عنوان را تایپ کنید"
 
                 binding.etTitle.requestFocus()
-                val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val inputMethodManager =
+                    requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.showSoftInput(binding.etTitle, InputMethodManager.SHOW_IMPLICIT)
 
                 val scope = CoroutineScope(Dispatchers.Main)
                 scope.launch {
                     delay(1300)
                     binding.etTitle.hint = "عنوان"
-                    binding.etTitle.setHintTextColor(ContextCompat.getColor(context, R.color.hint_text_color))
+                    binding.etTitle.setHintTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.hint_text_color
+                        )
+                    )
                 }
             } else {
                 dismiss()
@@ -224,13 +235,14 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onPause() {
-        super.onPause()
         saveTitleAndDescription()
+        super.onPause()
     }
 
     private fun saveTitleAndDescription() {
         if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false ||
-            binding.etDescription.text?.equals(viewModel.task.value?.description) == false) {
+            binding.etDescription.text?.equals(viewModel.task.value?.description) == false
+        ) {
             viewModel.updateTask { oldTask ->
                 oldTask.copy(
                     title = binding.etTitle.text.toString(),
