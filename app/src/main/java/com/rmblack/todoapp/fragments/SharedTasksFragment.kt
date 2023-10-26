@@ -69,7 +69,6 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
             binding.manageConnectionBtn.isClickable = true
             binding.manageConnectionBtn.setImageResource(R.drawable.ic_bottom)
 
-            val connectUserFragment: Fragment = ConnectUserFragment()
             val fm = childFragmentManager
 
             fm.beginTransaction().add(R.id.manage_user_connection_container, connectionStatusFragment, "2").hide(connectionStatusFragment).commit()

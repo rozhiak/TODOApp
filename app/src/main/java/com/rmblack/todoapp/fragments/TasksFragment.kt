@@ -33,6 +33,8 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
 
     val connectionStatusFragment: Fragment = ConnectionStatusFragment()
 
+    val connectUserFragment: Fragment = ConnectUserFragment()
+
     protected val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
@@ -77,6 +79,10 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
         } else {
             binding.refreshLayout.setOnRefreshListener {
                 viewLifecycleOwner.lifecycleScope.launch {
+                    viewModel.syncConnectedPhonesWithServer()
+                    (connectionStatusFragment as RefreshCallback).onRefresh()
+                    (connectUserFragment as RefreshCallback).onRefresh()
+
                     viewModel.updateSyncState(true)
                     val response = Utilities.syncTasksWithServer(userToken, requireContext())
                     response.onSuccess {
@@ -97,9 +103,6 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
                             binding.refreshLayout.isRefreshing = false
                         }
                     }
-
-                    viewModel.syncConnectedPhonesWithServer()
-                    (connectionStatusFragment as RefreshCallback).onRefresh()
                 }
             }
         }

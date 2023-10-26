@@ -21,10 +21,11 @@ import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.net.UnknownHostException
 
 
-class ConnectUserFragment(): Fragment() , ConnectUserCallback{
+class ConnectUserFragment(): Fragment() , ConnectUserCallback, RefreshCallback{
 
     private lateinit var viewModel : ConnectUserViewModel
 
@@ -60,10 +61,15 @@ class ConnectUserFragment(): Fragment() , ConnectUserCallback{
         setUpLoadingState()
     }
 
+    override fun onRefresh() {
+        try {
+            performCachedReq()
+        } catch (_: UninitializedPropertyAccessException) {}
+    }
+
     private fun performCachedReq() {
         val cachedReq = viewModel.getCachedConnectUser()
         if (cachedReq != null) {
-            viewModel.setConnectLoadingState(true)
             binding.phoneEt.setText(cachedReq.new_phone_number)
             viewModel.connectUserToSharedList(cachedReq.new_phone_number, this)
         }

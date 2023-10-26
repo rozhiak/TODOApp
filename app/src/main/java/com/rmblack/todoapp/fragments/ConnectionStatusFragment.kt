@@ -18,10 +18,7 @@ import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.net.UnknownHostException
 
 
 class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallback {
@@ -59,22 +56,22 @@ class ConnectionStatusFragment: Fragment(), DisconnectUserCallback, RefreshCallb
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        performCachedReq()
+        performDisconnectCachedReq()
         setDetails()
         setClickListeners()
         setUpLoadingState()
     }
 
-    private fun performCachedReq() {
+    private fun performDisconnectCachedReq() {
         val cachedReq = viewModel.getCachedDisconnectRequest()
         if (cachedReq != null) {
-            viewModel.setDisconnectLoadingState(true)
             viewModel.disconnectUserFromSharedList(this)
         }
     }
 
     override fun onRefresh() {
         try {
+            performDisconnectCachedReq()
             val phones = viewModel.getConnectedPhonesFromSP()
             if (phones != null) {
                 viewModel.setConnectedPhonesSF(phones)

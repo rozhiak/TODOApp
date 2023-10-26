@@ -7,6 +7,7 @@ import com.rmblack.todoapp.fragments.ConnectUserCallback
 import com.rmblack.todoapp.fragments.DisconnectUserCallback
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
+import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.UNKNOWN_ERROR_CODE
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.lang.Exception
 import java.net.UnknownHostException
 
@@ -132,6 +134,7 @@ class ConnectUserViewModel(
         viewModelScope.launch {
             if (disconnectUserRequest != null) {
                 try {
+                    performSharedCashedRequests()
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
                         removeConnectedPhonesFromSP()
@@ -148,6 +151,37 @@ class ConnectUserViewModel(
                         disconnectCallback.onFailureDisconnection(UNKNOWN_ERROR_CODE)
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun performSharedCashedRequests() {
+        val failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
+        val failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
+        val failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+
+        for (addReq in failedAddRequests) {
+            if (addReq.is_shared) {
+                val response = apiRepository.addNewTask(addReq.convertToServerAddModel())
+                if (response.isSuccessful) {
+                    sharedPreferencesManager.removeFailedAddRequest(addReq)
+                }
+            }
+        }
+
+        for (editReq in failedEditRequests) {
+            if (editReq.is_shared) {
+                val response = apiRepository.editTask(editReq.convertToServerEditModel())
+                if (response.code() == 200 || response.code() == 404) {
+                    sharedPreferencesManager.removeFailedEditRequest(editReq)
+                }
+            }
+        }
+
+        for (deleteReq in failedDeleteRequests) {
+            val response = apiRepository.deleteTask(deleteReq)
+            if (response.code() == 200 || response.code() == 404) {
+                sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
             }
         }
     }
