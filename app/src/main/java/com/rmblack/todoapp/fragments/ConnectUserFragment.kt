@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -23,11 +25,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 
-class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
+class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
-    private lateinit var viewModel : ConnectUserViewModel
+    private lateinit var activity: Activity
 
-    private var _binding : FragmentConnectUserBinding? = null
+    private lateinit var fragmentManager: FragmentManager
+
+    private lateinit var viewModel: ConnectUserViewModel
+
+    private var _binding: FragmentConnectUserBinding? = null
 
     val binding
         get() = checkNotNull(_binding) {
@@ -43,6 +49,10 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
         _binding = FragmentConnectUserBinding.inflate(inflater, container, false)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
+
+        activity = requireActivity()
+
+        fragmentManager = parentFragmentManager
 
         viewModel = ViewModelProvider(
             requireActivity(),
@@ -62,7 +72,12 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
     override fun onRefresh() {
         try {
             performCachedReq()
-        } catch (_: UninitializedPropertyAccessException) {}
+            val phones = viewModel.getConnectedPhonesFromSP()
+            if (phones != null) {
+                showConnectionStatusFragment()
+            }
+        } catch (_: UninitializedPropertyAccessException) {
+        }
     }
 
     private fun performCachedReq() {
@@ -97,6 +112,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
                     override fun onTick(millisUntilFinished: Long) {
                         binding.phoneEt.setTextColor(resources.getColor(R.color.urgent_red, null))
                     }
+
                     override fun onFinish() {
                         binding.phoneEt.setTextColor(resources.getColor(R.color.green, null))
                     }
@@ -107,13 +123,14 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     class ConnectUserViewModelFactory(
         private val sharedPreferencesManager: SharedPreferencesManager
-    ): ViewModelProvider.Factory {
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ConnectUserViewModel::class.java)) {
                 return ConnectUserViewModel(sharedPreferencesManager) as T
@@ -137,7 +154,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
                 showConnectionStatusFragment()
             }
 
-            response.onFailure {e ->
+            response.onFailure { e ->
                 requireActivity().runOnUiThread {
                     if (_binding != null) viewModel.setConnectLoadingState(false)
                 }
@@ -161,13 +178,13 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
 
     private fun showConnectionStatusFragment() {
         val fragmentContainerView =
-            requireActivity().findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
-        val fragmentManager = parentFragmentManager
+            activity.findViewById<FragmentContainerView>(R.id.manage_user_connection_container)
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(fragmentContainerView.id, ConnectionStatusFragment())
         try {
             transaction.commit()
-        } catch (_: IllegalStateException) {}
+        } catch (_: IllegalStateException) {
+        }
     }
 
     override fun onConnectUserFailure(errorCode: Int) {
@@ -180,6 +197,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
                     "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
                 )
             }
+
             404 -> {
                 viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
@@ -188,6 +206,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
                     "شماره همراه مورد نظر شما یافت نشد."
                 )
             }
+
             403 -> {
                 viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
@@ -196,6 +215,7 @@ class ConnectUserFragment: Fragment() , ConnectUserCallback, RefreshCallback{
                     "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
                 )
             }
+
             400 -> {
                 viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(

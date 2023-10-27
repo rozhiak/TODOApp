@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.marginTop
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -30,14 +29,12 @@ import java.util.UUID
 class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSyncing) {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            this,
-            SharedFragmentViewModelFactory(sharedPreferencesManager)
+            this, SharedFragmentViewModelFactory(sharedPreferencesManager)
         )[SharedTasksViewModel::class.java]
 
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -51,49 +48,52 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     private fun setUpConnectionManagementSection() {
         viewLifecycleOwner.lifecycleScope.launch {
-            if (viewModel.getUser()?.token == null) {
+            val userToken = viewModel.getUser()?.token
+            if (userToken == null) {
                 binding.manageConnectionBtn.visibility = View.GONE
             } else {
                 binding.manageConnectionBtn.visibility = View.VISIBLE
             }
 
-            binding.manageConnectionBtn.setImageResource(R.drawable.ic_sync)
-            binding.manageConnectionBtn.isClickable = false
-            viewModel.syncConnectedPhonesWithServer()
-            binding.manageConnectionBtn.isClickable = true
-            binding.manageConnectionBtn.setImageResource(R.drawable.ic_bottom)
-
             val fm = childFragmentManager
 
-            fm.beginTransaction().add(R.id.manage_user_connection_container, connectionStatusFragment, "2").hide(connectionStatusFragment).commit()
-            fm.beginTransaction().add(R.id.manage_user_connection_container, connectUserFragment, "1").commit()
+            fm.beginTransaction()
+                .add(R.id.manage_user_connection_container, connectionStatusFragment, "2")
+                .hide(connectionStatusFragment).commit()
+            fm.beginTransaction()
+                .add(R.id.manage_user_connection_container, connectUserFragment, "1").commit()
 
-            if (viewModel.getUser()?.token != null) {
-                if (viewModel.getConnectedPhones().isNullOrEmpty()) {
-                    fm.beginTransaction().hide(connectionStatusFragment).show(connectUserFragment).commit()
+            if (userToken != null) {
+                if (viewModel.getConnectedPhones() == null) {
+                    fm.beginTransaction().hide(connectionStatusFragment).show(connectUserFragment)
+                        .commit()
                 } else {
-                    fm.beginTransaction().hide(connectUserFragment).show(connectionStatusFragment).commit()
+                    fm.beginTransaction().hide(connectUserFragment).show(connectionStatusFragment)
+                        .commit()
                 }
             } else {
                 binding.manageUserConnectionContainer.visibility = View.GONE
             }
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.tasks.take(1).collect { tasks ->
-                    if (tasks.size != 1) setUpConnectionManagerVisibility()
-                }
+            viewModel.tasks.take(1).collect { tasks ->
+                if (tasks.size != 1) setUpConnectionManagerVisibility()
             }
+
+            viewModel.syncConnectedPhonesWithServer()
+            (connectionStatusFragment as RefreshCallback).onRefresh()
+            (connectUserFragment as RefreshCallback).onRefresh()
         }
     }
 
     private fun setUpConnectionManagerVisibility() {
-        if (viewModel.getConnectedPhones().isNullOrEmpty() && viewModel.tasks.value.size < 2) {
+        if (viewModel.getConnectedPhones() == null && viewModel.tasks.value.size < 2) {
             binding.manageConnectionBtn.rotation = 180f
             binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {
@@ -182,15 +182,18 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
             binding.ivNoTask.setImageResource(R.drawable.ic_no_task)
         } else {
             binding.ivNoTask.setImageResource(R.drawable.ic_open_door)
-            binding.tvNoTask.text = "برای استفاده از بخش اشتراکی ،\n باید ابتدا وارد حساب کاربری شوید."
+            binding.tvNoTask.text =
+                "برای استفاده از بخش اشتراکی ،\n باید ابتدا وارد حساب کاربری شوید."
         }
         super.setUpNoTaskIconAndText(hide)
     }
 
-    private fun createSharedTasksAdapter() =
-        SharedTasksAdapter(viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity())
+    private fun createSharedTasksAdapter() = SharedTasksAdapter(
+        viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity()
+    )
 
-    class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
+    class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {

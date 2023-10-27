@@ -19,18 +19,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-
 class PrivateTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSyncing) {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            this,
-            PrivateFragmentViewModelFactory(sharedPreferencesManager)
+            this, PrivateFragmentViewModelFactory(sharedPreferencesManager)
         )[PrivateTasksViewModel::class.java]
 
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -49,7 +46,8 @@ class PrivateTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSync
         setFragmentResultListener(
             EditTaskBottomSheet.REQUEST_KEY_ID_PRIVATE
         ) { _, bundle ->
-            editedTaskId = bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID_PRIVATE) as UUID?
+            editedTaskId =
+                bundle.getSerializable(EditTaskBottomSheet.BUNDLE_KEY_ID_PRIVATE) as UUID?
         }
 
         setFragmentResultListener(
@@ -81,11 +79,17 @@ class PrivateTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSync
         }
     }
 
-    private fun createPrivateTasksAdapter(): PrivateTasksAdapter =
-        PrivateTasksAdapter(viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity())
+    private fun createPrivateTasksAdapter(): PrivateTasksAdapter = PrivateTasksAdapter(
+        viewLifecycleOwner.lifecycleScope,
+        viewModel.isSyncing,
+        viewModel,
+        this,
+        requireActivity()
+    )
 
 
-    class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
+    class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(PrivateTasksViewModel::class.java)) {
                 PrivateTasksViewModel(sharedPreferencesManager) as T

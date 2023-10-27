@@ -2,23 +2,19 @@ package com.rmblack.todoapp.fragments
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -35,7 +31,6 @@ import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
-import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -53,16 +48,14 @@ class LoginFragment : Fragment() {
     val handler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            requireActivity(),
-            LoginViewModelFactory(sharedPreferencesManager)
+            requireActivity(), LoginViewModelFactory(sharedPreferencesManager)
         )[LoginViewModel::class.java]
 
         return binding.root
@@ -146,11 +139,11 @@ class LoginFragment : Fragment() {
             }
             if (phone.isEmpty()) {
                 setEmptyPhoneHint()
-            } else if (phone.isNotEmpty() && phone.length != 11){
+            } else if (phone.length != 11) {
                 setIncorrectPhoneHint()
             } else if (binding.nameField.visibility == View.VISIBLE && name.isEmpty()) {
                 setEmptyNameHint()
-            } else  {
+            } else {
                 viewModel.updateLoginLoadingState(true)
                 binding.errorHintTv.text = ""
                 if (binding.nameField.visibility == View.VISIBLE) {
@@ -187,19 +180,20 @@ class LoginFragment : Fragment() {
     }
 
     private fun setIncorrectPhoneHint() {
-        binding.phoneEt.requestFocus()
-        val inputMethodManager =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
+        showKeyboard()
         binding.errorHintTv.text = "◌ فرمت شماره غلط است."
     }
 
     private fun setEmptyPhoneHint() {
+        showKeyboard()
+        binding.errorHintTv.text = "◌ لطفا ، شماره همراه را وارد کنید"
+    }
+
+    private fun showKeyboard() {
         binding.phoneEt.requestFocus()
         val inputMethodManager =
             requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
-        binding.errorHintTv.text = "◌ لطفا ، شماره همراه را وارد کنید"
     }
 
     private fun showProgressing() {
@@ -213,14 +207,20 @@ class LoginFragment : Fragment() {
     private fun collectPhoneRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.loginRequestCode.collect { code ->
-                if (code == 200) {
-                    findNavController().navigate(
-                        LoginFragmentDirections.verifyPhoneNumber()
-                    )
-                } else if(code == 404) {
-                    bringPhoneUp()
-                } else if (code == CONNECTION_ERROR_CODE) {
-                    binding.errorHintTv.text = "◌ مشکل در اتصال به اینترنت"
+                when (code) {
+                    200 -> {
+                        findNavController().navigate(
+                            LoginFragmentDirections.verifyPhoneNumber()
+                        )
+                    }
+
+                    404 -> {
+                        bringPhoneUp()
+                    }
+
+                    CONNECTION_ERROR_CODE -> {
+                        binding.errorHintTv.text = "◌ مشکل در اتصال به اینترنت"
+                    }
                 }
                 viewModel.resetLoginRequestCode()
             }
@@ -230,15 +230,22 @@ class LoginFragment : Fragment() {
     private fun collectNewUserRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.newUserRequestCode.collect { code ->
-                if (code == 201) {
-                    findNavController().navigate(
-                        LoginFragmentDirections.verifyPhoneNumber()
-                    )
-                } else if(code == 400) {
-                    //User already exist -this situation must not happen
-                    //because we are calling login before any thing
-                } else if (code == CONNECTION_ERROR_CODE)  {
-                    binding.errorHintTv.text = "◌ مشکل در اتصال به اینترنت"
+                when (code) {
+                    201 -> {
+                        findNavController().navigate(
+                            LoginFragmentDirections.verifyPhoneNumber()
+                        )
+                    }
+
+                    400 -> {
+                        val phone = binding.phoneEt.text.toString()
+                        viewModel.loginUser(phone)
+                        collectPhoneRequestCode()
+                    }
+
+                    CONNECTION_ERROR_CODE -> {
+                        binding.errorHintTv.text = "◌ مشکل در اتصال به اینترنت"
+                    }
                 }
                 viewModel.resetNewUserRequestCode()
             }
@@ -246,21 +253,11 @@ class LoginFragment : Fragment() {
     }
 
     private fun bringPhoneUp() {
-        val oaHint = ObjectAnimator.ofFloat(binding.errorHintTv, "translationY", -230F).apply {
+        val oaHint = ObjectAnimator.ofFloat(
+            binding.errorHintTv, "translationY", -230F
+        ).apply {
             duration = 500
         }
-        oaHint.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(p0: Animator) {
-                binding.nameEt.setText("")
-            }
-
-            override fun onAnimationEnd(p0: Animator) {}
-
-            override fun onAnimationCancel(p0: Animator) {}
-
-            override fun onAnimationRepeat(p0: Animator) {}
-
-        })
         oaHint.start()
 
         val oaPhone = ObjectAnimator.ofFloat(binding.phoneField, "translationY", -230F).apply {
@@ -281,7 +278,8 @@ class LoginFragment : Fragment() {
         oaPhone.start()
     }
 
-    class LoginViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModelProvider.Factory {
+    class LoginViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
                 return LoginViewModel(sharedPreferencesManager) as T
@@ -289,5 +287,4 @@ class LoginFragment : Fragment() {
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
-
 }

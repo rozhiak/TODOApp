@@ -266,9 +266,14 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     suspend fun syncConnectedPhonesWithServer() {
-        val phones = getConnectedPhonesFromServer()
-        if (phones != null) {
-            saveConnectedPhonesInSP(phones)
+        val receivedPhones = getConnectedPhonesFromServer()
+        if (receivedPhones != null) {
+            val connectedPhones = sharedPreferencesManager.getConnectedPhone()
+            if (connectedPhones != null) {
+                saveConnectedPhonesInSP(receivedPhones)
+            } else if (receivedPhones.isNotEmpty()) {
+                saveConnectedPhonesInSP(receivedPhones)
+            }
         }
     }
 
