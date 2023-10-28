@@ -64,14 +64,13 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        performCachedReq()
         setUpClickListeners()
         setUpLoadingState()
     }
 
     override fun onRefresh() {
         try {
-            performCachedReq()
+//            performCachedReq()
             val phones = viewModel.getConnectedPhonesFromSP()
             if (phones != null) {
                 showConnectionStatusFragment()
@@ -80,13 +79,13 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         }
     }
 
-    private fun performCachedReq() {
-        val cachedReq = viewModel.getCachedConnectUser()
-        if (cachedReq != null) {
-            binding.phoneEt.setText(cachedReq.new_phone_number)
-            viewModel.connectUserToSharedList(cachedReq.new_phone_number, this)
-        }
-    }
+//    private fun performCachedReq() {
+//        val cachedReq = viewModel.getCachedConnectUser()
+//        if (cachedReq != null) {
+//            binding.phoneEt.setText(cachedReq.new_phone_number)
+//            viewModel.connectUserToSharedList(cachedReq.new_phone_number, this)
+//        }
+//    }
 
     private fun setUpLoadingState() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -146,9 +145,9 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
     override fun onConnectUserSuccess() {
         val job = CoroutineScope(Dispatchers.Default).launch {
-            val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), requireContext())
+            val response = Utilities.syncTasksWithServer(viewModel.getUserToken(), activity)
             response.onSuccess {
-                requireActivity().runOnUiThread {
+                activity.runOnUiThread {
                     if (_binding != null) viewModel.setConnectLoadingState(false)
                 }
                 showConnectionStatusFragment()
@@ -199,7 +198,6 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
             }
 
             404 -> {
-                viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
                     requireActivity(),
                     binding.root,
@@ -208,7 +206,6 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
             }
 
             403 -> {
-                viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
                     requireActivity(),
                     binding.root,
@@ -217,7 +214,6 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
             }
 
             400 -> {
-                viewModel.removeCachedConnectRequest()
                 Utilities.makeWarningSnack(
                     requireActivity(),
                     binding.root,

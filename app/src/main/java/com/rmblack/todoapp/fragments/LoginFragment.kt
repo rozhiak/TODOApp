@@ -15,6 +15,8 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -68,6 +70,35 @@ class LoginFragment : Fragment() {
         hideBottomICByScroll()
         setUpProgressButton()
         setUpProgressingState()
+        setOnTextChangedListener()
+    }
+
+    private fun setOnTextChangedListener() {
+        binding.phoneEt.doOnTextChanged { _, _, _, _ ->
+            if (binding.nameField.isVisible) {
+                hideName()
+            }
+        }
+    }
+
+    private fun hideName() {
+        binding.nameField.visibility = View.GONE
+        binding.nameEt.setText("")
+        binding.errorHintTv.text = ""
+
+        val oaHint = ObjectAnimator.ofFloat(
+            binding.errorHintTv, "translationY", 15F
+        ).apply {
+            duration = 500
+        }
+        oaHint.start()
+
+        val oaPhone = ObjectAnimator.ofFloat(binding.phoneField, "translationY", 15F).apply {
+            duration = 500
+        }
+        oaPhone.start()
+
+        binding.rootScroll.fullScroll(ScrollView.FOCUS_DOWN)
     }
 
     private fun setUpProgressingState() {

@@ -55,22 +55,21 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        performDisconnectCachedReq()
         setDetails()
         setClickListeners()
         setUpLoadingState()
     }
 
-    private fun performDisconnectCachedReq() {
-        val cachedReq = viewModel.getCachedDisconnectRequest()
-        if (cachedReq != null) {
-            viewModel.disconnectUserFromSharedList(this)
-        }
-    }
+//    private fun performDisconnectCachedReq() {
+//        val cachedReq = viewModel.getCachedDisconnectRequest()
+//        if (cachedReq != null) {
+//            viewModel.disconnectUserFromSharedList(this)
+//        }
+//    }
 
     override fun onRefresh() {
         try {
-            performDisconnectCachedReq()
+//            performDisconnectCachedReq()
             val phones = viewModel.getConnectedPhonesFromSP()
             if (phones != null) {
                 viewModel.setConnectedPhonesSF(phones)
@@ -94,7 +93,6 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
     private fun setClickListeners() {
         binding.disconnectProgressBtn.setOnClickListener {
             viewModel.setDisconnectLoadingState(true)
-            viewModel.deleteSharedTasks()
             viewModel.disconnectUserFromSharedList(this)
         }
     }
@@ -104,11 +102,10 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
             viewModel.connectedPhones.collect { phones ->
                 if (phones.isEmpty()) {
                     binding.noListMateTv.visibility = View.VISIBLE
-                } else {
-                    val adapter = ConnectedPhonesAdapter(phones)
-                    binding.listMatesRv.adapter = adapter
-                    binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
                 }
+                val adapter = ConnectedPhonesAdapter(phones)
+                binding.listMatesRv.adapter = adapter
+                binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
             }
         }
     }
@@ -143,7 +140,6 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
             }
 
             403 -> {
-                viewModel.removeCachedDisconnectRequestFromSP()
                 Utilities.makeWarningSnack(
                     activity,
                     binding.root,

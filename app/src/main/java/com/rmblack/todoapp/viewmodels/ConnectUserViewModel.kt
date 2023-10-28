@@ -62,25 +62,12 @@ class ConnectUserViewModel(
     }
 
     fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
-        val cachedReq = sharedPreferencesManager.getCachedConnectRequest()
-        val connectUserRequest = if (cachedReq == null) {
-            val req = sharedPreferencesManager.getUser()?.token?.let {token ->
-                ConnectUserRequest(
-                    token,
-                    phoneNumber
-                )
-            }
-            sharedPreferencesManager.cacheConnectRequest(req)
-            req
-        } else {
-            val req = if (cachedReq.new_phone_number == phoneNumber) {
-                cachedReq
-            } else {
-                val copy = cachedReq.copy(new_phone_number = phoneNumber)
-                sharedPreferencesManager.cacheConnectRequest(copy)
-                copy
-            }
-            req
+//        val cachedReq = sharedPreferencesManager.getCachedConnectRequest()
+        val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
+            ConnectUserRequest(
+                token,
+                phoneNumber
+            )
         }
 
         viewModelScope.launch {
@@ -88,7 +75,6 @@ class ConnectUserViewModel(
                 try {
                     val response = apiRepository.connectUser(connectUserRequest)
                     if (response.isSuccessful) {
-                        removeCachedConnectRequest()
                         val phones = getConnectedPhonesFromServer()
                         if (phones == null) {
                             saveConnectedPhonesInSP(listOf(connectUserRequest.new_phone_number))
@@ -118,28 +104,22 @@ class ConnectUserViewModel(
         }
     }
 
-    fun removeCachedConnectRequest() {
-        sharedPreferencesManager.removeConnectRequest()
-    }
-
     fun disconnectUserFromSharedList(disconnectCallback: DisconnectUserCallback) {
+        deleteSharedTasks()
+
         val disconnectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
             DisconnectUserRequest(
                 token
             )
         }
-
-        sharedPreferencesManager.cacheDisconnectRequest(disconnectUserRequest)
-
         viewModelScope.launch {
             if (disconnectUserRequest != null) {
                 try {
                     performSharedCashedRequests()
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
-                        removeConnectedPhonesFromSP()
                         setConnectedPhonesSF(listOf())
-                        removeCachedDisconnectRequestFromSP()
+                        removeConnectedPhonesFromSP()
                         disconnectCallback.onSuccessDisconnection()
                     } else {
                         disconnectCallback.onFailureDisconnection(response.code())
@@ -204,10 +184,6 @@ class ConnectUserViewModel(
         }
     }
 
-    fun removeCachedDisconnectRequestFromSP( ) {
-        sharedPreferencesManager.removeDisconnectRequest()
-    }
-
     fun getUserToken() : String {
         return sharedPreferencesManager.getUser()?.token ?: ""
     }
@@ -220,15 +196,7 @@ class ConnectUserViewModel(
         return sharedPreferencesManager.getConnectedPhone()
     }
 
-    fun getCachedConnectUser(): ConnectUserRequest? {
-        return sharedPreferencesManager.getCachedConnectRequest()
-    }
-
-    fun getCachedDisconnectRequest(): DisconnectUserRequest? {
-        return sharedPreferencesManager.getCachedDisconnectRequest()
-    }
-
-    fun deleteSharedTasks() {
+    private fun deleteSharedTasks() {
         taskRepository.deleteSharedTasks()
     }
 }

@@ -82,7 +82,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
                 binding.manageUserConnectionContainer.visibility = View.GONE
             }
 
-            viewModel.tasks.take(1).collect { tasks ->
+            viewModel.tasks.take(2).collect { tasks ->
                 if (tasks.size != 1) setUpConnectionManagerVisibility()
             }
 
@@ -93,7 +93,7 @@ class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSynci
     }
 
     private fun setUpConnectionManagerVisibility() {
-        if (viewModel.getConnectedPhones() == null && viewModel.tasks.value.size < 2) {
+        if (viewModel.getConnectedPhones() == null) {
             binding.manageConnectionBtn.rotation = 180f
             binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {

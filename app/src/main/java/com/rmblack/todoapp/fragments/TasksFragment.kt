@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +24,8 @@ import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
 
-open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(), TaskHolder.EditClickListener {
+open class TasksFragment(private val isSyncing: StateFlow<Boolean>) : Fragment(),
+    TaskHolder.EditClickListener {
 
     protected lateinit var viewModel: TasksViewModel
 
@@ -41,9 +41,7 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTasksBinding.inflate(inflater, container, false)
         binding.tasksRv.layoutManager = LinearLayoutManager(context)
@@ -65,7 +63,6 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
     private fun setUpSyncing() {
         viewLifecycleOwner.lifecycleScope.launch {
             isSyncing.collect {
-                viewModel.updateSyncState(it)
                 binding.refreshLayout.isRefreshing = it
             }
         }
@@ -96,7 +93,7 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
                             Utilities.makeWarningSnack(
                                 requireActivity(),
                                 binding.root,
-                            "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                                "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
                             )
                             binding.refreshLayout.isRefreshing = false
                         } else {
@@ -110,8 +107,8 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
 
     private fun setUpSwipeToDelete() {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+            0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
+        ) {
 
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -132,15 +129,16 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
                     viewModel.deleteTask(
                         viewModel.tasks.value[position],
                     )
-                    val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
-                        viewModel.insertTask(deletedTask)
-                        binding.tasksRv.post {
-                            binding.tasksRv.smoothScrollToPosition(position)
+                    val snackBar =
+                        Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
+                            viewModel.insertTask(deletedTask)
+                            binding.tasksRv.post {
+                                binding.tasksRv.smoothScrollToPosition(position)
+                            }
+                            if (deleteReq != null) {
+                                viewModel.removeDeleteRequest(deleteReq)
+                            }
                         }
-                        if (deleteReq != null) {
-                            viewModel.removeDeleteRequest(deleteReq)
-                        }
-                    }
 
                     snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -163,13 +161,7 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
                 isCurrentlyActive: Boolean
             ) {
                 super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
+                    c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                 )
 
                 binding.refreshLayout.isEnabled = !isCurrentlyActive
@@ -180,26 +172,14 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
                         val viewType = binding.tasksRv.adapter?.getItemViewType(position)
                         if (viewType == REMAINING_DAYS_LABLE) {
                             super.onChildDraw(
-                                c,
-                                recyclerView,
-                                viewHolder,
-                                0f,
-                                dY,
-                                actionState,
-                                isCurrentlyActive
+                                c, recyclerView, viewHolder, 0f, dY, actionState, isCurrentlyActive
                             )
                             return
                         }
                     }
                 }
                 super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
+                    c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                 )
             }
         }).attachToRecyclerView(binding.tasksRv)
@@ -216,9 +196,7 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>): Fragment(),
     }
 
     protected fun setUpForNewOrEditTask(
-        tasks: List<Task?>,
-        editedTaskId: UUID?,
-        isNewTask: Boolean?
+        tasks: List<Task?>, editedTaskId: UUID?, isNewTask: Boolean?
     ) {
         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
         if (editedTaskIndex != -1) {

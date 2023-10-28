@@ -5,9 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
-import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
-import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
 import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.success.User
 
@@ -23,54 +21,9 @@ private const val FAILED_DELETE_REQUESTS_KEY = "FAILED_DELETE_REQUESTS_KEY"
 
 private const val FAILED_EDIT_REQUESTS_KEY = "FAILED_EDIT_REQUESTS_KEY"
 
-private const val CASHED_CONNECT_REQUEST_KEY = "CASHED_CONNECT_REQUEST_KEY"
-
-private const val CASHED_DISCONNECT_REQUEST_KEY = "CASHED_DISCONNECT_REQUEST_KEY"
-
-
 class SharedPreferencesManager(private val context: Context) {
 
     private val gson = Gson()
-
-    fun getCachedConnectRequest(): ConnectUserRequest? {
-        val serializedReq = getSharedPreferences(context).getString(CASHED_CONNECT_REQUEST_KEY, "")
-        return if (serializedReq != null) {
-            gson.fromJson(serializedReq, ConnectUserRequest::class.java)
-        } else {
-            null
-        }
-    }
-
-    fun cacheConnectRequest(req: ConnectUserRequest?) {
-        if (req != null) {
-            val serializedUser = gson.toJson(req)
-            getEditor(context).putString(CASHED_CONNECT_REQUEST_KEY, serializedUser).apply()
-        }
-    }
-
-    fun removeConnectRequest() {
-        getEditor(context).remove(CASHED_CONNECT_REQUEST_KEY).apply()
-    }
-
-    fun getCachedDisconnectRequest(): DisconnectUserRequest? {
-        val serializedReq = getSharedPreferences(context).getString(CASHED_DISCONNECT_REQUEST_KEY, "")
-        return if (serializedReq != null) {
-            gson.fromJson(serializedReq, DisconnectUserRequest::class.java)
-        } else {
-            null
-        }
-    }
-
-    fun cacheDisconnectRequest(req: DisconnectUserRequest?) {
-        if (req != null) {
-            val serializedUser = gson.toJson(req)
-            getEditor(context).putString(CASHED_DISCONNECT_REQUEST_KEY, serializedUser).apply()
-        }
-    }
-
-    fun removeDisconnectRequest() {
-        getEditor(context).remove(CASHED_DISCONNECT_REQUEST_KEY).apply()
-    }
 
     fun getFailedAddRequests(): List<AddTaskRequest> {
         val serializedRequests = getSharedPreferences(context).getString(FAILED_ADD_REQUESTS_KEY, null)
@@ -199,7 +152,6 @@ class SharedPreferencesManager(private val context: Context) {
         }
     }
 
-    //TODO when user disconnect from a list , use this method
     fun removeConnectedPhones() {
         getEditor(context).remove(CONNECTED_PHONES_KEY).apply()
     }
