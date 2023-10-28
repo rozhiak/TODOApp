@@ -26,6 +26,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_et"
+            android:imeOptions="actionDone"
             android:maxLength="11"
             android:textColor="@color/green"
             android:textSize="17sp"

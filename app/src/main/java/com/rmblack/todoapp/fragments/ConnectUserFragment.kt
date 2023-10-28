@@ -7,6 +7,7 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -101,23 +102,35 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
     private fun setUpClickListeners() {
         binding.connectProgressBtn.setOnClickListener {
-            val phone = binding.phoneEt.text ?: ""
-            if (phone.length == 11) {
-                hideKeyboard()
-                viewModel.setConnectLoadingState(true)
-                viewModel.connectUserToSharedList(phone.toString(), this)
-            } else {
-                val timer = object : CountDownTimer(1000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        binding.phoneEt.setTextColor(resources.getColor(R.color.urgent_red, null))
-                    }
+            connectUser()
+        }
 
-                    override fun onFinish() {
-                        binding.phoneEt.setTextColor(resources.getColor(R.color.green, null))
-                    }
-                }
-                timer.start()
+        binding.phoneEt.setOnEditorActionListener { _, i, _ ->
+            if (i == EditorInfo.IME_ACTION_DONE) {
+                connectUser()
+                return@setOnEditorActionListener true
             }
+            false
+        }
+    }
+
+    private fun connectUser() {
+        val phone = binding.phoneEt.text ?: ""
+        if (phone.length == 11) {
+            hideKeyboard()
+            viewModel.setConnectLoadingState(true)
+            viewModel.connectUserToSharedList(phone.toString(), this)
+        } else {
+            val timer = object : CountDownTimer(1000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    binding.phoneEt.setTextColor(resources.getColor(R.color.urgent_red, null))
+                }
+
+                override fun onFinish() {
+                    binding.phoneEt.setTextColor(resources.getColor(R.color.green, null))
+                }
+            }
+            timer.start()
         }
     }
 
