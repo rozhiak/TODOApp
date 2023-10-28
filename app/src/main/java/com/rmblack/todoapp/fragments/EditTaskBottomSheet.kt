@@ -2,6 +2,7 @@ package com.rmblack.todoapp.fragments
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.Selection
@@ -9,9 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -67,6 +74,16 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         setClickListeners()
         updateUi()
         syncUserInput()
+        binding.etTitle.requestFocus()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            binding.etTitle.windowInsetsController?.show(WindowInsetsCompat.Type.ime())
+        } else {
+            val windowInsetsController =
+                activity?.window?.let { WindowCompat.getInsetsController(it, requireView()) }
+            windowInsetsController?.show(WindowInsetsCompat.Type.ime())
+        }
+
     }
 
     private fun syncUserInput() {

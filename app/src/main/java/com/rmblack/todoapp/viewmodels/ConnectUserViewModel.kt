@@ -105,8 +105,6 @@ class ConnectUserViewModel(
     }
 
     fun disconnectUserFromSharedList(disconnectCallback: DisconnectUserCallback) {
-        deleteSharedTasks()
-
         val disconnectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
             DisconnectUserRequest(
                 token
@@ -118,6 +116,7 @@ class ConnectUserViewModel(
                     performSharedCashedRequests()
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
+                        deleteSharedTasks()
                         setConnectedPhonesSF(listOf())
                         removeConnectedPhonesFromSP()
                         disconnectCallback.onSuccessDisconnection()
