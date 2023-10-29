@@ -10,15 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -74,6 +70,13 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         setClickListeners()
         updateUi()
         syncUserInput()
+        val isNew = arguments?.getBoolean("isNewTask")
+        if (isNew == true) {
+            focusOnTitle()
+        }
+    }
+
+    private fun focusOnTitle() {
         binding.etTitle.requestFocus()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -83,7 +86,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 activity?.window?.let { WindowCompat.getInsetsController(it, requireView()) }
             windowInsetsController?.show(WindowInsetsCompat.Type.ime())
         }
-
     }
 
     private fun syncUserInput() {

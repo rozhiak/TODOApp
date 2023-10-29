@@ -55,6 +55,13 @@ open class TaskHolder(
         }
     }
 
+    fun setLongPress(task: Task, cardView: CardView) {
+        cardView.setOnLongClickListener {
+            editClickListener.onEditClick(task)
+            return@setOnLongClickListener true
+        }
+    }
+
     fun setDoneUi(
         task: Task,
         doneCheckBox: AppCompatCheckBox

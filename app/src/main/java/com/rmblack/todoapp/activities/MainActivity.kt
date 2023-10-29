@@ -89,8 +89,9 @@ class MainActivity : AppCompatActivity() {
                 val (popupView, popupWindow) = createWindow()
 
                 setUserName(popupView)
-                changeUserName(popupView)
+                changeUserName(popupView, popupWindow)
 
+                //TODO problem(position of window)
                 popupWindow.elevation = 60.0f
                 popupWindow.showAsDropDown(binding.ivProfile, -470, 25, 0)
 
@@ -106,14 +107,14 @@ class MainActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    private fun changeUserName(popupView: View) {
+    private fun changeUserName(popupView: View, popupWindow: PopupWindow) {
         val saveBTN = popupView.findViewById<CircularProgressButton>(R.id.save_btn)
         saveBTN.setOnClickListener { saveBtnView ->
             hideKeyboard(saveBtnView)
             val nameEt = popupView.findViewById<TextInputEditText>(R.id.name_et)
             if (nameEt.text.toString() != "") {
                 saveBTN.startAnimation {
-                    performChangeNameRequest(nameEt, saveBTN)
+                    performChangeNameRequest(nameEt, saveBTN, popupWindow)
                 }
             } else {
                 makeSnack("نام کاربری نمی تواند خالی باشد.")
@@ -123,7 +124,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun performChangeNameRequest(
         nameEt: TextInputEditText,
-        saveBTN: CircularProgressButton
+        saveBTN: CircularProgressButton,
+        popupWindow: PopupWindow
     ) {
         lifecycleScope.launch {
             val res = viewModel.updateUserInServer(
@@ -131,6 +133,7 @@ class MainActivity : AppCompatActivity() {
             )
             res.onSuccess {
                 syncTasksWithNewName(saveBTN)
+                popupWindow.dismiss()
             }
             res.onFailure {
                 saveBTN.revertAnimation()
