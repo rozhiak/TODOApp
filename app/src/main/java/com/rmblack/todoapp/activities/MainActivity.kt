@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -91,9 +90,8 @@ class MainActivity : AppCompatActivity() {
                 setUserName(popupView)
                 changeUserName(popupView, popupWindow)
 
-                //TODO problem(position of window)
                 popupWindow.elevation = 60.0f
-                popupWindow.showAsDropDown(binding.ivProfile, -470, 25, 0)
+                popupWindow.showAsDropDown(binding.appBarLayout, 450, 25, 0)
 
                 popupWindow.setOnDismissListener {
                     binding.ivProfile.setImageResource(R.drawable.ic_person)
@@ -250,8 +248,8 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
 
-        val privateTasksFragment: Fragment = PrivateTasksFragment(viewModel.isSyncing)
-        val sharedTasksFragment: Fragment = SharedTasksFragment(viewModel.isSyncing)
+        val privateTasksFragment: Fragment = PrivateTasksFragment()
+        val sharedTasksFragment: Fragment = SharedTasksFragment()
         val fm = supportFragmentManager
 
         fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment, "2")

@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class SharedTasksFragment(isSyncing: StateFlow<Boolean>) : TasksFragment(isSyncing) {
+class SharedTasksFragment : TasksFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

@@ -10,6 +10,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,14 +23,17 @@ import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
 
-open class TasksFragment(private val isSyncing: StateFlow<Boolean>) : Fragment(),
+open class TasksFragment : Fragment(),
     TaskHolder.EditClickListener {
+
+    private val activityViewModel : MainViewModel by activityViewModels ()
 
     protected lateinit var viewModel: TasksViewModel
 
@@ -66,7 +70,10 @@ open class TasksFragment(private val isSyncing: StateFlow<Boolean>) : Fragment()
 
     private fun setUpSyncing() {
         viewLifecycleOwner.lifecycleScope.launch {
-            isSyncing.collect {
+//            isSyncing.collect {
+//                binding.refreshLayout.isRefreshing = it
+//            }
+            activityViewModel.isSyncing.collect {
                 binding.refreshLayout.isRefreshing = it
             }
         }
