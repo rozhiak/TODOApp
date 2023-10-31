@@ -40,7 +40,7 @@ import java.util.UUID
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var context: Context
-
+    
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
         EditTaskViewModelFactory(UUID.fromString(taskId))

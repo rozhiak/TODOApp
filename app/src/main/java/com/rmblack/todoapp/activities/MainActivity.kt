@@ -121,9 +121,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun performChangeNameRequest(
-        nameEt: TextInputEditText,
-        saveBTN: CircularProgressButton,
-        popupWindow: PopupWindow
+        nameEt: TextInputEditText, saveBTN: CircularProgressButton, popupWindow: PopupWindow
     ) {
         lifecycleScope.launch {
             val res = viewModel.updateUserInServer(
