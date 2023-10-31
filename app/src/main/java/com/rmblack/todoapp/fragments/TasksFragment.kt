@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
 
+const val LAST_EXPANDED_ID_KEY = "LAST_EXPANDED_ID_KEY"
+
 open class TasksFragment : Fragment(),
     TaskHolder.EditClickListener {
 
@@ -70,9 +72,6 @@ open class TasksFragment : Fragment(),
 
     private fun setUpSyncing() {
         viewLifecycleOwner.lifecycleScope.launch {
-//            isSyncing.collect {
-//                binding.refreshLayout.isRefreshing = it
-//            }
             activityViewModel.isSyncing.collect {
                 binding.refreshLayout.isRefreshing = it
             }
@@ -231,6 +230,11 @@ open class TasksFragment : Fragment(),
         args.putBoolean("isNewTask", false)
         editTaskBottomSheet.arguments = args
         editTaskBottomSheet.show(parentFragmentManager, "TODO tag")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable(LAST_EXPANDED_ID_KEY, viewModel.lastExpandedID)
     }
 
     override fun onStop() {

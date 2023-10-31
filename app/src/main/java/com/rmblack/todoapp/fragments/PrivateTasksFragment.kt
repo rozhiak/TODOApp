@@ -1,11 +1,11 @@
 package com.rmblack.todoapp.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.marginTop
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -15,24 +15,24 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.PrivateTasksAdapter
 import com.rmblack.todoapp.utils.SharedPreferencesManager
-import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class PrivateTasksFragment : TasksFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
             this, PrivateFragmentViewModelFactory(sharedPreferencesManager)
         )[PrivateTasksViewModel::class.java]
 
-        return super.onCreateView(inflater, container, savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val id = savedInstanceState?.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
+            viewModel.setLastExpandedID(id)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

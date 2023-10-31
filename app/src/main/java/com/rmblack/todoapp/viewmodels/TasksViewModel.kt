@@ -42,7 +42,10 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
 
-    private var lastExpandedID : UUID? = null
+    private var _lastExpandedID : UUID? = null
+
+    val lastExpandedID
+        get() = _lastExpandedID
 
     //Server properties
     private var addJob: Job? = null
@@ -50,8 +53,11 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     private var editJob: Job? = null
 
     private var deleteJob : Job? = null
-
     //End of server properties
+
+    fun setLastExpandedID (id: UUID?) {
+        _lastExpandedID = id
+    }
 
     fun updateDetailsVisibility(isVisible: Boolean, id: UUID) {
         taskRepository.updateDetailsVisibility(id, isVisible)
@@ -73,11 +79,11 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         for (t in tasks.value) {
             if (t?.detailsVisibility == true) {
                 taskRepository.updateDetailsVisibility(t.id, false)
-                lastExpandedID = t.id
+                setLastExpandedID(t.id)
                 return
             }
         }
-        lastExpandedID = null
+        setLastExpandedID(null)
     }
 
     fun resetLastExpandedTask() {

@@ -2,6 +2,7 @@ package com.rmblack.todoapp.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,16 +29,18 @@ import java.util.UUID
 
 class SharedTasksFragment : TasksFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
             this, SharedFragmentViewModelFactory(sharedPreferencesManager)
         )[SharedTasksViewModel::class.java]
 
-        return super.onCreateView(inflater, container, savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val id = savedInstanceState?.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
+            viewModel.setLastExpandedID(id)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
