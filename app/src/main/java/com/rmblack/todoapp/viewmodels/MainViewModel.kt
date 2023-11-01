@@ -19,7 +19,7 @@ import kotlin.Result.Companion.failure
 
 const val SAME_USER_NAME = 1
 
-class MainViewModel( val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
+class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
     private val taskRepository = TaskRepository.get()
 
@@ -30,9 +30,9 @@ class MainViewModel( val sharedPreferencesManager: SharedPreferencesManager): Vi
     val isSyncing get() = _isSyncing.asStateFlow()
 
     fun updateSyncState(state: Boolean) {
-       _isSyncing.update {
-           state
-       }
+        _isSyncing.update {
+            state
+        }
     }
 
     fun removeNoTitleTasks() {
@@ -57,14 +57,15 @@ class MainViewModel( val sharedPreferencesManager: SharedPreferencesManager): Vi
                 user?.token ?: "",
                 newName
             )
-            if (!user?.token.isNullOrBlank()){
+            if (!user?.token.isNullOrBlank()) {
                 try {
                     val response = apiRepository.updateUser(updateUserRequest)
-                    when(response.code()) {
+                    when (response.code()) {
                         200 -> {
                             updateUserName(newName)
                             return Result.success(200)
                         }
+
                         404 -> {
                             return failure(UpdateUserException(404))
                         }
@@ -87,7 +88,7 @@ class MainViewModel( val sharedPreferencesManager: SharedPreferencesManager): Vi
         return sharedPreferencesManager.getEntranceState()
     }
 
-    private fun updateUserName(newName : String) {
+    private fun updateUserName(newName: String) {
         val user = sharedPreferencesManager.getUser()?.copy(
             name = newName
         )

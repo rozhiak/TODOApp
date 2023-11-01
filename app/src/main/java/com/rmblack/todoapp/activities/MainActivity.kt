@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +14,10 @@ import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -62,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
         syncTasks()
         setUpUI()
-        wireUpBottomNav()
+        wireUpBottomNav(savedInstanceState)
         showToday()
         setUpProfileBtn()
     }
@@ -241,7 +244,7 @@ class MainActivity : AppCompatActivity() {
         binding.monthOfYear.text = today.monthName
     }
 
-    private fun wireUpBottomNav() {
+    private fun wireUpBottomNav(savedInstanceState: Bundle?) {
         binding.bottomNavigationView.background = null
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
@@ -249,6 +252,11 @@ class MainActivity : AppCompatActivity() {
         val privateTasksFragment: Fragment = PrivateTasksFragment()
         val sharedTasksFragment: Fragment = SharedTasksFragment()
         val fm = supportFragmentManager
+
+        // Clear the fm
+        if (savedInstanceState != null) {
+            fm.beginTransaction().replace(R.id.main_fragment_container, Fragment()).commit()
+        }
 
         fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment, "2")
             .hide(sharedTasksFragment).commit()
