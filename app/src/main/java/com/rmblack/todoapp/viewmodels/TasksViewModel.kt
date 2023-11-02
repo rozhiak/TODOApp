@@ -86,7 +86,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         setLastExpandedID(null)
     }
 
-    fun resetLastExpandedTask() {
+    fun openLastExpandedTask() {
         lastExpandedID?.let { id -> taskRepository.updateDetailsVisibility(id, true) }
     }
 

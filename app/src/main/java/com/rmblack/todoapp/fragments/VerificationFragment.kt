@@ -23,10 +23,9 @@ import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
-
 class VerificationFragment : Fragment() {
 
-    var _binding: FragmentVerificationBinding? = null
+    private var _binding: FragmentVerificationBinding? = null
 
     val binding
         get() = checkNotNull(_binding) {
@@ -38,7 +37,7 @@ class VerificationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentVerificationBinding.inflate(inflater, container, false)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
@@ -70,13 +69,11 @@ class VerificationFragment : Fragment() {
 
     private fun setLoadingState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.verificationFragmentLoading.collect {isLoading ->
-                    if (isLoading) {
-                        showProgressing()
-                    } else {
-                        binding.progressBtn.hideProgress("تایید")
-                    }
+            viewModel.verificationFragmentLoading.collect {isLoading ->
+                if (isLoading) {
+                    showProgressing()
+                } else {
+                    binding.progressBtn.hideProgress("تایید")
                 }
             }
         }

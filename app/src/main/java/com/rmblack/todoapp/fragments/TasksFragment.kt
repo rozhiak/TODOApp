@@ -1,14 +1,10 @@
 package com.rmblack.todoapp.fragments
 
 import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -22,20 +18,19 @@ import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.TasksViewModel
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
 
 const val LAST_EXPANDED_ID_KEY = "LAST_EXPANDED_ID_KEY"
 
-open class TasksFragment : Fragment(),
-    TaskHolder.EditClickListener {
+open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
 
-    private val activityViewModel : MainViewModel by activityViewModels ()
+    private val activityViewModel: MainViewModel by activityViewModels()
 
     protected lateinit var viewModel: TasksViewModel
 
@@ -60,7 +55,7 @@ open class TasksFragment : Fragment(),
 
     override fun onResume() {
         super.onResume()
-        viewModel.resetLastExpandedTask()
+        viewModel.openLastExpandedTask()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,32 +81,40 @@ open class TasksFragment : Fragment(),
         } else {
             binding.refreshLayout.setOnRefreshListener {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.syncConnectedPhonesWithServer()
-                    (connectionStatusFragment as RefreshCallback).onRefresh()
-                    (connectUserFragment as RefreshCallback).onRefresh()
-
-                    viewModel.updateSyncState(true)
-                    val response = Utilities.syncTasksWithServer(userToken, requireContext())
-                    response.onSuccess {
-                        viewModel.updateSyncState(false)
-                        binding.refreshLayout.isRefreshing = false
-                    }
-
-                    response.onFailure { e ->
-                        viewModel.updateSyncState(false)
-                        if (e is UnknownHostException) {
-                            Utilities.makeWarningSnack(
-                                requireActivity(),
-                                binding.root,
-                                "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
-                            )
-                            binding.refreshLayout.isRefreshing = false
-                        } else {
-                            binding.refreshLayout.isRefreshing = false
-                        }
-                    }
+                    refreshConnection()
+                    syncTasks(userToken)
                 }
             }
+        }
+    }
+
+    private suspend fun syncTasks(userToken: String) {
+        viewModel.updateSyncState(true)
+        val response = Utilities.syncTasksWithServer(userToken, requireContext())
+        response.onSuccess {
+            viewModel.updateSyncState(false)
+            binding.refreshLayout.isRefreshing = false
+        }
+
+        response.onFailure { e ->
+            viewModel.updateSyncState(false)
+            binding.refreshLayout.isRefreshing = false
+            if (e is UnknownHostException) {
+                Utilities.makeWarningSnack(
+                    requireActivity(),
+                    binding.root,
+                    "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
+                )
+                binding.refreshLayout.isRefreshing = false
+            }
+        }
+    }
+
+    private suspend fun refreshConnection() {
+        if (this@TasksFragment is SharedTasksFragment) {
+            viewModel.syncConnectedPhonesWithServer()
+            (connectionStatusFragment as RefreshCallback).onRefresh()
+            (connectUserFragment as RefreshCallback).onRefresh()
         }
     }
 
@@ -132,32 +135,8 @@ open class TasksFragment : Fragment(),
                 val position = viewHolder.absoluteAdapterPosition
                 val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
-                    val deleteReq = viewModel.makeDeleteRequest(deletedTask.serverID)
-                    if (deleteReq != null) {
-                        viewModel.cashDeleteRequest(deleteReq)
-                    }
-                    viewModel.deleteTask(
-                        viewModel.tasks.value[position],
-                    )
-                    val snackBar =
-                        Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
-                            viewModel.insertTask(deletedTask)
-                            binding.tasksRv.post {
-                                binding.tasksRv.smoothScrollToPosition(position)
-                            }
-                            if (deleteReq != null) {
-                                viewModel.removeDeleteRequest(deleteReq)
-                            }
-                        }
-
-                    snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
-                                viewModel.deleteTaskFromServer(deleteReq, deletedTask)
-                            }
-                        }
-                    })
+                    val deleteReq = performDeletion(deletedTask, position)
+                    makeSnack(deletedTask, position, deleteReq)
                 }
             }
 
@@ -174,6 +153,7 @@ open class TasksFragment : Fragment(),
                     c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                 )
 
+                // Avoid scroll conflict
                 binding.refreshLayout.isEnabled = !isCurrentlyActive
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
@@ -188,11 +168,48 @@ open class TasksFragment : Fragment(),
                         }
                     }
                 }
-                super.onChildDraw(
-                    c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
-                )
             }
         }).attachToRecyclerView(binding.tasksRv)
+    }
+
+    private fun performDeletion(
+        deletedTask: Task,
+        position: Int
+    ): DeleteTaskRequest? {
+        val deleteReq = viewModel.makeDeleteRequest(deletedTask.serverID)
+        if (deleteReq != null) {
+            viewModel.cashDeleteRequest(deleteReq)
+        }
+        viewModel.deleteTask(
+            viewModel.tasks.value[position],
+        )
+        return deleteReq
+    }
+
+    private fun makeSnack(
+        deletedTask: Task,
+        position: Int,
+        deleteReq: DeleteTaskRequest?
+    ) {
+        val snackBar =
+            Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
+                viewModel.insertTask(deletedTask)
+                binding.tasksRv.post {
+                    binding.tasksRv.smoothScrollToPosition(position)
+                }
+                if (deleteReq != null) {
+                    viewModel.removeDeleteRequest(deleteReq)
+                }
+            }
+
+        snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
+                    viewModel.deleteTaskFromServer(deleteReq, deletedTask)
+                }
+            }
+        })
     }
 
     protected open fun setUpNoTaskIconAndText(hide: Boolean) {
@@ -206,7 +223,9 @@ open class TasksFragment : Fragment(),
     }
 
     protected fun setUpForNewOrEditTask(
-        tasks: List<Task?>, editedTaskId: UUID?, isNewTask: Boolean?
+        tasks: List<Task?>,
+        editedTaskId: UUID?,
+        isNewTask: Boolean?
     ) {
         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
         if (editedTaskIndex != -1) {
@@ -246,5 +265,4 @@ open class TasksFragment : Fragment(),
         _binding = null
         super.onDestroyView()
     }
-
 }

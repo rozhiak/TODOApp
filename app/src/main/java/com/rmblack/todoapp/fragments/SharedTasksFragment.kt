@@ -96,7 +96,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun setUpConnectionManagerVisibility() {
-        if (viewModel.getConnectedPhones() == null) {
+        if (viewModel.getConnectedPhones() == null && viewModel.getUserToken() != null) {
             binding.manageConnectionBtn.rotation = 180f
             binding.manageUserConnectionContainer.visibility = View.VISIBLE
         } else {
