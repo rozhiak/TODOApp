@@ -23,7 +23,6 @@ class PrivateTasksFragment : TasksFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
             this, PrivateFragmentViewModelFactory(sharedPreferencesManager)

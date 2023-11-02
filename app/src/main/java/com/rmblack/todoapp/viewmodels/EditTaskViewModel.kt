@@ -3,6 +3,7 @@ package com.rmblack.todoapp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.SharedPreferencesManager
@@ -16,6 +17,8 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class EditTaskViewModel(taskId: UUID): ViewModel() {
+
+    var doNotSave = false
 
     private val taskRepository = TaskRepository.get()
 
@@ -44,13 +47,19 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        task.value?.let {
-            if ((it.title.isEmpty() || it.title.isBlank()) && primaryTitle.isNotBlank()) {
-                //Do nothing
-            } else if (it.title.isEmpty() || it.title.isBlank()) {
+        if (doNotSave) {
+            if (task.value?.serverID == newlyAddedTaskServerID) {
                 taskRepository.deleteTask(task.value)
-            } else {
-                taskRepository.updateTask(it)
+            }
+        } else {
+            task.value?.let {
+                if ((it.title.isEmpty() || it.title.isBlank()) && primaryTitle.isNotBlank()) {
+                    //Do nothing
+                } else if (it.title.isEmpty() || it.title.isBlank()) {
+                    taskRepository.deleteTask(task.value)
+                } else {
+                    taskRepository.updateTask(it)
+                }
             }
         }
     }

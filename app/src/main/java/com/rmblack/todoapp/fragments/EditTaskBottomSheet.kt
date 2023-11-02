@@ -79,6 +79,11 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.doNotSave = true
+    }
+
     private fun focusOnTitle() {
         binding.etTitle.requestFocus()
 

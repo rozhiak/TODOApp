@@ -75,7 +75,7 @@ class Utilities {
             return snackBar
         }
 
-        //TODO before using this function , check user login state
+        // before using this function , check user login state
         suspend fun syncTasksWithServer(token: String, context: Context): Result<Unit> {
             val sharedPreferencesManager = SharedPreferencesManager(context)
             var failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
