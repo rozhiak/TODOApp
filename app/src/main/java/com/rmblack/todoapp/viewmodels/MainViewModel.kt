@@ -1,9 +1,12 @@
 package com.rmblack.todoapp.viewmodels
 
 import android.content.Context
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
+import com.rmblack.todoapp.fragments.PrivateTasksFragment
+import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.success.User
@@ -20,6 +23,10 @@ import kotlin.Result.Companion.failure
 const val SAME_USER_NAME = 1
 
 class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+
+    val privateTasksFragment: Fragment = PrivateTasksFragment()
+
+    val sharedTasksFragment: Fragment = SharedTasksFragment()
 
     private val taskRepository = TaskRepository.get()
 

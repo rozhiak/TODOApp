@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -42,6 +40,8 @@ import java.util.UUID
 
 const val newlyAddedTaskServerID = "newly added"
 
+private const val FRAGMENT_ID_KEY = "FRAGMENT_ID_KEY"
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -65,9 +65,14 @@ class MainActivity : AppCompatActivity() {
 
         syncTasks()
         setUpUI()
-        wireUpBottomNav(savedInstanceState)
+        setFragmentContainer(savedInstanceState)
         showToday()
         setUpProfileBtn()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(FRAGMENT_ID_KEY, binding.bottomNavigationView.selectedItemId)
     }
 
     private fun syncTasks() {
@@ -244,24 +249,25 @@ class MainActivity : AppCompatActivity() {
         binding.monthOfYear.text = today.monthName
     }
 
-    private fun wireUpBottomNav(savedInstanceState: Bundle?) {
+    private fun setFragmentContainer(savedInstanceState: Bundle?) {
         binding.bottomNavigationView.background = null
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(1).isCheckable = false
 
-        val privateTasksFragment: Fragment = PrivateTasksFragment()
-        val sharedTasksFragment: Fragment = SharedTasksFragment()
+        val privateTasksFragment: Fragment = viewModel.privateTasksFragment
+        val sharedTasksFragment: Fragment = viewModel.sharedTasksFragment
         val fm = supportFragmentManager
 
-        // Clear the fm
-        if (savedInstanceState != null) {
-            fm.beginTransaction().replace(R.id.main_fragment_container, Fragment()).commit()
-        }
+        setVisibleFragment(savedInstanceState, fm, sharedTasksFragment, privateTasksFragment)
 
-        fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment, "2")
-            .hide(sharedTasksFragment).commit()
-        fm.beginTransaction().add(R.id.main_fragment_container, privateTasksFragment, "1").commit()
+        wireUpBottomNav(fm, sharedTasksFragment, privateTasksFragment)
+    }
 
+    private fun wireUpBottomNav(
+        fm: FragmentManager,
+        sharedTasksFragment: Fragment,
+        privateTasksFragment: Fragment
+    ) {
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.privateTasksFragment -> {
@@ -283,6 +289,35 @@ class MainActivity : AppCompatActivity() {
             } else {
                 showNewTask()
             }
+        }
+    }
+
+    private fun setVisibleFragment(
+        savedInstanceState: Bundle?,
+        fm: FragmentManager,
+        sharedTasksFragment: Fragment,
+        privateTasksFragment: Fragment
+    ) {
+        if (savedInstanceState != null) {
+            fm.beginTransaction().replace(R.id.main_fragment_container, Fragment())
+                .commit() // Clear the fm
+
+            val lastVisibleFragID = savedInstanceState.getInt(FRAGMENT_ID_KEY)
+            if (lastVisibleFragID == R.id.privateTasksFragment) {
+                fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment)
+                    .hide(sharedTasksFragment).commit()
+                fm.beginTransaction().add(R.id.main_fragment_container, privateTasksFragment)
+                    .commit()
+            } else {
+                fm.beginTransaction().add(R.id.main_fragment_container, privateTasksFragment)
+                    .hide(privateTasksFragment).commit()
+                fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment)
+                    .commit()
+            }
+        } else {
+            fm.beginTransaction().add(R.id.main_fragment_container, sharedTasksFragment)
+                .hide(sharedTasksFragment).commit()
+            fm.beginTransaction().add(R.id.main_fragment_container, privateTasksFragment).commit()
         }
     }
 
