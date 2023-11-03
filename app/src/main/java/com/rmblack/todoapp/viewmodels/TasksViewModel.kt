@@ -126,28 +126,28 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                         if (response.code() == 403) {
                             //invalid token
                         } else {
-                            sharedPreferencesManager.insertFailedAddRequest(addRequest)
+                            sharedPreferencesManager.insertCashedAddRequest(addRequest)
                         }
                     }
                 } catch (e: Exception) {
-                    sharedPreferencesManager.insertFailedAddRequest(addRequest)
+                    sharedPreferencesManager.insertCashedAddRequest(addRequest)
                 }
             }
         }
     }
 
     fun editTaskInServer(editedTask: Task) {
-        val addRequests = sharedPreferencesManager.getFailedAddRequests()
+        val addRequests = sharedPreferencesManager.getCashedAddRequests()
         val index = addRequests.indexOfFirst { req ->
             req.localTaskID == editedTask.id
         }
         if (index != -1) {
-            sharedPreferencesManager.removeFailedAddRequest(addRequests[index])
+            sharedPreferencesManager.removeCashedAddRequest(addRequests[index])
             addTaskToServer(editedTask)
         } else {
             val user = getUser()
             if (user?.token != null) {
-                val editRequests = sharedPreferencesManager.getFailedEditRequests()
+                val editRequests = sharedPreferencesManager.getCashedEditRequests()
                 val editIndex = editRequests.indexOfFirst {req ->
                     req.localTaskId == editedTask.id
                 }
@@ -163,7 +163,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                         editedTask.isShared,
                         editedTask.id
                     )
-                    sharedPreferencesManager.insertFailedEditRequest(req)
+                    sharedPreferencesManager.insertCashedEditRequest(req)
                     req
                 } else {
                     val editReq = editRequests[editIndex]
@@ -171,12 +171,12 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                         title = editedTask.title,
                         description = editedTask.description,
                         deadline = editedTask.deadLine.timeInMillis.toString(),
-                        is_shared = editedTask.isShared,
-                        is_done = editedTask.isDone,
-                        is_urgent = editedTask.isUrgent,
+                        isShared = editedTask.isShared,
+                        isDone = editedTask.isDone,
+                        isUrgent = editedTask.isUrgent,
                     )
-                    sharedPreferencesManager.removeFailedEditRequest(editReq)
-                    sharedPreferencesManager.insertFailedEditRequest(newEditReq)
+                    sharedPreferencesManager.removeCashedEditRequest(editReq)
+                    sharedPreferencesManager.insertCashedEditRequest(newEditReq)
                     newEditReq
                 }
 
@@ -184,14 +184,14 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                     try {
                         val response = apiRepository.editTask(editRequest.convertToServerEditModel())
                         if (response.isSuccessful) {
-                            sharedPreferencesManager.removeFailedEditRequest(editRequest)
+                            sharedPreferencesManager.removeCashedEditRequest(editRequest)
                         } else {
                             if (response.code() == 403) {
                                 //invalid token or access denied
-                                sharedPreferencesManager.removeFailedEditRequest(editRequest)
+                                sharedPreferencesManager.removeCashedEditRequest(editRequest)
                             } else if (response.code() == 404) {
                                 //Task not found
-                                sharedPreferencesManager.removeFailedEditRequest(editRequest)
+                                sharedPreferencesManager.removeCashedEditRequest(editRequest)
                             }
                         }
                     } catch (_: Exception) {
@@ -205,12 +205,12 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     fun deleteTaskFromServer(deleteRequest: DeleteTaskRequest, taskToDelete: Task) {
         val user = getUser()
         if (user?.token != null) {
-            val addRequests = sharedPreferencesManager.getFailedAddRequests()
+            val addRequests = sharedPreferencesManager.getCashedAddRequests()
             val addIndex = addRequests.indexOfFirst { req ->
                 req.localTaskID == taskToDelete.id
             }
             if (addIndex != -1) {
-                sharedPreferencesManager.removeFailedAddRequest(addRequests[addIndex])
+                sharedPreferencesManager.removeCashedAddRequest(addRequests[addIndex])
             } else {
                 deleteJob = CoroutineScope(Dispatchers.IO).launch {
                     try {
@@ -230,17 +230,17 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 }
             }
 
-            val editRequests = sharedPreferencesManager.getFailedEditRequests()
+            val editRequests = sharedPreferencesManager.getCashedEditRequests()
             for (req in editRequests) {
                 if (req.localTaskId == taskToDelete.id) {
-                    sharedPreferencesManager.removeFailedEditRequest(req)
+                    sharedPreferencesManager.removeCashedEditRequest(req)
                 }
             }
         }
     }
 
     fun cashDeleteRequest(deleteRequest: DeleteTaskRequest) {
-        sharedPreferencesManager.insertFailedDeleteRequest(deleteRequest)
+        sharedPreferencesManager.insertCashedDeleteRequest(deleteRequest)
     }
 
     fun makeDeleteRequest(serverID: String): DeleteTaskRequest? {
@@ -255,7 +255,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     }
 
     fun removeDeleteRequest(deleteRequest: DeleteTaskRequest) {
-        sharedPreferencesManager.removeFailedDeleteRequest(deleteRequest)
+        sharedPreferencesManager.removeCashedDeleteRequest(deleteRequest)
     }
 
     fun getUserToken(): String? {

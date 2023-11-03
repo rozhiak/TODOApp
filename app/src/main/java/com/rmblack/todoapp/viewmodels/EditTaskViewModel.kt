@@ -14,13 +14,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class EditTaskViewModel(taskId: UUID): ViewModel() {
+class EditTaskViewModel(taskId: UUID) : ViewModel() {
     var doNotSave = false
 
     private val taskRepository = TaskRepository.get()
 
-    private val _task : MutableStateFlow<Task?> = MutableStateFlow(null)
-    val task : StateFlow<Task?> = _task.asStateFlow()
+    private val _task: MutableStateFlow<Task?> = MutableStateFlow(null)
+    val task: StateFlow<Task?> = _task.asStateFlow()
 
     lateinit var primaryTask: Task
 
@@ -35,7 +35,7 @@ class EditTaskViewModel(taskId: UUID): ViewModel() {
     }
 
     fun updateTask(onUpdate: (Task) -> Task) {
-        _task.update {oldTask ->
+        _task.update { oldTask ->
             oldTask?.let {
                 onUpdate(it)
             }

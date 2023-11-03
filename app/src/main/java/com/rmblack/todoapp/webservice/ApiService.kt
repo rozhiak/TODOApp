@@ -4,7 +4,6 @@ import com.rmblack.todoapp.models.StringResponse
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
-import com.rmblack.todoapp.models.server.requests.EditTaskRequest
 import com.rmblack.todoapp.models.server.requests.LoginRequest
 import com.rmblack.todoapp.models.server.requests.NewUserRequest
 import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest

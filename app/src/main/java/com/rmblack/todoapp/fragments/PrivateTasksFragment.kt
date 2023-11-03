@@ -2,9 +2,7 @@ package com.rmblack.todoapp.fragments
 
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.marginTop
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
@@ -27,16 +25,21 @@ class PrivateTasksFragment : TasksFragment() {
         viewModel = ViewModelProvider(
             this, PrivateFragmentViewModelFactory(sharedPreferencesManager)
         )[PrivateTasksViewModel::class.java]
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val id = savedInstanceState?.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
-            viewModel.setLastExpandedID(id)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        restoreLastExpandedID(savedInstanceState)
         setUpRecyclerview()
+    }
+
+    private fun restoreLastExpandedID(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (savedInstanceState != null) {
+                val id = savedInstanceState.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
+                viewModel.setLastExpandedID(id)
+            }
+        }
     }
 
     private fun setUpRecyclerview() {

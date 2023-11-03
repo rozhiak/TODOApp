@@ -7,7 +7,6 @@ import com.rmblack.todoapp.fragments.ConnectUserCallback
 import com.rmblack.todoapp.fragments.DisconnectUserCallback
 import com.rmblack.todoapp.models.server.requests.ConnectUserRequest
 import com.rmblack.todoapp.models.server.requests.DisconnectUserRequest
-import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.UNKNOWN_ERROR_CODE
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import java.lang.Exception
 import java.net.UnknownHostException
 
@@ -25,21 +23,21 @@ class ConnectUserViewModel(
     private val sharedPreferencesManager: SharedPreferencesManager
 ) : ViewModel() {
 
-    val taskRepository = TaskRepository.get()
+    private val taskRepository = TaskRepository.get()
 
     private val apiRepository = ApiRepository()
 
-    private val _connectLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _connectLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val connectLoading: StateFlow<Boolean>
         get() = _connectLoading.asStateFlow()
 
-    private val _disconnectLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _disconnectLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val disconnectLoading: StateFlow<Boolean>
         get() = _disconnectLoading.asStateFlow()
 
-    private val _connectedPhones : MutableStateFlow<List<String>> =
+    private val _connectedPhones: MutableStateFlow<List<String>> =
         MutableStateFlow(sharedPreferencesManager.getConnectedPhone() ?: listOf())
 
     val connectedPhones: StateFlow<List<String>>
@@ -62,8 +60,7 @@ class ConnectUserViewModel(
     }
 
     fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
-//        val cachedReq = sharedPreferencesManager.getCachedConnectRequest()
-        val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
+        val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let { token ->
             ConnectUserRequest(
                 token,
                 phoneNumber
@@ -84,7 +81,7 @@ class ConnectUserViewModel(
                             setConnectedPhonesSF(phones)
                         }
                         connectCallback.onConnectUserSuccess()
-                    } else if(response.code() == 500){
+                    } else if (response.code() == 500) {
                         val disconnectReq = DisconnectUserRequest(
                             getUserToken()
                         )
@@ -105,11 +102,12 @@ class ConnectUserViewModel(
     }
 
     fun disconnectUserFromSharedList(disconnectCallback: DisconnectUserCallback) {
-        val disconnectUserRequest = sharedPreferencesManager.getUser()?.token?.let {token ->
+        val disconnectUserRequest = sharedPreferencesManager.getUser()?.token?.let { token ->
             DisconnectUserRequest(
                 token
             )
         }
+
         viewModelScope.launch {
             if (disconnectUserRequest != null) {
                 try {
@@ -123,7 +121,7 @@ class ConnectUserViewModel(
                     } else {
                         disconnectCallback.onFailureDisconnection(response.code())
                     }
-                } catch (e:Exception) {
+                } catch (e: Exception) {
                     if (e is UnknownHostException) {
                         disconnectCallback.onFailureDisconnection(CONNECTION_ERROR_CODE)
                     } else {
@@ -135,24 +133,24 @@ class ConnectUserViewModel(
     }
 
     private suspend fun performSharedCashedRequests() {
-        val failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
-        val failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
-        val failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+        val failedAddRequests = sharedPreferencesManager.getCashedAddRequests()
+        val failedEditRequests = sharedPreferencesManager.getCashedEditRequests()
+        val failedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
 
         for (addReq in failedAddRequests) {
-            if (addReq.is_shared) {
+            if (addReq.isShared) {
                 val response = apiRepository.addNewTask(addReq.convertToServerAddModel())
                 if (response.isSuccessful) {
-                    sharedPreferencesManager.removeFailedAddRequest(addReq)
+                    sharedPreferencesManager.removeCashedAddRequest(addReq)
                 }
             }
         }
 
         for (editReq in failedEditRequests) {
-            if (editReq.is_shared) {
+            if (editReq.isShared) {
                 val response = apiRepository.editTask(editReq.convertToServerEditModel())
                 if (response.code() == 200 || response.code() == 404) {
-                    sharedPreferencesManager.removeFailedEditRequest(editReq)
+                    sharedPreferencesManager.removeCashedEditRequest(editReq)
                 }
             }
         }
@@ -160,7 +158,7 @@ class ConnectUserViewModel(
         for (deleteReq in failedDeleteRequests) {
             val response = apiRepository.deleteTask(deleteReq)
             if (response.code() == 200 || response.code() == 404) {
-                sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
+                sharedPreferencesManager.removeCashedDeleteRequest(deleteReq)
             }
         }
     }
@@ -183,7 +181,7 @@ class ConnectUserViewModel(
         }
     }
 
-    fun getUserToken() : String {
+    fun getUserToken(): String {
         return sharedPreferencesManager.getUser()?.token ?: ""
     }
 

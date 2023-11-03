@@ -9,8 +9,6 @@ data class TaskResponse(
     val data: ServerTask
 )
 
-
-//TODO Here I changed booleans to int and vise versa, maybe it cause some issues (the debug should be done in server.) I
 data class ServerTask(
     val title: String,
     val id: String,
@@ -67,6 +65,7 @@ data class ServerTask(
         )
     }
 
+    //Check equality of a serverTask and a localTask
     fun checkEquality(localTask: Task): Boolean {
         if (title != localTask.title) return false
         else if (description != localTask.description) return false

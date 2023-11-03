@@ -15,19 +15,19 @@ private const val ENTRANCE_STATE_KEY = "ENTRANCE_STATE_KEY"
 
 private const val CONNECTED_PHONES_KEY = "CONNECTED_PHONES_KEY"
 
-private const val FAILED_ADD_REQUESTS_KEY = "FAILED_ADD_REQUESTS_KEY"
+private const val CASHED_ADD_REQUESTS_KEY = "FAILED_ADD_REQUESTS_KEY"
 
-private const val FAILED_DELETE_REQUESTS_KEY = "FAILED_DELETE_REQUESTS_KEY"
+private const val CASHED_DELETE_REQUESTS_KEY = "FAILED_DELETE_REQUESTS_KEY"
 
-private const val FAILED_EDIT_REQUESTS_KEY = "FAILED_EDIT_REQUESTS_KEY"
+private const val CASHED_EDIT_REQUESTS_KEY = "FAILED_EDIT_REQUESTS_KEY"
 
 class SharedPreferencesManager(private val context: Context) {
 
     private val gson = Gson()
 
-    fun getFailedAddRequests(): List<AddTaskRequest> {
-        val serializedRequests = getSharedPreferences(context).getString(FAILED_ADD_REQUESTS_KEY, null)
-
+    fun getCashedAddRequests(): List<AddTaskRequest> {
+        val serializedRequests =
+            getSharedPreferences(context).getString(CASHED_ADD_REQUESTS_KEY, null)
         return if (serializedRequests != null) {
             gson.fromJson(serializedRequests, object : TypeToken<List<AddTaskRequest>>() {}.type)
         } else {
@@ -35,28 +35,29 @@ class SharedPreferencesManager(private val context: Context) {
         }
     }
 
-    fun insertFailedAddRequest(request: AddTaskRequest) {
+    fun insertCashedAddRequest(request: AddTaskRequest) {
         val existingList: MutableList<AddTaskRequest> =
-            getFailedAddRequests().toMutableList()
+            getCashedAddRequests().toMutableList()
 
         existingList.add(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        getEditor(context).putString(FAILED_ADD_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(CASHED_ADD_REQUESTS_KEY, serializedRequests).apply()
     }
 
-    fun removeFailedAddRequest(request: AddTaskRequest) {
+    fun removeCashedAddRequest(request: AddTaskRequest) {
         val existingList: MutableList<AddTaskRequest> =
-            getFailedAddRequests().toMutableList()
+            getCashedAddRequests().toMutableList()
 
         existingList.remove(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        getEditor(context).putString(FAILED_ADD_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(CASHED_ADD_REQUESTS_KEY, serializedRequests).apply()
     }
 
-    fun getFailedDeleteRequests(): List<DeleteTaskRequest> {
-        val serializedRequests = getSharedPreferences(context).getString(FAILED_DELETE_REQUESTS_KEY, null)
+    fun getCashedDeleteRequests(): List<DeleteTaskRequest> {
+        val serializedRequests =
+            getSharedPreferences(context).getString(CASHED_DELETE_REQUESTS_KEY, null)
 
         return if (serializedRequests != null) {
             gson.fromJson(serializedRequests, object : TypeToken<List<DeleteTaskRequest>>() {}.type)
@@ -65,28 +66,29 @@ class SharedPreferencesManager(private val context: Context) {
         }
     }
 
-    fun insertFailedDeleteRequest(request: DeleteTaskRequest) {
+    fun insertCashedDeleteRequest(request: DeleteTaskRequest) {
         val existingList: MutableList<DeleteTaskRequest> =
-            getFailedDeleteRequests().toMutableList()
+            getCashedDeleteRequests().toMutableList()
 
         existingList.add(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        getEditor(context).putString(FAILED_DELETE_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(CASHED_DELETE_REQUESTS_KEY, serializedRequests).apply()
     }
 
-    fun removeFailedDeleteRequest(request: DeleteTaskRequest) {
+    fun removeCashedDeleteRequest(request: DeleteTaskRequest) {
         val existingList: MutableList<DeleteTaskRequest> =
-            getFailedDeleteRequests().toMutableList()
+            getCashedDeleteRequests().toMutableList()
 
         existingList.remove(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        getEditor(context).putString(FAILED_DELETE_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(CASHED_DELETE_REQUESTS_KEY, serializedRequests).apply()
     }
 
-    fun getFailedEditRequests(): List<EditTaskRequest> {
-        val serializedRequests = getSharedPreferences(context).getString(FAILED_EDIT_REQUESTS_KEY, null)
+    fun getCashedEditRequests(): List<EditTaskRequest> {
+        val serializedRequests =
+            getSharedPreferences(context).getString(CASHED_EDIT_REQUESTS_KEY, null)
 
         return if (serializedRequests != null) {
             gson.fromJson(serializedRequests, object : TypeToken<List<EditTaskRequest>>() {}.type)
@@ -95,24 +97,24 @@ class SharedPreferencesManager(private val context: Context) {
         }
     }
 
-    fun insertFailedEditRequest(request: EditTaskRequest) {
+    fun insertCashedEditRequest(request: EditTaskRequest) {
         val existingList: MutableList<EditTaskRequest> =
-            getFailedEditRequests().toMutableList()
+            getCashedEditRequests().toMutableList()
 
         existingList.add(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        getEditor(context).putString(FAILED_EDIT_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(CASHED_EDIT_REQUESTS_KEY, serializedRequests).apply()
     }
 
-    fun removeFailedEditRequest(request: EditTaskRequest) {
+    fun removeCashedEditRequest(request: EditTaskRequest) {
         val existingList: MutableList<EditTaskRequest> =
-            getFailedEditRequests().toMutableList()
+            getCashedEditRequests().toMutableList()
 
         existingList.remove(request)
 
         val serializedRequests = gson.toJson(existingList.toList())
-        getEditor(context).putString(FAILED_EDIT_REQUESTS_KEY, serializedRequests).apply()
+        getEditor(context).putString(CASHED_EDIT_REQUESTS_KEY, serializedRequests).apply()
     }
 
     fun saveUser(user: User) {
@@ -162,13 +164,14 @@ class SharedPreferencesManager(private val context: Context) {
         private fun getSharedPreferences(context: Context): SharedPreferences {
             synchronized(spLOCK) {
                 if (sharedPreferences == null) {
-                    sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                    sharedPreferences =
+                        context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                 }
                 return sharedPreferences!!
             }
         }
 
-        private var editor : SharedPreferences.Editor? = null
+        private var editor: SharedPreferences.Editor? = null
         private val editorLOCK = Any()
         private fun getEditor(context: Context): SharedPreferences.Editor {
             synchronized(editorLOCK) {
@@ -178,8 +181,6 @@ class SharedPreferencesManager(private val context: Context) {
                 return editor!!
             }
         }
-
-
     }
 
 }

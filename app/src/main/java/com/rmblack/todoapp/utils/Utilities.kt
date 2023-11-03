@@ -15,15 +15,11 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.server.requests.AddTaskRequest
-import com.rmblack.todoapp.models.server.requests.ServerAddTaskRequest
-import com.rmblack.todoapp.models.server.success.AllTasksResponse
 import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.models.server.success.Tasks
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import retrofit2.Response
 import java.lang.Exception
-import java.util.UUID
 
 const val CONNECTION_ERROR_CODE = 0
 
@@ -78,9 +74,9 @@ class Utilities {
         // before using this function , check user login state
         suspend fun syncTasksWithServer(token: String, context: Context): Result<Unit> {
             val sharedPreferencesManager = SharedPreferencesManager(context)
-            var failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
-            var failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
-            var failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+            var failedAddRequests = sharedPreferencesManager.getCashedAddRequests()
+            var failedEditRequests = sharedPreferencesManager.getCashedEditRequests()
+            var failedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
 
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
@@ -90,7 +86,7 @@ class Utilities {
                 try {
                     response = apiRepository.addNewTask(addReq.convertToServerAddModel())
                     if (response.isSuccessful) {
-                        sharedPreferencesManager.removeFailedAddRequest(addReq)
+                        sharedPreferencesManager.removeCashedAddRequest(addReq)
                         response.body()?.data?.id?.let {
                             taskRepository.updateServerID(addReq.localTaskID , it)
                         }
@@ -104,7 +100,7 @@ class Utilities {
                 try {
                     val response = apiRepository.editTask(editReq.convertToServerEditModel())
                     if (response.code() == 200 || response.code() == 404)
-                        sharedPreferencesManager.removeFailedEditRequest(editReq)
+                        sharedPreferencesManager.removeCashedEditRequest(editReq)
                 } catch (e: Exception) {
                     return Result.failure(e)
                 }
@@ -114,15 +110,15 @@ class Utilities {
                 try {
                     val response = apiRepository.deleteTask(deleteReq)
                     if (response.code() == 200 || response.code() == 404)
-                        sharedPreferencesManager.removeFailedDeleteRequest(deleteReq)
+                        sharedPreferencesManager.removeCashedDeleteRequest(deleteReq)
                 } catch (e: Exception) {
                     return Result.failure(e)
                 }
             }
 
-            failedAddRequests = sharedPreferencesManager.getFailedAddRequests()
-            failedEditRequests = sharedPreferencesManager.getFailedEditRequests()
-            failedDeleteRequests = sharedPreferencesManager.getFailedDeleteRequests()
+            failedAddRequests = sharedPreferencesManager.getCashedAddRequests()
+            failedEditRequests = sharedPreferencesManager.getCashedEditRequests()
+            failedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
 
             var isThereAnyFailedRequest = false
             if (failedAddRequests.isNotEmpty()) {
@@ -165,7 +161,7 @@ class Utilities {
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            val failedRequestIndex = sharedPreferencesManager.getFailedDeleteRequests().indexOfFirst {deleteReq ->
+                            val failedRequestIndex = sharedPreferencesManager.getCashedDeleteRequests().indexOfFirst { deleteReq ->
                                 deleteReq.task_id == pServerTask.id
                             }
                             if (failedRequestIndex == -1) {
@@ -187,7 +183,7 @@ class Utilities {
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            val failedRequestIndex = sharedPreferencesManager.getFailedDeleteRequests().indexOfFirst {deleteReq ->
+                            val failedRequestIndex = sharedPreferencesManager.getCashedDeleteRequests().indexOfFirst { deleteReq ->
                                 deleteReq.task_id == sServerTask.id
                             }
                             if (failedRequestIndex == -1) {

@@ -68,7 +68,6 @@ open class TaskHolder(
                 return@setOnLongClickListener true
             }
             return@setOnLongClickListener true
-
         }
     }
 

@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.marginTop
@@ -22,7 +20,6 @@ import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -31,23 +28,27 @@ class SharedTasksFragment : TasksFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
             this, SharedFragmentViewModelFactory(sharedPreferencesManager)
         )[SharedTasksViewModel::class.java]
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val id = savedInstanceState?.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
-            viewModel.setLastExpandedID(id)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        restoreLastExpandedID(savedInstanceState)
         setUpRecyclerview()
         setUpClickListeners()
         setUpConnectionManagementSection()
+    }
+
+    private fun restoreLastExpandedID(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (savedInstanceState != null) {
+                val id = savedInstanceState.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
+                viewModel.setLastExpandedID(id)
+            }
+        }
     }
 
     private fun hideKeyboard() {

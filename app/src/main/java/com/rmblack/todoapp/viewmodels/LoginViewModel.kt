@@ -28,7 +28,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private val customScope = CoroutineScope(Dispatchers.IO)
 
-    val taskRepository = TaskRepository.get()
+    private val taskRepository = TaskRepository.get()
 
     private val apiRepository: ApiRepository = ApiRepository()
 
@@ -51,7 +51,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private var _verifyingPhone = ""
 
-    val verifyingPhone
+    private val verifyingPhone
         get() = _verifyingPhone
 
     private var _loginFragmentLoading = MutableStateFlow<Boolean>(false)
@@ -195,7 +195,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                         }
                     }
                 } catch (e: Exception) {
-                    sharedPreferencesManager.insertFailedAddRequest(addRequest)
+                    sharedPreferencesManager.insertCashedAddRequest(addRequest)
                 }
             }
         }
