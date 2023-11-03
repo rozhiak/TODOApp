@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.fragments
 
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -22,8 +23,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.gson.Gson
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
+import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
@@ -36,6 +39,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
+
+private const val PRIMARY_TASK_KEY = "PRIMARY_TASK_KEY"
 
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
@@ -66,10 +71,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        resetIfNeeded(savedInstanceState)
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState != null) {
-            dismiss()
-        }
         setClickListeners()
         updateUi()
         syncUserInput()
@@ -79,9 +82,26 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    // Rollback if activity destroyed.
+    private fun resetIfNeeded(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            viewModel.doNotSave = true
+            val taskJson = savedInstanceState.getString(PRIMARY_TASK_KEY)
+            val primaryTask = Gson().fromJson(taskJson, Task::class.java)
+            val isNew = arguments?.getBoolean("isNewTask")
+            if (isNew == true) {
+                viewModel.deleteTaskFromRoom(primaryTask)
+            } else {
+                viewModel.updateTaskInRoom(primaryTask)
+            }
+            dismiss()
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        viewModel.doNotSave = true
+        val taskJson = Gson().toJson(viewModel.primaryTask)
+        outState.putString(PRIMARY_TASK_KEY, taskJson)
     }
 
     private fun focusOnTitle() {
