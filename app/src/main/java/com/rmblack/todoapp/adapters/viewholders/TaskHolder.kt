@@ -23,6 +23,7 @@ import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 const val TASK = 0
@@ -53,12 +54,21 @@ open class TaskHolder(
         editCard.setOnClickListener {
             editClickListener.onEditClick(task)
         }
+        scope?.launch {
+            isSyncing.collect {
+                editCard.isEnabled = !it
+            }
+        }
     }
 
     fun setLongPress(task: Task, cardView: CardView) {
         cardView.setOnLongClickListener {
-            editClickListener.onEditClick(task)
+            if (!isSyncing.value) {
+                editClickListener.onEditClick(task)
+                return@setOnLongClickListener true
+            }
             return@setOnLongClickListener true
+
         }
     }
 

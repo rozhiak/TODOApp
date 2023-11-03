@@ -68,6 +68,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     private fun setUpSyncing() {
         viewLifecycleOwner.lifecycleScope.launch {
             activityViewModel.isSyncing.collect {
+                viewModel.updateSyncState(it)
                 binding.refreshLayout.isRefreshing = it
             }
         }
@@ -105,7 +106,6 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
                     binding.root,
                     "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
                 )
-                binding.refreshLayout.isRefreshing = false
             }
         }
     }

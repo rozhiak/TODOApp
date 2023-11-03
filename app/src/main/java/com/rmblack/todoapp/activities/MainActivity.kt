@@ -26,8 +26,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
-import com.rmblack.todoapp.fragments.PrivateTasksFragment
-import com.rmblack.todoapp.fragments.SharedTasksFragment
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
