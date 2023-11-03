@@ -31,7 +31,7 @@ import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.MainViewModel
-import com.rmblack.todoapp.viewmodels.SAME_USER_NAME
+import com.rmblack.todoapp.viewmodels.SAME_USER_NAME_CODE
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.util.UUID
@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                     is MainViewModel.UpdateUserException -> {
                         if (it.intValue == 404) {
                             makeSnack("مشکلی در فرآیند ورودتان به برنامه پیش آمده")
-                        } else if (it.intValue == SAME_USER_NAME) {
+                        } else if (it.intValue == SAME_USER_NAME_CODE) {
                             makeSnack("نام جدید با نام فعلی نمی تواند یکسان باشد.")
                         }
                     }

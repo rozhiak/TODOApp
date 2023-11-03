@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import kotlin.Result.Companion.failure
 
-const val SAME_USER_NAME = 1
+const val SAME_USER_NAME_CODE = 1
 
 class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
@@ -61,8 +61,7 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
         val user = sharedPreferencesManager.getUser()
         if (user?.name != newName) {
             val updateUserRequest = UpdateUserRequest(
-                user?.token ?: "",
-                newName
+                user?.token ?: "", newName
             )
             if (!user?.token.isNullOrBlank()) {
                 try {
@@ -84,7 +83,7 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
                 return failure(UpdateUserException(404))
             }
         }
-        return failure(UpdateUserException(SAME_USER_NAME))
+        return failure(UpdateUserException(SAME_USER_NAME_CODE))
     }
 
     fun getUserFromSharedPreferences(): User? {

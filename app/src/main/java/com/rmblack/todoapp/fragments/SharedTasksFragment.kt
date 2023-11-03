@@ -46,7 +46,7 @@ class SharedTasksFragment : TasksFragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (savedInstanceState != null) {
                 val id = savedInstanceState.getSerializable(LAST_EXPANDED_ID_KEY, UUID::class.java)
-                viewModel.setLastExpandedID(id)
+                viewModel.setPreviouslyExpandedID(id)
             }
         }
     }

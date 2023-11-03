@@ -24,25 +24,17 @@ import java.util.UUID
 open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
     private val _isSyncing = MutableStateFlow(false)
-
     val isSyncing get() = _isSyncing.asStateFlow()
-
-    fun updateSyncState(state: Boolean) {
-        _isSyncing.update {
-            state
-        }
-    }
 
     private val apiRepository = ApiRepository()
 
     val taskRepository = TaskRepository.get()
 
     protected val _tasks: MutableStateFlow<List<Task?>> = MutableStateFlow(listOf(null))
-
     val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
 
-    private var _lastExpandedID : UUID? = null
+    private var _lastExpandedID: UUID? = null
 
     val lastExpandedID
         get() = _lastExpandedID
@@ -52,10 +44,16 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     private var editJob: Job? = null
 
-    private var deleteJob : Job? = null
+    private var deleteJob: Job? = null
     //End of server properties
 
-    fun setLastExpandedID (id: UUID?) {
+    fun updateSyncState(state: Boolean) {
+        _isSyncing.update {
+            state
+        }
+    }
+
+    fun setPreviouslyExpandedID(id: UUID?) {
         _lastExpandedID = id
     }
 
@@ -79,14 +77,14 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         for (t in tasks.value) {
             if (t?.detailsVisibility == true) {
                 taskRepository.updateDetailsVisibility(t.id, false)
-                setLastExpandedID(t.id)
+                setPreviouslyExpandedID(t.id)
                 return
             }
         }
-        setLastExpandedID(null)
+        setPreviouslyExpandedID(null)
     }
 
-    fun openLastExpandedTask() {
+    fun reopenLastExpandedTask() {
         lastExpandedID?.let { id -> taskRepository.updateDetailsVisibility(id, true) }
     }
 
@@ -142,13 +140,14 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
             req.localTaskID == editedTask.id
         }
         if (index != -1) {
+            // Related add request found
             sharedPreferencesManager.removeCashedAddRequest(addRequests[index])
             addTaskToServer(editedTask)
         } else {
             val user = getUser()
             if (user?.token != null) {
                 val editRequests = sharedPreferencesManager.getCashedEditRequests()
-                val editIndex = editRequests.indexOfFirst {req ->
+                val editIndex = editRequests.indexOfFirst { req ->
                     req.localTaskId == editedTask.id
                 }
                 val editRequest = if (editIndex == -1) {
@@ -182,7 +181,8 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
                 editJob = CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val response = apiRepository.editTask(editRequest.convertToServerEditModel())
+                        val response =
+                            apiRepository.editTask(editRequest.convertToServerEditModel())
                         if (response.isSuccessful) {
                             sharedPreferencesManager.removeCashedEditRequest(editRequest)
                         } else {
@@ -247,8 +247,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
         val user = getUser()
         if (user?.token != null) {
             return DeleteTaskRequest(
-                user.token,
-                serverID
+                user.token, serverID
             )
         }
         return null

@@ -24,7 +24,7 @@ import java.lang.Exception
 import java.net.UnknownHostException
 import java.util.UUID
 
-class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager): ViewModel() {
+class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
     private val customScope = CoroutineScope(Dispatchers.IO)
 
@@ -36,17 +36,17 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     private var _loginRequestCode = MutableStateFlow(-1)
 
-    val loginRequestCode : StateFlow<Int>
+    val loginRequestCode: StateFlow<Int>
         get() = _loginRequestCode.asStateFlow()
 
     private var _verifyRequestCode = MutableStateFlow(-1)
 
-    val verifyRequestCode : StateFlow<Int>
+    val verifyRequestCode: StateFlow<Int>
         get() = _verifyRequestCode.asStateFlow()
 
     private var _newUserRequestCode = MutableStateFlow(-1)
 
-    val newUserRequestCode : StateFlow<Int>
+    val newUserRequestCode: StateFlow<Int>
         get() = _newUserRequestCode.asStateFlow()
 
     private var _verifyingPhone = ""
@@ -54,7 +54,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
     private val verifyingPhone
         get() = _verifyingPhone
 
-    private var _loginFragmentLoading = MutableStateFlow<Boolean>(false)
+    private var _loginFragmentLoading = MutableStateFlow(false)
 
     val loginFragmentLoading: StateFlow<Boolean>
         get() = _loginFragmentLoading.asStateFlow()
@@ -137,9 +137,9 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
             try {
                 val response = apiRepository.validateUser(validateUserRequest)
                 if (response.code() == 200) {
-                    response.body()?.user?.token?.let { syncTasksWithServer(it) }
+                    response.body()?.user?.token?.let { syncTasksWithServerOnValidate(it) }
                     saveUserInSharedPreferences(response)
-                    response.body()?.user?.connectedPhones?.let {phones ->
+                    response.body()?.user?.connectedPhones?.let { phones ->
                         if (phones.isNotEmpty()) {
                             sharedPreferencesManager.saveConnectedPhones(
                                 phones
@@ -167,7 +167,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         }
     }
 
-    private suspend fun syncTasksWithServer(token: String) {
+    private suspend fun syncTasksWithServerOnValidate(token: String) {
         val privateLocalTasks = taskRepository.getPrivateTasks().toList()
 
         for (pTask in privateLocalTasks) {
@@ -186,13 +186,8 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
                 try {
                     val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
-                    println(response)
                     if (response.isSuccessful) {
                         response.body()?.data?.id?.let { updateServerID(pTask.id, it) }
-                    } else {
-                        if (response.code() == 403) {
-                            //invalid token
-                        }
                     }
                 } catch (e: Exception) {
                     sharedPreferencesManager.insertCashedAddRequest(addRequest)
@@ -227,7 +222,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
         _verifyRequestCode.value = -1
     }
 
-    fun getBottomICVisibility() : Boolean {
+    fun getBottomICVisibility(): Boolean {
         return bottomIcVisibility
     }
 

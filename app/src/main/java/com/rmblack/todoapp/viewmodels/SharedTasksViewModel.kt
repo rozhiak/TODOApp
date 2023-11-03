@@ -4,9 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
-class SharedTasksViewModel(sharedPreferencesManager: SharedPreferencesManager): TasksViewModel(sharedPreferencesManager) {
+class SharedTasksViewModel(sharedPreferencesManager: SharedPreferencesManager) :
+    TasksViewModel(sharedPreferencesManager) {
     init {
         viewModelScope.launch {
             taskRepository.getSharedTasksFlow().collect { tasks ->
@@ -15,7 +15,7 @@ class SharedTasksViewModel(sharedPreferencesManager: SharedPreferencesManager): 
 
                 if (sortedTasks.isNotEmpty()) {
                     tasksWithDatePositionNull.add(null)
-                    tasksWithDatePositionNull.add(sortedTasks[0])
+                    tasksWithDatePositionNull.add(sortedTasks[0]) //Because of if condition we can not access i - 1 position (-1)
                     for (i in 1 until sortedTasks.size) {
                         if (sortedTasks[i].deadLine.shortDateString != sortedTasks[i - 1].deadLine.shortDateString) {
                             tasksWithDatePositionNull.add(null)

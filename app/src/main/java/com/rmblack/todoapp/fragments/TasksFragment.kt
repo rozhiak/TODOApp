@@ -55,7 +55,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
 
     override fun onResume() {
         super.onResume()
-        viewModel.openLastExpandedTask()
+        viewModel.reopenLastExpandedTask()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
