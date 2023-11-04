@@ -7,6 +7,6 @@ import com.rmblack.todoapp.models.local.Task
 
 @Database(entities = [Task::class], version = 1, exportSchema = false)
 @TypeConverters(TaskTypeConverters::class)
-abstract class TaskDatabase: RoomDatabase() {
+abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 }

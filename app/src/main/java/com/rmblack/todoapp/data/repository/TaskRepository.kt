@@ -18,13 +18,9 @@ class TaskRepository private constructor(
     private val coroutineScope: CoroutineScope = GlobalScope
 ) {
 
-    private val database: TaskDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            TaskDatabase::class.java,
-            DATABASE_NAME
-        )
-        .build()
+    private val database: TaskDatabase = Room.databaseBuilder(
+            context.applicationContext, TaskDatabase::class.java, DATABASE_NAME
+        ).build()
 
     suspend fun getTasks(): List<Task> = database.taskDao().getTasks()
 
@@ -51,7 +47,7 @@ class TaskRepository private constructor(
     }
 
     fun updateUrgentState(isUrgent: Boolean, id: UUID) {
-        coroutineScope.launch() {
+        coroutineScope.launch {
             database.taskDao().updateUrgentState(isUrgent, id)
         }
     }

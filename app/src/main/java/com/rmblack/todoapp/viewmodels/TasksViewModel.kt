@@ -115,21 +115,27 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 task.id
             )
 
-            addJob = CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
-                    if (response.isSuccessful) {
-                        response.body()?.data?.id?.let { updateServerID(task.id, it) }
+            sendAddRequest(addRequest, task)
+        }
+    }
+
+    private fun sendAddRequest(
+        addRequest: AddTaskRequest, task: Task
+    ) {
+        addJob = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
+                if (response.isSuccessful) {
+                    response.body()?.data?.id?.let { updateServerID(task.id, it) }
+                } else {
+                    if (response.code() == 403) {
+                        //invalid token
                     } else {
-                        if (response.code() == 403) {
-                            //invalid token
-                        } else {
-                            sharedPreferencesManager.insertCashedAddRequest(addRequest)
-                        }
+                        sharedPreferencesManager.insertCashedAddRequest(addRequest)
                     }
-                } catch (e: Exception) {
-                    sharedPreferencesManager.insertCashedAddRequest(addRequest)
                 }
+            } catch (e: Exception) {
+                sharedPreferencesManager.insertCashedAddRequest(addRequest)
             }
         }
     }
@@ -179,25 +185,28 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                     newEditReq
                 }
 
-                editJob = CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val response =
-                            apiRepository.editTask(editRequest.convertToServerEditModel())
-                        if (response.isSuccessful) {
-                            sharedPreferencesManager.removeCashedEditRequest(editRequest)
-                        } else {
-                            if (response.code() == 403) {
-                                //invalid token or access denied
-                                sharedPreferencesManager.removeCashedEditRequest(editRequest)
-                            } else if (response.code() == 404) {
-                                //Task not found
-                                sharedPreferencesManager.removeCashedEditRequest(editRequest)
-                            }
-                        }
-                    } catch (_: Exception) {
+                sendEditRequest(editRequest)
+            }
+        }
+    }
 
+    private fun sendEditRequest(editRequest: EditTaskRequest) {
+        editJob = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiRepository.editTask(editRequest.convertToServerEditModel())
+                if (response.isSuccessful) {
+                    sharedPreferencesManager.removeCashedEditRequest(editRequest)
+                } else {
+                    if (response.code() == 403) {
+                        //invalid token or access denied
+                        sharedPreferencesManager.removeCashedEditRequest(editRequest)
+                    } else if (response.code() == 404) {
+                        //Task not found
+                        sharedPreferencesManager.removeCashedEditRequest(editRequest)
                     }
                 }
+            } catch (_: Exception) {
+
             }
         }
     }
@@ -212,22 +221,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
             if (addIndex != -1) {
                 sharedPreferencesManager.removeCashedAddRequest(addRequests[addIndex])
             } else {
-                deleteJob = CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val response = apiRepository.deleteTask(deleteRequest)
-                        if (response.isSuccessful) {
-                            removeDeleteRequest(deleteRequest)
-                        } else if (response.code() == 403) {
-                            //Invalid token or access denied
-                            removeDeleteRequest(deleteRequest)
-                        } else if (response.code() == 404) {
-                            //task not found
-                            removeDeleteRequest(deleteRequest)
-                        }
-                    } catch (_: Exception) {
-
-                    }
-                }
+                sendDeleteRequest(deleteRequest)
             }
 
             val editRequests = sharedPreferencesManager.getCashedEditRequests()
@@ -235,6 +229,25 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 if (req.localTaskId == taskToDelete.id) {
                     sharedPreferencesManager.removeCashedEditRequest(req)
                 }
+            }
+        }
+    }
+
+    private fun sendDeleteRequest(deleteRequest: DeleteTaskRequest) {
+        deleteJob = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiRepository.deleteTask(deleteRequest)
+                if (response.isSuccessful) {
+                    removeDeleteRequest(deleteRequest)
+                } else if (response.code() == 403) {
+                    //Invalid token or access denied
+                    removeDeleteRequest(deleteRequest)
+                } else if (response.code() == 404) {
+                    //task not found
+                    removeDeleteRequest(deleteRequest)
+                }
+            } catch (_: Exception) {
+
             }
         }
     }

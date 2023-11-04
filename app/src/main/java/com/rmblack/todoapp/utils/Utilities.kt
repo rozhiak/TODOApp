@@ -23,15 +23,14 @@ import java.lang.Exception
 
 const val CONNECTION_ERROR_CODE = 0
 
-const val UNKNOWN_ERROR_CODE =  7
+const val UNKNOWN_ERROR_CODE = 7
 
 class Utilities {
 
     companion object {
         fun makeDeleteSnackBar(activity: Activity, container: View, onUndo: () -> Unit): Snackbar {
             val snackBar = Snackbar.make(container, "", Snackbar.LENGTH_LONG)
-            val customSnackView: View =
-                activity.layoutInflater.inflate(R.layout.delete_snack, null)
+            val customSnackView: View = activity.layoutInflater.inflate(R.layout.delete_snack, null)
             snackBar.view.setBackgroundColor(Color.TRANSPARENT)
             val snackBarLayout = snackBar.view as SnackbarLayout
             snackBarLayout.setPadding(0, 0, 0, 0)
@@ -82,13 +81,13 @@ class Utilities {
             val taskRepository = TaskRepository.get()
 
             for (addReq in failedAddRequests) {
-                val response : Response<TaskResponse>
+                val response: Response<TaskResponse>
                 try {
                     response = apiRepository.addNewTask(addReq.convertToServerAddModel())
                     if (response.isSuccessful) {
                         sharedPreferencesManager.removeCashedAddRequest(addReq)
                         response.body()?.data?.id?.let {
-                            taskRepository.updateServerID(addReq.localTaskID , it)
+                            taskRepository.updateServerID(addReq.localTaskID, it)
                         }
                     }
                 } catch (e: Exception) {
@@ -99,8 +98,9 @@ class Utilities {
             for (editReq in failedEditRequests) {
                 try {
                     val response = apiRepository.editTask(editReq.convertToServerEditModel())
-                    if (response.code() == 200 || response.code() == 404)
-                        sharedPreferencesManager.removeCashedEditRequest(editReq)
+                    if (response.code() == 200 || response.code() == 404) sharedPreferencesManager.removeCashedEditRequest(
+                        editReq
+                    )
                 } catch (e: Exception) {
                     return Result.failure(e)
                 }
@@ -109,8 +109,9 @@ class Utilities {
             for (deleteReq in failedDeleteRequests) {
                 try {
                     val response = apiRepository.deleteTask(deleteReq)
-                    if (response.code() == 200 || response.code() == 404)
-                        sharedPreferencesManager.removeCashedDeleteRequest(deleteReq)
+                    if (response.code() == 200 || response.code() == 404) sharedPreferencesManager.removeCashedDeleteRequest(
+                        deleteReq
+                    )
                 } catch (e: Exception) {
                     return Result.failure(e)
                 }
@@ -130,7 +131,7 @@ class Utilities {
             }
 
             if (!isThereAnyFailedRequest) {
-                val allServerTasks : Tasks?
+                val allServerTasks: Tasks?
                 try {
                     allServerTasks = apiRepository.getAllTasks(token).body()?.data
                 } catch (e: Exception) {
@@ -138,32 +139,38 @@ class Utilities {
                 }
 
                 val privateLocalTasks = taskRepository.getPrivateTasks()
-                val privateLocalTasksPair: MutableList<Pair<Task, Boolean>> = privateLocalTasks.map { task ->
-                    Pair(task, false)
-                } as MutableList<Pair<Task, Boolean>>
+                val privateLocalTasksPair: MutableList<Pair<Task, Boolean>> =
+                    privateLocalTasks.map { task ->
+                        Pair(task, false)
+                    } as MutableList<Pair<Task, Boolean>>
 
                 val sharedLocalTasks = taskRepository.getSharedTasks()
-                val sharedLocalTasksPair: MutableList<Pair<Task, Boolean>> = sharedLocalTasks.map {task ->
-                    Pair(task, false)
-                } as MutableList<Pair<Task, Boolean>>
+                val sharedLocalTasksPair: MutableList<Pair<Task, Boolean>> =
+                    sharedLocalTasks.map { task ->
+                        Pair(task, false)
+                    } as MutableList<Pair<Task, Boolean>>
 
                 if (allServerTasks != null) {
                     for (pServerTask in allServerTasks.private) {
-                        val index = privateLocalTasksPair.indexOfFirst {pair ->
+                        val index = privateLocalTasksPair.indexOfFirst { pair ->
                             pair.first.serverID == pServerTask.id && !pair.second
                         }
                         if (index >= 0) {
                             val localTask = privateLocalTasksPair[index].first
                             if (!pServerTask.checkEquality(localTask)) {
-                                taskRepository.updateTask(pServerTask.convertToLocalTaskWithLocalID(
-                                    localTask.id, localTask.detailsVisibility)
+                                taskRepository.updateTask(
+                                    pServerTask.convertToLocalTaskWithLocalID(
+                                        localTask.id, localTask.detailsVisibility
+                                    )
                                 )
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            val failedRequestIndex = sharedPreferencesManager.getCashedDeleteRequests().indexOfFirst { deleteReq ->
-                                deleteReq.task_id == pServerTask.id
-                            }
+                            val failedRequestIndex =
+                                sharedPreferencesManager.getCashedDeleteRequests()
+                                    .indexOfFirst { deleteReq ->
+                                        deleteReq.task_id == pServerTask.id
+                                    }
                             if (failedRequestIndex == -1) {
                                 taskRepository.addTask(pServerTask.convertToLocalTask())
                             }
@@ -171,21 +178,25 @@ class Utilities {
                     }
 
                     for (sServerTask in allServerTasks.shared) {
-                        val index = sharedLocalTasksPair.indexOfFirst {pair ->
-                            pair.first.serverID == sServerTask.id  && !pair.second
+                        val index = sharedLocalTasksPair.indexOfFirst { pair ->
+                            pair.first.serverID == sServerTask.id && !pair.second
                         }
                         if (index >= 0) {
                             val localTask = sharedLocalTasksPair[index].first
                             if (!sServerTask.checkEquality(localTask)) {
-                                taskRepository.updateTask(sServerTask.convertToLocalTaskWithLocalID(
-                                    localTask.id, localTask.detailsVisibility)
+                                taskRepository.updateTask(
+                                    sServerTask.convertToLocalTaskWithLocalID(
+                                        localTask.id, localTask.detailsVisibility
+                                    )
                                 )
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            val failedRequestIndex = sharedPreferencesManager.getCashedDeleteRequests().indexOfFirst { deleteReq ->
-                                deleteReq.task_id == sServerTask.id
-                            }
+                            val failedRequestIndex =
+                                sharedPreferencesManager.getCashedDeleteRequests()
+                                    .indexOfFirst { deleteReq ->
+                                        deleteReq.task_id == sServerTask.id
+                                    }
                             if (failedRequestIndex == -1) {
                                 taskRepository.addTask(sServerTask.convertToLocalTask())
                             }

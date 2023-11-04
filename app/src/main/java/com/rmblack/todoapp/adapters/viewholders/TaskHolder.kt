@@ -198,7 +198,6 @@ open class TaskHolder(
     ) {
         deleteBtn.setOnClickListener {
             viewModel.deleteTask(task)
-
             val deleteReq = viewModel.makeDeleteRequest(task.serverID)
             if (deleteReq != null) {
                 viewModel.cashDeleteRequest(deleteReq)
@@ -212,6 +211,7 @@ open class TaskHolder(
                     viewModel.removeDeleteRequest(deleteReq)
                 }
             }
+
             snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     super.onDismissed(transientBottomBar, event)
