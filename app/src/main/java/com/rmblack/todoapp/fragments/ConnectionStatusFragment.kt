@@ -37,7 +37,7 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentConnectionStatusBinding.inflate(inflater, container, false)
 
@@ -60,16 +60,8 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
         setUpLoadingState()
     }
 
-//    private fun performDisconnectCachedReq() {
-//        val cachedReq = viewModel.getCachedDisconnectRequest()
-//        if (cachedReq != null) {
-//            viewModel.disconnectUserFromSharedList(this)
-//        }
-//    }
-
     override fun onRefresh() {
         try {
-//            performDisconnectCachedReq()
             val phones = viewModel.getConnectedPhonesFromSP()
             if (phones != null) {
                 viewModel.setConnectedPhonesSF(phones)

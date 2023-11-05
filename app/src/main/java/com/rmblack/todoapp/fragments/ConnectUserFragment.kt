@@ -45,7 +45,7 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentConnectUserBinding.inflate(inflater, container, false)
 

@@ -36,10 +36,10 @@ class PrivateTaskHolder(
         adapter: TaskAdapter
     ) {
         val task = tasks[pos]
-        task?.let {task ->
+        task?.let {notNullTask ->
             binding.apply {
-                configUrgentSwitch(viewModel, task, urgentSwitch)
-                configDoneCheckBox(viewModel, task, doneCheckBox)
+                configUrgentSwitch(viewModel, notNullTask, urgentSwitch)
+                configDoneCheckBox(viewModel, notNullTask, doneCheckBox)
                 setDetailsVisibility(
                     viewModel.tasks.value[pos]?.detailsVisibility ?: false,
                     descriptionLable,
@@ -49,15 +49,15 @@ class PrivateTaskHolder(
                     editCard,
                     deleteBtn
                 )
-                setUrgentUi(task, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
-                setDoneUi(task, doneCheckBox)
+                setUrgentUi(notNullTask, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
+                setDoneUi(notNullTask, doneCheckBox)
                 setEachTaskClick(pos, adapter, rootCard, viewModel)
-                setTaskDetails(task, titleTv, deadLineTv, descriptionTv, descriptionLable)
-                setEditClick(task, editCard)
+                setTaskDetails(notNullTask, titleTv, deadLineTv, descriptionTv, descriptionLable)
+                setEditClick(notNullTask, editCard)
                 setBackground(viewModel, pos, rootConstraint, activity.resources)
-                setUpDelete(pos, task, deleteBtn, viewModel, activity)
+                setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
-                setLongPress(task, rootCard)
+                setLongPress(notNullTask, rootCard)
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.rmblack.todoapp.fragments
 
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle

@@ -23,7 +23,6 @@ import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 const val TASK = 0

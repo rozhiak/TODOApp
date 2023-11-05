@@ -91,7 +91,6 @@ class PrivateTasksFragment : TasksFragment() {
         requireActivity()
     )
 
-
     class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
