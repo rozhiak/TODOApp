@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -28,6 +29,30 @@ const val UNKNOWN_ERROR_CODE = 7
 class Utilities {
 
     companion object {
+        fun calculateDateDistance(calendarDate: PersianCalendar): Double {
+            val currentDate = PersianCalendar()
+            val targetDate = PersianCalendar()
+
+            targetDate.timeInMillis = calendarDate.timeInMillis
+
+            currentDate.hourOfDay = 0
+            targetDate.hourOfDay = 0
+            currentDate.minute = 0
+            targetDate.minute = 0
+            currentDate.second = 0
+            targetDate.second = 0
+            currentDate.millisecond = 0
+            targetDate.millisecond = 0
+
+            val dateInMillis = calendarDate.timeInMillis
+            val currentDateInMillis = currentDate.timeInMillis
+
+            val millisInDay = 1000.0 * 60.0 * 60.0 * 24.0
+            val distanceInMillis = dateInMillis - currentDateInMillis
+
+            return distanceInMillis / millisInDay
+        }
+
         fun makeDeleteSnackBar(activity: Activity, container: View, onUndo: () -> Unit): Snackbar {
             val snackBar = Snackbar.make(container, "", Snackbar.LENGTH_LONG)
             val customSnackView: View = activity.layoutInflater.inflate(R.layout.delete_snack, null)

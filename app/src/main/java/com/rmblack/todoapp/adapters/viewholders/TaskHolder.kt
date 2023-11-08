@@ -111,12 +111,16 @@ open class TaskHolder(
             titleTv.setTextColor(Color.parseColor("#D05D8A"))
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
+            urgentSwitch.setEnableEffect(false)
             urgentSwitch.isChecked = true
+            urgentSwitch.setEnableEffect(true)
         } else {
             titleTv.setTextColor(Color.parseColor("#5DD0A3"))
             doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
             rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
+            urgentSwitch.setEnableEffect(false)
             urgentSwitch.isChecked = false
+            urgentSwitch.setEnableEffect(true)
         }
 
         scope?.launch {

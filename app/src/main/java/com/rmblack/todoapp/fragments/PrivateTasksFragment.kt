@@ -2,7 +2,9 @@ package com.rmblack.todoapp.fragments
 
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.marginTop
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
@@ -25,6 +27,17 @@ class PrivateTasksFragment : TasksFragment() {
         viewModel = ViewModelProvider(
             this, PrivateFragmentViewModelFactory(sharedPreferencesManager)
         )[PrivateTasksViewModel::class.java]
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val res = super.onCreateView(inflater, container, savedInstanceState)
+        binding.tasksRv.adapter = createPrivateTasksAdapter()
+        return res
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,7 +86,8 @@ class PrivateTasksFragment : TasksFragment() {
                     val pos = layoutManager.findFirstVisibleItemPosition()
                     val marginTop = firstVisibleItem?.marginTop ?: 0
 
-                    binding.tasksRv.adapter = createPrivateTasksAdapter()
+                    val adapter = binding.tasksRv.adapter as PrivateTasksAdapter
+                    adapter.updateData(tasks)
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 

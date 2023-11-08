@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.marginTop
@@ -17,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
+import com.rmblack.todoapp.adapters.PrivateTasksAdapter
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
@@ -32,6 +35,16 @@ class SharedTasksFragment : TasksFragment() {
         viewModel = ViewModelProvider(
             this, SharedFragmentViewModelFactory(sharedPreferencesManager)
         )[SharedTasksViewModel::class.java]
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val res = super.onCreateView(inflater, container, savedInstanceState)
+        binding.tasksRv.adapter = createSharedTasksAdapter()
+        return res
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -170,7 +183,8 @@ class SharedTasksFragment : TasksFragment() {
                     val pos = layoutManager.findFirstVisibleItemPosition()
                     val marginTop = firstVisibleItem?.marginTop ?: 0
 
-                    binding.tasksRv.adapter = createSharedTasksAdapter()
+                    val adapter = binding.tasksRv.adapter as SharedTasksAdapter
+                    adapter.updateData(tasks)
 
                     layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
