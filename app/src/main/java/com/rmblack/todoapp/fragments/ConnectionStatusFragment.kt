@@ -117,7 +117,8 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
         transaction.replace(fragmentContainerView.id, ConnectUserFragment())
         try {
             transaction.commit()
-        } catch (_: IllegalStateException) { }
+        } catch (_: IllegalStateException) {
+        }
     }
 
     override fun onFailureDisconnection(errorCode: Int) {

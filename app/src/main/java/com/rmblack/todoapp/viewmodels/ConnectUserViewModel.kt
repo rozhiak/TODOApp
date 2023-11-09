@@ -115,7 +115,6 @@ class ConnectUserViewModel(
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
                     if (response.isSuccessful) {
                         deleteSharedTasks()
-                        setConnectedPhonesSF(listOf())
                         removeConnectedPhonesFromSP()
                         disconnectCallback.onSuccessDisconnection()
                     } else {

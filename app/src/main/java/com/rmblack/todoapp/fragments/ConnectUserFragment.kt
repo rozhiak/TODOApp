@@ -71,7 +71,6 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
     override fun onRefresh() {
         try {
-//            performCachedReq()
             val phones = viewModel.getConnectedPhonesFromSP()
             if (phones != null) {
                 showConnectionStatusFragment()
@@ -79,14 +78,6 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         } catch (_: UninitializedPropertyAccessException) {
         }
     }
-
-//    private fun performCachedReq() {
-//        val cachedReq = viewModel.getCachedConnectUser()
-//        if (cachedReq != null) {
-//            binding.phoneEt.setText(cachedReq.new_phone_number)
-//            viewModel.connectUserToSharedList(cachedReq.new_phone_number, this)
-//        }
-//    }
 
     private fun setUpLoadingState() {
         viewLifecycleOwner.lifecycleScope.launch {
