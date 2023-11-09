@@ -30,6 +30,7 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.utils.Utilities.SharedObject.setSyncingState
 import com.rmblack.todoapp.viewmodels.MainViewModel
 import com.rmblack.todoapp.viewmodels.SAME_USER_NAME_CODE
 import kotlinx.coroutines.launch
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     private fun syncTasks() {
         val user = viewModel.getUserFromSharedPreferences()
         if (user?.token != null) {
-            viewModel.updateSyncState(true)
+            setSyncingState(true)
             viewModel.syncTasksWithServer(this)
         }
     }
@@ -158,17 +159,17 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun syncTasksWithNewName(saveBTN: CircularProgressButton) {
         viewModel.getUserFromSharedPreferences()?.let { user ->
-            viewModel.updateSyncState(true)
+            setSyncingState(true)
             val result = Utilities.syncTasksWithServer(
                 user.token, this@MainActivity
             )
             result.onSuccess {
-                viewModel.updateSyncState(false)
+                setSyncingState(false)
                 saveBTN.revertAnimation()
                 makeSnack("تغییرات با موفقیت لحاظ شد.")
             }
             result.onFailure { e ->
-                viewModel.updateSyncState(false)
+                setSyncingState(false)
                 saveBTN.revertAnimation()
                 when (e) {
                     is UnknownHostException -> {

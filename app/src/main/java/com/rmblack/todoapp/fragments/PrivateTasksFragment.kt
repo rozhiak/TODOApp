@@ -99,7 +99,6 @@ class PrivateTasksFragment : TasksFragment() {
 
     private fun createPrivateTasksAdapter(): PrivateTasksAdapter = PrivateTasksAdapter(
         viewLifecycleOwner.lifecycleScope,
-        viewModel.isSyncing,
         viewModel,
         this,
         requireActivity()

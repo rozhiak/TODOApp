@@ -19,6 +19,8 @@ import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.models.server.success.Tasks
 import com.rmblack.todoapp.webservice.repository.ApiRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Response
 import java.lang.Exception
 
@@ -27,6 +29,16 @@ const val CONNECTION_ERROR_CODE = 0
 const val UNKNOWN_ERROR_CODE = 7
 
 class Utilities {
+
+    object SharedObject {
+        private val _isSyncing: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        val isSyncing: StateFlow<Boolean>
+            get() = _isSyncing
+
+        fun setSyncingState(isSyncing: Boolean) {
+            _isSyncing.value = isSyncing
+        }
+    }
 
     companion object {
         fun calculateDateDistance(calendarDate: PersianCalendar): Double {

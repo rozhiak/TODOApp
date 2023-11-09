@@ -13,11 +13,9 @@ import com.rmblack.todoapp.databinding.SharedTasksRvItemBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 
 class SharedTaskHolder(
     scope: CoroutineScope,
-    isSyncing: StateFlow<Boolean>,
     private val binding: SharedTasksRvItemBinding,
     private val viewModel: TasksViewModel,
     private val activity: Activity,
@@ -25,7 +23,6 @@ class SharedTaskHolder(
     recyclerView: RecyclerView
 ) : TaskHolder(
     scope,
-    isSyncing,
     editClickListener,
     recyclerView,
     binding
@@ -66,7 +63,6 @@ class SharedTaskHolder(
 
 class SharedTasksAdapter(
     private val scope: CoroutineScope,
-    private val isSyncing: StateFlow<Boolean>,
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity
@@ -84,7 +80,6 @@ class SharedTasksAdapter(
             val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
             SharedTaskHolder(
                 scope,
-                isSyncing,
                 binding,
                 viewModel,
                 activity,

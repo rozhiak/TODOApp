@@ -19,10 +19,10 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.TaskAdapter
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.utils.Utilities.SharedObject.isSyncing
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import com.suke.widget.SwitchButton
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 const val TASK = 0
@@ -31,7 +31,6 @@ const val REMAINING_DAYS_LABLE = 1
 
 open class TaskHolder(
     private val scope: CoroutineScope?,
-    private val isSyncing: StateFlow<Boolean>,
     private val editClickListener: EditClickListener,
     private val recyclerView: RecyclerView,
     binding: ViewBinding,

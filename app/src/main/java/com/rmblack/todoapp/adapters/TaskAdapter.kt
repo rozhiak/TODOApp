@@ -31,7 +31,7 @@ open class TaskAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-        return TaskHolder(null, MutableStateFlow(false), editClickListener, recyclerView, binding)
+        return TaskHolder(null, editClickListener, recyclerView, binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {}

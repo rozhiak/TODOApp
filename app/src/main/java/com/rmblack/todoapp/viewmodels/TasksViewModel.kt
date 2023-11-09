@@ -23,9 +23,6 @@ import java.util.UUID
 
 open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
 
-    private val _isSyncing = MutableStateFlow(false)
-    val isSyncing get() = _isSyncing.asStateFlow()
-
     private val apiRepository = ApiRepository()
 
     val taskRepository = TaskRepository.get()
@@ -46,12 +43,6 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
 
     private var deleteJob: Job? = null
     //End of server properties
-
-    fun updateSyncState(state: Boolean) {
-        _isSyncing.update {
-            state
-        }
-    }
 
     fun setPreviouslyExpandedID(id: UUID?) {
         _lastExpandedID = id

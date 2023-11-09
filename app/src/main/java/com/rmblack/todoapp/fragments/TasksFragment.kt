@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +19,8 @@ import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
 import com.rmblack.todoapp.utils.Utilities
-import com.rmblack.todoapp.viewmodels.MainViewModel
+import com.rmblack.todoapp.utils.Utilities.SharedObject.isSyncing
+import com.rmblack.todoapp.utils.Utilities.SharedObject.setSyncingState
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
@@ -29,8 +29,6 @@ import java.util.UUID
 const val LAST_EXPANDED_ID_KEY = "LAST_EXPANDED_ID_KEY"
 
 open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
-
-    private val activityViewModel: MainViewModel by activityViewModels()
 
     protected lateinit var viewModel: TasksViewModel
 
@@ -62,16 +60,6 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
         super.onViewCreated(view, savedInstanceState)
         setUpSwipeToDelete()
         setUpRefreshLayout()
-        setUpSyncing()
-    }
-
-    private fun setUpSyncing() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            activityViewModel.isSyncing.collect {
-                viewModel.updateSyncState(it)
-                binding.refreshLayout.isRefreshing = it
-            }
-        }
     }
 
     private fun setUpRefreshLayout() {
@@ -82,24 +70,28 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
         } else {
             binding.refreshLayout.setOnRefreshListener {
                 viewLifecycleOwner.lifecycleScope.launch {
+                    setSyncingState(true)
                     refreshConnection()
                     syncTasks(userToken)
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            isSyncing.collect {
+                binding.refreshLayout.isRefreshing = it
+            }
+        }
     }
 
     private suspend fun syncTasks(userToken: String) {
-        viewModel.updateSyncState(true)
         val response = Utilities.syncTasksWithServer(userToken, requireContext())
         response.onSuccess {
-            viewModel.updateSyncState(false)
-            binding.refreshLayout.isRefreshing = false
+            setSyncingState(false)
         }
 
         response.onFailure { e ->
-            viewModel.updateSyncState(false)
-            binding.refreshLayout.isRefreshing = false
+            setSyncingState(false)
             if (e is UnknownHostException) {
                 Utilities.makeWarningSnack(
                     requireActivity(),

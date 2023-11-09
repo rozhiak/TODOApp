@@ -13,11 +13,9 @@ import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.viewmodels.TasksViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 
 class PrivateTaskHolder(
     scope: CoroutineScope,
-    isSyncing: StateFlow<Boolean>,
     private val binding: PrivateTasksRvItemBinding,
     private val viewModel: TasksViewModel,
     private val activity: Activity,
@@ -25,7 +23,6 @@ class PrivateTaskHolder(
     recyclerView: RecyclerView,
 ) : TaskHolder(
     scope,
-    isSyncing,
     editClickListener,
     recyclerView,
     binding
@@ -65,7 +62,6 @@ class PrivateTaskHolder(
 
 class PrivateTasksAdapter(
     private val scope: CoroutineScope,
-    private val isSyncing: StateFlow<Boolean>,
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity
@@ -80,7 +76,7 @@ class PrivateTasksAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-            PrivateTaskHolder(scope, isSyncing, binding, viewModel ,activity ,editClickListener, recyclerView)
+            PrivateTaskHolder(scope, binding, viewModel ,activity ,editClickListener, recyclerView)
         }
     }
 

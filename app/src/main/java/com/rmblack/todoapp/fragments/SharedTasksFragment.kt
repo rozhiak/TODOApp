@@ -19,7 +19,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
-import com.rmblack.todoapp.adapters.PrivateTasksAdapter
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
@@ -207,7 +206,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun createSharedTasksAdapter() = SharedTasksAdapter(
-        viewLifecycleOwner.lifecycleScope, viewModel.isSyncing, viewModel, this, requireActivity()
+        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity()
     )
 
     class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :

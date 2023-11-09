@@ -17,6 +17,7 @@ import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.utils.Utilities.SharedObject.isSyncing
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.launch
 
@@ -86,6 +87,12 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
         binding.disconnectProgressBtn.setOnClickListener {
             viewModel.setDisconnectLoadingState(true)
             viewModel.disconnectUserFromSharedList(this)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            isSyncing.collect {
+                binding.disconnectProgressBtn.isClickable = !it
+            }
         }
     }
 

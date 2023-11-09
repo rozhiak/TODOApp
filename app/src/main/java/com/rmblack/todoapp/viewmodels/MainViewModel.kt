@@ -12,10 +12,8 @@ import com.rmblack.todoapp.models.server.requests.UpdateUserRequest
 import com.rmblack.todoapp.models.server.success.User
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
+import com.rmblack.todoapp.utils.Utilities.SharedObject.setSyncingState
 import com.rmblack.todoapp.webservice.repository.ApiRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import kotlin.Result.Companion.failure
@@ -31,16 +29,6 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
     private val taskRepository = TaskRepository.get()
 
     private val apiRepository = ApiRepository()
-
-    private val _isSyncing = MutableStateFlow(false)
-
-    val isSyncing get() = _isSyncing.asStateFlow()
-
-    fun updateSyncState(state: Boolean) {
-        _isSyncing.update {
-            state
-        }
-    }
 
     fun removeNoTitleTasks() {
         viewModelScope.launch {
@@ -111,10 +99,10 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
             viewModelScope.launch {
                 val res = Utilities.syncTasksWithServer(user.token, context)
                 res.onSuccess {
-                    updateSyncState(false)
+                    setSyncingState(false)
                 }
                 res.onFailure {
-                    updateSyncState(false)
+                    setSyncingState(false)
                 }
             }
         }
