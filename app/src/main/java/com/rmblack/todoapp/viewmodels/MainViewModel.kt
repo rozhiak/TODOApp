@@ -93,11 +93,11 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
         }
     }
 
-    fun syncTasksWithServer(context: Context) {
+    fun syncTasksWithServer() {
         val user = getUserFromSharedPreferences()
         if (user != null) {
             viewModelScope.launch {
-                val res = Utilities.syncTasksWithServer(user.token, context)
+                val res = Utilities.syncTasksWithServer(user.token, sharedPreferencesManager)
                 res.onSuccess {
                     setSyncingState(false)
                 }

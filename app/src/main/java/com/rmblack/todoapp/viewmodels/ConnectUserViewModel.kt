@@ -20,7 +20,7 @@ import java.lang.Exception
 import java.net.UnknownHostException
 
 class ConnectUserViewModel(
-    private val sharedPreferencesManager: SharedPreferencesManager
+    val sharedPreferencesManager: SharedPreferencesManager
 ) : ViewModel() {
 
     private val taskRepository = TaskRepository.get()

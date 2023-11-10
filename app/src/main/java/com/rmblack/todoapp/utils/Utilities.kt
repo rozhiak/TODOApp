@@ -108,11 +108,13 @@ class Utilities {
         }
 
         // before using this function , check user login state
-        suspend fun syncTasksWithServer(token: String, context: Context): Result<Unit> {
+        suspend fun syncTasksWithServer(
+            token: String,
+            sharedPreferencesManager: SharedPreferencesManager
+        ): Result<Unit> {
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
 
-            val sharedPreferencesManager = SharedPreferencesManager(context)
             var failedAddRequests = sharedPreferencesManager.getCashedAddRequests()
             var failedEditRequests = sharedPreferencesManager.getCashedEditRequests()
             var failedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()

@@ -85,7 +85,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     private suspend fun syncTasks(userToken: String) {
-        val response = Utilities.syncTasksWithServer(userToken, requireContext())
+        val response = Utilities.syncTasksWithServer(userToken, viewModel.sharedPreferencesManager)
         response.onSuccess {
             setSyncingState(false)
         }

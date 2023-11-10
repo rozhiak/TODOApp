@@ -47,9 +47,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPreferencesManager = SharedPreferencesManager(this)
+    val sharedPreferencesManager = SharedPreferencesManager(this)
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(
             this, MainViewModelFactory(sharedPreferencesManager)
         )[MainViewModel::class.java]
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         val user = viewModel.getUserFromSharedPreferences()
         if (user?.token != null) {
             setSyncingState(true)
-            viewModel.syncTasksWithServer(this)
+            viewModel.syncTasksWithServer()
         }
     }
 
@@ -161,7 +162,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.getUserFromSharedPreferences()?.let { user ->
             setSyncingState(true)
             val result = Utilities.syncTasksWithServer(
-                user.token, this@MainActivity
+                user.token,
+                sharedPreferencesManager
             )
             result.onSuccess {
                 setSyncingState(false)
