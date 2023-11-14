@@ -15,14 +15,7 @@ data class EditTaskRequest(
 ) {
     fun convertToServerEditModel(): ServerEditTaskRequest {
         return ServerEditTaskRequest(
-            token,
-            taskId,
-            title,
-            description,
-            deadline,
-            isUrgent,
-            isDone,
-            isShared
+            token, taskId, title, description, deadline, isUrgent, isDone, isShared
         )
     }
 }

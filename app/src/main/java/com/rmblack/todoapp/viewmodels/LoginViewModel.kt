@@ -102,8 +102,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     fun newUser(phoneNumber: String, name: String) {
         val newUserRequest = NewUserRequest(
-            phoneNumber,
-            name
+            phoneNumber, name
         )
 
         customScope.launch {
@@ -129,8 +128,7 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
 
     fun validateUser(code: String) {
         val validateUserRequest = ValidateUserRequest(
-            verifyingPhone,
-            code.toInt()
+            verifyingPhone, code.toInt()
         )
 
         customScope.launch {

@@ -8,8 +8,7 @@ import java.util.UUID
 @Entity
 data class Task(
     var title: String,
-    @PrimaryKey
-    val id: UUID,
+    @PrimaryKey val id: UUID,
     val description: String,
     val addedTime: PersianCalendar,
     val deadLine: PersianCalendar,
@@ -19,5 +18,5 @@ data class Task(
     val composer: String,
     val groupId: String,
     val serverID: String = "",
-    var detailsVisibility : Boolean
+    var detailsVisibility: Boolean
 )

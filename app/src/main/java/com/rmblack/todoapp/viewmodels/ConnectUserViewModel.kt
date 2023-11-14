@@ -62,8 +62,7 @@ class ConnectUserViewModel(
     fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
         val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let { token ->
             ConnectUserRequest(
-                token,
-                phoneNumber
+                token, phoneNumber
             )
         }
 

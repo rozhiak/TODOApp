@@ -42,9 +42,7 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentConnectUserBinding.inflate(inflater, container, false)
@@ -56,8 +54,7 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         fragmentManager = parentFragmentManager
 
         viewModel = ViewModelProvider(
-            requireActivity(),
-            ConnectUserViewModelFactory(sharedPreferencesManager)
+            requireActivity(), ConnectUserViewModelFactory(sharedPreferencesManager)
         )[ConnectUserViewModel::class.java]
 
         return binding.root
@@ -150,8 +147,7 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
     override fun onConnectUserSuccess() {
         val job = CoroutineScope(Dispatchers.Default).launch {
             val response = Utilities.syncTasksWithServer(
-                viewModel.getUserToken(),
-                viewModel.sharedPreferencesManager
+                viewModel.getUserToken(), viewModel.sharedPreferencesManager
             )
             response.onSuccess {
                 activity.runOnUiThread {
@@ -206,17 +202,13 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
             404 -> {
                 Utilities.makeWarningSnack(
-                    requireActivity(),
-                    binding.root,
-                    "شماره همراه مورد نظر شما یافت نشد."
+                    requireActivity(), binding.root, "شماره همراه مورد نظر شما یافت نشد."
                 )
             }
 
             403 -> {
                 Utilities.makeWarningSnack(
-                    requireActivity(),
-                    binding.root,
-                    "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
+                    requireActivity(), binding.root, "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
                 )
             }
 

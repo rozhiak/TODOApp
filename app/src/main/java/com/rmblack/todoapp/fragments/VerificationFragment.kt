@@ -33,15 +33,13 @@ class VerificationFragment : Fragment() {
     private lateinit var viewModel: LoginViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentVerificationBinding.inflate(inflater, container, false)
 
         val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            requireActivity(),
-            LoginFragment.LoginViewModelFactory(sharedPreferencesManager)
+            requireActivity(), LoginFragment.LoginViewModelFactory(sharedPreferencesManager)
         )[LoginViewModel::class.java]
 
         return binding.root
@@ -55,19 +53,17 @@ class VerificationFragment : Fragment() {
     }
 
     private fun onBackPressed() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            requireActivity(),
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     findNavController().navigateUp()
                 }
-            }
-        )
+            })
     }
 
     private fun setLoadingState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.verificationFragmentLoading.collect {isLoading ->
+            viewModel.verificationFragmentLoading.collect { isLoading ->
                 if (isLoading) {
                     showProgressing()
                 } else {
@@ -112,16 +108,18 @@ class VerificationFragment : Fragment() {
 
     private fun collectVerifyRequestCode() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.verifyRequestCode.collect {code ->
+            viewModel.verifyRequestCode.collect { code ->
                 when (code) {
                     200 -> {
                         val intent = Intent(requireContext(), MainActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
                     }
+
                     404 -> {
                         binding.tvError.text = "◌ حساب کاربر یافت نشد."
                     }
+
                     CONNECTION_ERROR_CODE -> {
                         binding.tvError.text = "◌ مشکل در اتصال به اینترنت"
                     }

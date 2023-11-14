@@ -36,8 +36,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun insertCashedAddRequest(request: AddTaskRequest) {
-        val existingList: MutableList<AddTaskRequest> =
-            getCashedAddRequests().toMutableList()
+        val existingList: MutableList<AddTaskRequest> = getCashedAddRequests().toMutableList()
 
         existingList.add(request)
 
@@ -46,8 +45,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun removeCashedAddRequest(request: AddTaskRequest) {
-        val existingList: MutableList<AddTaskRequest> =
-            getCashedAddRequests().toMutableList()
+        val existingList: MutableList<AddTaskRequest> = getCashedAddRequests().toMutableList()
 
         existingList.remove(request)
 
@@ -67,8 +65,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun insertCashedDeleteRequest(request: DeleteTaskRequest) {
-        val existingList: MutableList<DeleteTaskRequest> =
-            getCashedDeleteRequests().toMutableList()
+        val existingList: MutableList<DeleteTaskRequest> = getCashedDeleteRequests().toMutableList()
 
         existingList.add(request)
 
@@ -77,8 +74,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun removeCashedDeleteRequest(request: DeleteTaskRequest) {
-        val existingList: MutableList<DeleteTaskRequest> =
-            getCashedDeleteRequests().toMutableList()
+        val existingList: MutableList<DeleteTaskRequest> = getCashedDeleteRequests().toMutableList()
 
         existingList.remove(request)
 
@@ -98,8 +94,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun insertCashedEditRequest(request: EditTaskRequest) {
-        val existingList: MutableList<EditTaskRequest> =
-            getCashedEditRequests().toMutableList()
+        val existingList: MutableList<EditTaskRequest> = getCashedEditRequests().toMutableList()
 
         existingList.add(request)
 
@@ -108,8 +103,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     fun removeCashedEditRequest(request: EditTaskRequest) {
-        val existingList: MutableList<EditTaskRequest> =
-            getCashedEditRequests().toMutableList()
+        val existingList: MutableList<EditTaskRequest> = getCashedEditRequests().toMutableList()
 
         existingList.remove(request)
 

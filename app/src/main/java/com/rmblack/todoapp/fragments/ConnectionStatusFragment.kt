@@ -35,9 +35,7 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentConnectionStatusBinding.inflate(inflater, container, false)
@@ -141,9 +139,7 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
 
             403 -> {
                 Utilities.makeWarningSnack(
-                    activity,
-                    binding.root,
-                    "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
+                    activity, binding.root, "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
                 )
             }
         }

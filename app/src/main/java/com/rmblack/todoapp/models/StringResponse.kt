@@ -1,5 +1,5 @@
 package com.rmblack.todoapp.models
 
-class StringResponse (
+class StringResponse(
     message: String
 )

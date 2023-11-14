@@ -12,7 +12,6 @@ import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities.Companion.calculateDateDistance
 import com.rmblack.todoapp.viewmodels.TasksViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 
 open class TaskAdapter(
     private val viewModel: TasksViewModel,
@@ -54,8 +53,7 @@ open class TaskAdapter(
 }
 
 class TaskDiffCallback(
-    private val oldTasks: List<Task?>,
-    private val newTasks: List<Task?>
+    private val oldTasks: List<Task?>, private val newTasks: List<Task?>
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldTasks.size
     override fun getNewListSize(): Int = newTasks.size
@@ -85,8 +83,10 @@ class TaskDiffCallback(
                 val old = oldTasks[oldItemPosition]
                 val new = newTasks[oldItemPosition]
                 if (old == null && new == null) {
-                    val dis1 = oldTasks[oldItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
-                    val dis2 = newTasks[newItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
+                    val dis1 =
+                        oldTasks[oldItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
+                    val dis2 =
+                        newTasks[newItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
                     val dis1InDay = dis1?.let { kotlin.math.floor(it).toInt() }
                     val dis2InDay = dis2?.let { kotlin.math.floor(it).toInt() }
                     return dis1InDay == dis2InDay

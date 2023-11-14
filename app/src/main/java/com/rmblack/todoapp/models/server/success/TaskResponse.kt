@@ -5,8 +5,7 @@ import com.rmblack.todoapp.models.local.Task
 import java.util.UUID
 
 data class TaskResponse(
-    val message: String,
-    val data: ServerTask
+    val message: String, val data: ServerTask
 )
 
 data class ServerTask(

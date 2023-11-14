@@ -37,9 +37,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val res = super.onCreateView(inflater, container, savedInstanceState)
         binding.tasksRv.adapter = createSharedTasksAdapter()

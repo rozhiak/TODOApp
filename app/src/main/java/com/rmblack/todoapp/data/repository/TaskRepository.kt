@@ -14,13 +14,12 @@ import java.util.UUID
 private const val DATABASE_NAME = "crime-database"
 
 class TaskRepository private constructor(
-    context: Context,
-    private val coroutineScope: CoroutineScope = GlobalScope
+    context: Context, private val coroutineScope: CoroutineScope = GlobalScope
 ) {
 
     private val database: TaskDatabase = Room.databaseBuilder(
-            context.applicationContext, TaskDatabase::class.java, DATABASE_NAME
-        ).build()
+        context.applicationContext, TaskDatabase::class.java, DATABASE_NAME
+    ).build()
 
     suspend fun getTasks(): List<Task> = database.taskDao().getTasks()
 

@@ -39,12 +39,10 @@ class ApiRepository {
 
     companion object {
         private var apiService: ApiService? = null
-        private fun getInstance() : ApiService {
+        private fun getInstance(): ApiService {
             if (apiService == null) {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://amirh.pythonanywhere.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
+                val retrofit = Retrofit.Builder().baseUrl("https://amirh.pythonanywhere.com/")
+                    .addConverterFactory(GsonConverterFactory.create()).build()
                 apiService = retrofit.create(ApiService::class.java)
             }
             return apiService!!

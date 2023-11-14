@@ -22,18 +22,13 @@ class PrivateTaskHolder(
     editClickListener: EditClickListener,
     recyclerView: RecyclerView,
 ) : TaskHolder(
-    scope,
-    editClickListener,
-    recyclerView,
-    binding
+    scope, editClickListener, recyclerView, binding
 ) {
     fun bind(
-        tasks: List<Task?>,
-        pos: Int,
-        adapter: TaskAdapter
+        tasks: List<Task?>, pos: Int, adapter: TaskAdapter
     ) {
         val task = tasks[pos]
-        task?.let {notNullTask ->
+        task?.let { notNullTask ->
             binding.apply {
                 configUrgentSwitch(viewModel, notNullTask, urgentSwitch)
                 configDoneCheckBox(viewModel, notNullTask, doneCheckBox)
@@ -76,7 +71,7 @@ class PrivateTasksAdapter(
             RemainingDaysLableHolder(binding)
         } else {
             val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
-            PrivateTaskHolder(scope, binding, viewModel ,activity ,editClickListener, recyclerView)
+            PrivateTaskHolder(scope, binding, viewModel, activity, editClickListener, recyclerView)
         }
     }
 
@@ -84,7 +79,7 @@ class PrivateTasksAdapter(
         if (holder is PrivateTaskHolder) {
             holder.bind(viewModel.tasks.value, position, this)
         } else if (holder is RemainingDaysLableHolder && position + 1 < viewModel.tasks.value.size) {
-            viewModel.tasks.value[position+1]?.let { holder.bind(it.deadLine) }
+            viewModel.tasks.value[position + 1]?.let { holder.bind(it.deadLine) }
         }
     }
 }

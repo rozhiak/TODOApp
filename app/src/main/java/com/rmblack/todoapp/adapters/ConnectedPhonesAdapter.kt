@@ -13,7 +13,8 @@ class ConnectedPhoneHolder(
     }
 }
 
-class ConnectedPhonesAdapter(private val phones: List<String>) : RecyclerView.Adapter<ConnectedPhoneHolder>() {
+class ConnectedPhonesAdapter(private val phones: List<String>) :
+    RecyclerView.Adapter<ConnectedPhoneHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConnectedPhoneHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ConnectedPhoneRvItemBinding.inflate(inflater, parent, false)

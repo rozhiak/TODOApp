@@ -1,8 +1,7 @@
 package com.rmblack.todoapp.models.server.success
 
 data class UpdateUserResponse(
-    val message: String,
-    val data: UserData
+    val message: String, val data: UserData
 )
 
 data class UserData(

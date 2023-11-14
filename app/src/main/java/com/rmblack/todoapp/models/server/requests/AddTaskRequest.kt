@@ -15,14 +15,7 @@ data class AddTaskRequest(
 ) {
     fun convertToServerAddModel(): ServerAddTaskRequest {
         return ServerAddTaskRequest(
-            token,
-            title,
-            addedTime,
-            description,
-            deadline,
-            isUrgent,
-            isDone,
-            isShared
+            token, title, addedTime, description, deadline, isUrgent, isDone, isShared
         )
     }
 }

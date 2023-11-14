@@ -1,5 +1,5 @@
 package com.rmblack.todoapp.models.server.requests
 
-data class DisconnectUserRequest (
+data class DisconnectUserRequest(
     val token: String
 )

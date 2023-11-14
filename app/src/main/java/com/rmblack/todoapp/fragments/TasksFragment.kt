@@ -165,8 +165,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     private fun performDeletion(
-        deletedTask: Task,
-        position: Int
+        deletedTask: Task, position: Int
     ): DeleteTaskRequest? {
         val deleteReq = viewModel.makeDeleteRequest(deletedTask.serverID)
         if (deleteReq != null) {
@@ -179,20 +178,17 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     private fun makeSnack(
-        deletedTask: Task,
-        position: Int,
-        deleteReq: DeleteTaskRequest?
+        deletedTask: Task, position: Int, deleteReq: DeleteTaskRequest?
     ) {
-        val snackBar =
-            Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
-                viewModel.insertTask(deletedTask)
-                binding.tasksRv.post {
-                    binding.tasksRv.smoothScrollToPosition(position)
-                }
-                if (deleteReq != null) {
-                    viewModel.removeDeleteRequest(deleteReq)
-                }
+        val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
+            viewModel.insertTask(deletedTask)
+            binding.tasksRv.post {
+                binding.tasksRv.smoothScrollToPosition(position)
             }
+            if (deleteReq != null) {
+                viewModel.removeDeleteRequest(deleteReq)
+            }
+        }
 
         snackBar.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
@@ -215,9 +211,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     protected fun setUpForNewOrEditTask(
-        tasks: List<Task?>,
-        editedTaskId: UUID?,
-        isNewTask: Boolean?
+        tasks: List<Task?>, editedTaskId: UUID?, isNewTask: Boolean?
     ) {
         val editedTaskIndex = tasks.indexOfFirst { (it?.id ?: 0) == editedTaskId }
         if (editedTaskIndex != -1) {

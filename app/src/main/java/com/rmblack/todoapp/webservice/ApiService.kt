@@ -28,7 +28,7 @@ interface ApiService {
 
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/new/")
-    suspend fun newTask(@Body task: ServerAddTaskRequest) : Response<TaskResponse>
+    suspend fun newTask(@Body task: ServerAddTaskRequest): Response<TaskResponse>
 
     @Headers("Content-Type: application/json", "accept: application/json")
     @POST("tasks/edit/")

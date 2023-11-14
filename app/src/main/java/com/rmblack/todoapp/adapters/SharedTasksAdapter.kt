@@ -22,18 +22,13 @@ class SharedTaskHolder(
     editClickListener: EditClickListener,
     recyclerView: RecyclerView
 ) : TaskHolder(
-    scope,
-    editClickListener,
-    recyclerView,
-    binding
+    scope, editClickListener, recyclerView, binding
 ) {
     fun bind(
-        tasks: List<Task?>,
-        pos: Int,
-        adapter: TaskAdapter
+        tasks: List<Task?>, pos: Int, adapter: TaskAdapter
     ) {
         val task = tasks[pos]
-        task?.let {notNullTask ->
+        task?.let { notNullTask ->
             binding.apply {
                 configUrgentSwitch(viewModel, notNullTask, urgentSwitch)
                 configDoneCheckBox(viewModel, notNullTask, doneCheckBox)
@@ -79,12 +74,7 @@ class SharedTasksAdapter(
         } else {
             val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
             SharedTaskHolder(
-                scope,
-                binding,
-                viewModel,
-                activity,
-                editClickListener,
-                recyclerView
+                scope, binding, viewModel, activity, editClickListener, recyclerView
             )
         }
     }

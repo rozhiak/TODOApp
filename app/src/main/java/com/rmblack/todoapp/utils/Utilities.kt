@@ -1,7 +1,6 @@
 package com.rmblack.todoapp.utils
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
@@ -109,8 +108,7 @@ class Utilities {
 
         // before using this function , check user login state
         suspend fun syncTasksWithServer(
-            token: String,
-            sharedPreferencesManager: SharedPreferencesManager
+            token: String, sharedPreferencesManager: SharedPreferencesManager
         ): Result<Unit> {
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
