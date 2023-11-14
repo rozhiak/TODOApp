@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     val sharedPreferencesManager = SharedPreferencesManager(this)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(
             this, MainViewModelFactory(sharedPreferencesManager)
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         syncTasks()
-        setUpUI()
+        setNavigationBarColor()
         setFragmentContainer(savedInstanceState)
         showToday()
         setUpProfileBtn()
@@ -162,8 +161,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getUserFromSharedPreferences()?.let { user ->
             setSyncingState(true)
             val result = Utilities.syncTasksWithServer(
-                user.token,
-                sharedPreferencesManager
+                user.token, sharedPreferencesManager
             )
             result.onSuccess {
                 setSyncingState(false)
@@ -226,7 +224,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUpUI() {
+    private fun setNavigationBarColor() {
         when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> window.navigationBarColor =
                 ContextCompat.getColor(this, R.color.dark_bottom_navigation)
@@ -265,9 +263,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun wireUpBottomNav(
-        fm: FragmentManager,
-        sharedTasksFragment: Fragment,
-        privateTasksFragment: Fragment
+        fm: FragmentManager, sharedTasksFragment: Fragment, privateTasksFragment: Fragment
     ) {
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {

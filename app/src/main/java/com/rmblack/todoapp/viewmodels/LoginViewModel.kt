@@ -147,13 +147,9 @@ class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesMana
                         }
                     }
                     changeEntranceState(true)
-                    _verifyRequestCode.update {
-                        response.code()
-                    }
-                } else {
-                    _verifyRequestCode.update {
-                        response.code()
-                    }
+                }
+                _verifyRequestCode.update {
+                    response.code()
                 }
                 updateVerificationLoadingState(false)
             } catch (e: Exception) {

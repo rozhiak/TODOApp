@@ -125,6 +125,10 @@ class VerificationFragment : Fragment() {
                     CONNECTION_ERROR_CODE -> {
                         binding.tvError.text = "◌ مشکل در اتصال به اینترنت"
                     }
+                    // There would be a case for when otp code is not entered correctly.
+                    //CASE -> {
+                    //    binding.tvError.text = "◌ کد وارد شده صحیح نیست"
+                    //}
                 }
                 viewModel.resetVerifyRequestCode()
             }
