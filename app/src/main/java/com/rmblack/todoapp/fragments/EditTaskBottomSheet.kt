@@ -44,7 +44,7 @@ private const val PRIMARY_TASK_KEY = "PRIMARY_TASK_KEY"
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var context: Context
-    
+
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
         EditTaskViewModelFactory(UUID.fromString(taskId))
@@ -60,9 +60,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     override fun getTheme(): Int = R.style.Theme_NoWiredStrapInNavigationBar
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEditTaskBottomSheetBinding.inflate(inflater, container, false)
         context = requireContext()
@@ -148,13 +146,17 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             deadlineTv.setOnClickListener {
-                saveTitleAndDescription()
+                viewModel.saveTitleAndDescription(
+                    binding.etTitle.text.toString(), binding.etDescription.text.toString()
+                )
                 showDatePicker()
                 resetCursorsPosition()
             }
 
             calendarIc.setOnClickListener {
-                saveTitleAndDescription()
+                viewModel.saveTitleAndDescription(
+                    binding.etTitle.text.toString(), binding.etDescription.text.toString()
+                )
                 showDatePicker()
                 resetCursorsPosition()
             }
@@ -183,31 +185,20 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
 
-        val picker = PersianDatePickerDialog(context)
-            .setPositiveButtonString("تایید")
-            .setNegativeButton("لغو")
-            .setTodayButton("برو به امروز")
-            .setTodayButtonVisible(true)
-            .setInitDate(persianPickerDate, true)
-            .setActionTextColor(Color.parseColor("#5DD0A3"))
+        val picker = PersianDatePickerDialog(context).setPositiveButtonString("تایید")
+            .setNegativeButton("لغو").setTodayButton("برو به امروز").setTodayButtonVisible(true)
+            .setInitDate(persianPickerDate, true).setActionTextColor(Color.parseColor("#5DD0A3"))
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
             .setTitleColor(ResourcesCompat.getColor(resources, R.color.title_black, null))
             .setBackgroundColor(
                 ResourcesCompat.getColor(
-                    resources,
-                    R.color.bottom_sheet_back_color,
-                    null
+                    resources, R.color.bottom_sheet_back_color, null
                 )
-            )
-            .setPickerBackgroundColor(
+            ).setPickerBackgroundColor(
                 ResourcesCompat.getColor(
-                    resources,
-                    R.color.bottom_sheet_back_color,
-                    null
+                    resources, R.color.bottom_sheet_back_color, null
                 )
-            )
-            .setAllButtonsTextSize(16)
-            .setListener(object : PersianPickerListener {
+            ).setAllButtonsTextSize(16).setListener(object : PersianPickerListener {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {
                     viewModel.updateTask { oldTask ->
                         val newDeadline = PersianCalendar()
@@ -265,8 +256,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     binding.etTitle.hint = "عنوان"
                     binding.etTitle.setHintTextColor(
                         ContextCompat.getColor(
-                            context,
-                            R.color.hint_text_color
+                            context, R.color.hint_text_color
                         )
                     )
                 }
@@ -281,43 +271,28 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onPause() {
-        saveTitleAndDescription()
+        viewModel.saveTitleAndDescription(
+            binding.etTitle.text.toString(), binding.etDescription.text.toString()
+        )
         super.onPause()
-    }
-
-    private fun saveTitleAndDescription() {
-        if (binding.etTitle.text?.equals(viewModel.task.value?.title) == false ||
-            binding.etDescription.text?.equals(viewModel.task.value?.description) == false
-        ) {
-            viewModel.updateTask { oldTask ->
-                oldTask.copy(
-                    title = binding.etTitle.text.toString(),
-                    description = binding.etDescription.text.toString(),
-                )
-            }
-        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (binding.etTitle.text?.isNotBlank() == true || binding.etTitle.text?.isNotEmpty() == true) {
             setFragmentResult(
-                REQUEST_KEY_ID_PRIVATE,
-                bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)
+                REQUEST_KEY_ID_PRIVATE, bundleOf(BUNDLE_KEY_ID_PRIVATE to viewModel.task.value?.id)
             )
             setFragmentResult(
-                REQUEST_KEY_ID_SHARED,
-                bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
+                REQUEST_KEY_ID_SHARED, bundleOf(BUNDLE_KEY_ID_SHARED to viewModel.task.value?.id)
             )
 
             val isNew = arguments?.getBoolean("isNewTask")
             setFragmentResult(
-                REQUEST_KEY_IS_NEW_PRIVATE,
-                bundleOf(BUNDLE_KEY_IS_NEW_PRIVATE to isNew)
+                REQUEST_KEY_IS_NEW_PRIVATE, bundleOf(BUNDLE_KEY_IS_NEW_PRIVATE to isNew)
             )
             setFragmentResult(
-                REQUEST_KEY_IS_NEW_SHARED,
-                bundleOf(BUNDLE_KEY_IS_NEW_SHARED to isNew)
+                REQUEST_KEY_IS_NEW_SHARED, bundleOf(BUNDLE_KEY_IS_NEW_SHARED to isNew)
             )
         }
     }

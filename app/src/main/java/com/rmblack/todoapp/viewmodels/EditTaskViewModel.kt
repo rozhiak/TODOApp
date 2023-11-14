@@ -34,6 +34,20 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
         }
     }
 
+    fun saveTitleAndDescription(newTitle: String, newDes: String) {
+        val newTitleTrimmed = newTitle.trimEnd()
+        val newDescriptionTrimmed = newDes.trimEnd()
+
+        if (newTitleTrimmed != task.value?.title || newDescriptionTrimmed != task.value?.description) {
+            updateTask { oldTask ->
+                oldTask.copy(
+                    title = newTitleTrimmed,
+                    description = newDescriptionTrimmed,
+                )
+            }
+        }
+    }
+
     fun updateTask(onUpdate: (Task) -> Task) {
         _task.update { oldTask ->
             oldTask?.let {
