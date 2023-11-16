@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        syncTasks()
+        viewModel.syncTasks()
         setNavigationBarColor()
         setFragmentContainer(savedInstanceState)
         showToday()
@@ -72,14 +72,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(FRAGMENT_ID_KEY, binding.bottomNavigationView.selectedItemId)
-    }
-
-    private fun syncTasks() {
-        val user = viewModel.getUserFromSharedPreferences()
-        if (user?.token != null) {
-            setSyncingState(true)
-            viewModel.syncTasksWithServer()
-        }
     }
 
     private fun setUpProfileBtn() {

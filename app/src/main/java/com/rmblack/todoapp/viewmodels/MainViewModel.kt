@@ -92,7 +92,7 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
         }
     }
 
-    fun syncTasksWithServer() {
+    private fun syncTasksWithServer() {
         val user = getUserFromSharedPreferences()
         if (user != null) {
             viewModelScope.launch {
@@ -104,6 +104,14 @@ class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : Vi
                     setSyncingState(false)
                 }
             }
+        }
+    }
+
+    fun syncTasks() {
+        val user = getUserFromSharedPreferences()
+        if (user?.token != null) {
+            setSyncingState(true)
+            syncTasksWithServer()
         }
     }
 
