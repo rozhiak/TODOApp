@@ -5,13 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.rmblack.todoapp.adapters.viewholders.REMAINING_DAYS_LABLE
-import com.rmblack.todoapp.adapters.viewholders.TASK
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities.Companion.calculateDateDistance
 import com.rmblack.todoapp.viewmodels.TasksViewModel
+
+const val TASK_TYPE = 0
+
+const val REMAINING_DAYS_LABLE = 1
 
 open class TaskAdapter(
     private val viewModel: TasksViewModel,
@@ -37,7 +39,7 @@ open class TaskAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if (position >= 0 && viewModel.tasks.value[position] != null) {
-            TASK
+            TASK_TYPE
         } else {
             REMAINING_DAYS_LABLE
         }

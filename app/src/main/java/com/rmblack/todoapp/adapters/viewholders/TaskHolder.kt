@@ -25,10 +25,6 @@ import com.suke.widget.SwitchButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-const val TASK = 0
-
-const val REMAINING_DAYS_LABLE = 1
-
 open class TaskHolder(
     private val scope: CoroutineScope?,
     private val editClickListener: EditClickListener,
