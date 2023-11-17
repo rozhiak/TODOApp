@@ -46,11 +46,8 @@ open class TaskHolder(
         task: Task, editCard: CardView
     ) {
         editCard.setOnClickListener {
-            editClickListener.onEditClick(task)
-        }
-        scope?.launch {
-            isSyncing.collect {
-                editCard.isEnabled = !it
+            if (!isSyncing.value) {
+                editClickListener.onEditClick(task)
             }
         }
     }
