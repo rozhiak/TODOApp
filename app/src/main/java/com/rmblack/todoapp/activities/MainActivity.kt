@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 val (popupView, popupWindow) = createWindow()
 
                 setUserName(popupView)
-                changeUserName(popupView, popupWindow)
+                saveNewName(popupView, popupWindow)
 
                 popupWindow.elevation = 60.0f
                 popupWindow.showAsDropDown(binding.appBarLayout, 450, 25, 0)
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    private fun changeUserName(popupView: View, popupWindow: PopupWindow) {
+    private fun saveNewName(popupView: View, popupWindow: PopupWindow) {
         val saveBTN = popupView.findViewById<CircularProgressButton>(R.id.save_btn)
         saveBTN.setOnClickListener { saveBtnView ->
             hideKeyboard(saveBtnView)
