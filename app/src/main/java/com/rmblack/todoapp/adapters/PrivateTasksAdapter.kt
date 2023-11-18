@@ -40,10 +40,18 @@ class PrivateTaskHolder(
                     editCard,
                     deleteBtn
                 )
-                setUrgentUi(notNullTask, titleTv, doneCheckBox, rightColoredLine, urgentSwitch)
-                setDoneUi(notNullTask, doneCheckBox)
+                setUrgentUi(
+                    notNullTask,
+                    titleTv,
+                    doneCheckBox,
+                    rightColoredLine,
+                    urgentSwitch,
+                    activity.resources
+                )
                 setEachTaskClick(pos, adapter, rootCard, viewModel)
-                setTaskDetails(notNullTask, titleTv, deadLineTv, descriptionTv, descriptionLable)
+                setTaskDetails(
+                    notNullTask, titleTv, deadLineTv, descriptionTv, descriptionLable, doneCheckBox
+                )
                 setEditClick(notNullTask, editCard)
                 setBackground(viewModel, pos, rootConstraint, activity.resources)
                 setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity)

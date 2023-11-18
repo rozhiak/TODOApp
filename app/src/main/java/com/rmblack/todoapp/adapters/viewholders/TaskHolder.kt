@@ -3,7 +3,6 @@ package com.rmblack.todoapp.adapters.viewholders
 import android.app.Activity
 import android.content.res.ColorStateList
 import android.content.res.Resources
-import android.graphics.Color
 import android.view.View
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatImageView
@@ -62,26 +61,17 @@ open class TaskHolder(
         }
     }
 
-    fun setDoneUi(
-        task: Task, doneCheckBox: AppCompatCheckBox
-    ) {
-        doneCheckBox.isChecked = task.isDone
-        scope?.launch {
-            isSyncing.collect {
-                doneCheckBox.isEnabled = !it
-            }
-        }
-    }
-
     open fun setTaskDetails(
         task: Task,
         titleTv: AppCompatTextView,
         deadLineTv: AppCompatTextView,
         descriptionTv: AppCompatTextView,
-        descriptionLable: AppCompatTextView
+        descriptionLable: AppCompatTextView,
+        doneCheckBox: AppCompatCheckBox
     ) {
         titleTv.text = task.title
         deadLineTv.text = task.deadLine.shortDateString
+        doneCheckBox.isChecked = task.isDone
         if (task.description != "") {
             descriptionTv.text = task.description
             descriptionLable.text = "توضیحات:"
@@ -96,28 +86,25 @@ open class TaskHolder(
         titleTv: AppCompatTextView,
         doneCheckBox: AppCompatCheckBox,
         rightColoredLine: AppCompatImageView,
-        urgentSwitch: SwitchButton
+        urgentSwitch: SwitchButton,
+        resources: Resources
     ) {
         if (task.isUrgent) {
-            titleTv.setTextColor(Color.parseColor("#D05D8A"))
-            doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
-            rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#D05D8A"))
+            val urgentRed = ResourcesCompat.getColor(resources, R.color.urgent_red, null)
+            titleTv.setTextColor(urgentRed)
+            doneCheckBox.buttonTintList = ColorStateList.valueOf(urgentRed)
+            rightColoredLine.imageTintList = ColorStateList.valueOf(urgentRed)
             urgentSwitch.setEnableEffect(false)
             urgentSwitch.isChecked = true
             urgentSwitch.setEnableEffect(true)
         } else {
-            titleTv.setTextColor(Color.parseColor("#5DD0A3"))
-            doneCheckBox.buttonTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
-            rightColoredLine.imageTintList = ColorStateList.valueOf(Color.parseColor("#5DD0A3"))
+            val green = ResourcesCompat.getColor(resources, R.color.green, null)
+            titleTv.setTextColor(green)
+            doneCheckBox.buttonTintList = ColorStateList.valueOf(green)
+            rightColoredLine.imageTintList = ColorStateList.valueOf(green)
             urgentSwitch.setEnableEffect(false)
             urgentSwitch.isChecked = false
             urgentSwitch.setEnableEffect(true)
-        }
-
-        scope?.launch {
-            isSyncing.collect {
-                urgentSwitch.isEnabled = !it
-            }
         }
     }
 
@@ -154,6 +141,12 @@ open class TaskHolder(
             viewModel.updateUrgentState(isUrgent, task.id)
             viewModel.editTaskInServer(task.copy(isUrgent = isUrgent))
         }
+
+        scope?.launch {
+            isSyncing.collect {
+                urgentSwitch.isEnabled = !it
+            }
+        }
     }
 
     fun configDoneCheckBox(
@@ -163,6 +156,12 @@ open class TaskHolder(
             if (isDone != task.isDone) {
                 viewModel.updateDoneState(isDone, task.id)
                 viewModel.editTaskInServer(task.copy(isDone = isDone))
+            }
+        }
+
+        scope?.launch {
+            isSyncing.collect {
+                doneCheckBox.isEnabled = !it
             }
         }
     }
