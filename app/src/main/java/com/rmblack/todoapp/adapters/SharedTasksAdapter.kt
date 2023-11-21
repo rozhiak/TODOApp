@@ -56,8 +56,8 @@ class SharedTaskHolder(
                 setBackground(viewModel, pos, rootConstraint, activity.resources)
                 setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
-                composerNameTv.text = notNullTask.composer
                 setLongPress(notNullTask, rootCard)
+                composerNameTv.text = notNullTask.composer
             }
         }
     }
@@ -90,6 +90,7 @@ class SharedTasksAdapter(
         if (holder is SharedTaskHolder) {
             holder.bind(viewModel.tasks.value, position, this)
         } else if (holder is RemainingDaysLableHolder && position + 1 < viewModel.tasks.value.size) {
+            //Check if item is not the last position in rec
             viewModel.tasks.value[position + 1]?.let { holder.bind(it.deadLine) }
         }
     }

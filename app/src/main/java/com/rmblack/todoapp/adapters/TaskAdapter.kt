@@ -29,12 +29,14 @@ open class TaskAdapter(
         this.recyclerView = recyclerView
     }
 
+    // This method in derived classes have proper functionality but here is just have shambolic implementation.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = PrivateTasksRvItemBinding.inflate(inflater, parent, false)
         return TaskHolder(null, editClickListener, recyclerView, binding)
     }
 
+    // This method in derived classes have proper functionality but here is just have shambolic implementation.
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {}
 
     override fun getItemViewType(position: Int): Int {
@@ -88,16 +90,16 @@ class TaskDiffCallback(
                     val dis1 =
                         oldTasks[oldItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
                     val dis2 =
-                        newTasks[newItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
+                        newTasks[oldItemPosition + 1]?.let { calculateDateDistance(it.deadLine) }
                     val dis1InDay = dis1?.let { kotlin.math.floor(it).toInt() }
                     val dis2InDay = dis2?.let { kotlin.math.floor(it).toInt() }
                     return dis1InDay == dis2InDay
                 } else if (old == null || new == null) {
                     return false
                 } else {
-                    if (old.isDone != new.isDone) {
+                    if (old.id != new.id) {
                         return false
-                    } else if (old.id != new.id) {
+                    } else if (old.isDone != new.isDone) {
                         return false
                     } else if (old.isUrgent != new.isUrgent) {
                         return false

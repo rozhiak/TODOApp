@@ -1,6 +1,6 @@
 package com.rmblack.todoapp.adapters
 
-import android.app.Activity
+import  android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -86,6 +86,7 @@ class PrivateTasksAdapter(
         if (holder is PrivateTaskHolder) {
             holder.bind(viewModel.tasks.value, position, this)
         } else if (holder is RemainingDaysLableHolder && position + 1 < viewModel.tasks.value.size) {
+            //Check if item is not the last position in rec
             viewModel.tasks.value[position + 1]?.let { holder.bind(it.deadLine) }
         }
     }
