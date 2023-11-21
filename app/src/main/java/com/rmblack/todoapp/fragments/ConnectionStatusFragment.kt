@@ -54,7 +54,7 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setDetails()
+        setPhonesList()
         setClickListeners()
         setUpLoadingState()
     }
@@ -94,17 +94,19 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
         }
     }
 
-    private fun setDetails() {
+    private fun setPhonesList() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.connectedPhones.collect { phones ->
                 if (phones.isEmpty()) {
                     binding.noListMateTv.visibility = View.VISIBLE
+                } else {
+                    binding.noListMateTv.visibility = View.GONE
                 }
                 val adapter = ConnectedPhonesAdapter(phones)
                 binding.listMatesRv.adapter = adapter
-                binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
             }
         }
+        binding.listMatesRv.layoutManager = LinearLayoutManager(requireContext())
     }
 
     override fun onSuccessDisconnection() {
