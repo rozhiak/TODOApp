@@ -44,8 +44,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var context: Context
 
-    private var timerJob: Job? = null
-
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
         EditTaskViewModelFactory(UUID.fromString(taskId))
@@ -258,8 +256,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.showSoftInput(binding.etTitle, InputMethodManager.SHOW_IMPLICIT)
 
-                val scope = CoroutineScope(Dispatchers.Main)
-                timerJob = scope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     delay(1300)
                     binding.etTitle.hint = "عنوان"
                     binding.etTitle.setHintTextColor(
@@ -282,7 +279,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         viewModel.saveTitleAndDescription(
             binding.etTitle.text.toString(), binding.etDescription.text.toString()
         )
-        timerJob?.takeIf { it.isActive }?.cancel()
         super.onPause()
     }
 
