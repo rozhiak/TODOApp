@@ -17,9 +17,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
@@ -35,6 +33,7 @@ import ir.hamsaa.persiandatepicker.api.PersianPickerListener
 import ir.hamsaa.persiandatepicker.date.PersianDateImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -44,6 +43,8 @@ private const val PRIMARY_TASK_KEY = "PRIMARY_TASK_KEY"
 class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var context: Context
+
+    private var timerJob: Job? = null
 
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
@@ -115,17 +116,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private fun syncUserInput() {
         binding.apply {
-            urgentSwitch.setOnCheckedChangeListener { _, b ->
-                viewModel.updateTask { oldTask ->
-                    oldTask.copy(
-                        isUrgent = b,
-                        title = binding.etTitle.text.toString(),
-                        description = binding.etDescription.text.toString(),
-                    )
-                }
-                resetCursorsPosition()
-            }
-
             segmentedBtn.setOnPositionChangedListener { pos ->
                 val sharedPropertiesManager = SharedPreferencesManager(context)
                 val user = sharedPropertiesManager.getUser()
@@ -143,6 +133,17 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 } else {
                     binding.segmentedBtn.visibility = View.GONE
                 }
+            }
+
+            urgentSwitch.setOnCheckedChangeListener { _, b ->
+                viewModel.updateTask { oldTask ->
+                    oldTask.copy(
+                        isUrgent = b,
+                        title = binding.etTitle.text.toString(),
+                        description = binding.etDescription.text.toString(),
+                    )
+                }
+                resetCursorsPosition()
             }
 
             deadlineTv.setOnClickListener {
@@ -185,9 +186,18 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         val persianPickerDate = PersianDateImpl()
         persianPickerDate.setDate(year, month, day)
 
-        val picker = PersianDatePickerDialog(context).setPositiveButtonString("تایید")
-            .setNegativeButton("لغو").setTodayButton("برو به امروز").setTodayButtonVisible(true)
-            .setInitDate(persianPickerDate, true).setActionTextColor(Color.parseColor("#5DD0A3"))
+        val picker = makeDatePicker(persianPickerDate)
+        picker.show()
+    }
+
+    private fun makeDatePicker(taskDeadline: PersianDateImpl): PersianDatePickerDialog {
+        val picker = PersianDatePickerDialog(context)
+            .setPositiveButtonString("تایید")
+            .setNegativeButton("لغو")
+            .setTodayButton("برو به امروز")
+            .setTodayButtonVisible(true)
+            .setInitDate(taskDeadline, true)
+            .setActionTextColor(ResourcesCompat.getColor(resources, R.color.green, null))
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
             .setTitleColor(ResourcesCompat.getColor(resources, R.color.title_black, null))
             .setBackgroundColor(
@@ -198,7 +208,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 ResourcesCompat.getColor(
                     resources, R.color.bottom_sheet_back_color, null
                 )
-            ).setAllButtonsTextSize(16).setListener(object : PersianPickerListener {
+            ).setAllButtonsTextSize(16)
+            .setListener(object : PersianPickerListener {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {
                     viewModel.updateTask { oldTask ->
                         val newDeadline = PersianCalendar()
@@ -213,25 +224,22 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
                 override fun onDismissed() {}
             })
-
-        picker.show()
+        return picker
     }
 
     private fun updateUi() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.task.collect { task ->
-                    task?.let { notNullTask ->
-                        binding.apply {
-                            urgentSwitch.isChecked = notNullTask.isUrgent
-                            etTitle.setText(notNullTask.title)
-                            deadlineTv.text = notNullTask.deadLine.longDateString
-                            etDescription.setText(notNullTask.description)
-                            if (notNullTask.isShared) {
-                                segmentedBtn.setPosition(0, false)
-                            } else {
-                                segmentedBtn.setPosition(1, false)
-                            }
+            viewModel.task.collect { task ->
+                task?.let { notNullTask ->
+                    binding.apply {
+                        urgentSwitch.isChecked = notNullTask.isUrgent
+                        etTitle.setText(notNullTask.title)
+                        deadlineTv.text = notNullTask.deadLine.longDateString
+                        etDescription.setText(notNullTask.description)
+                        if (notNullTask.isShared) {
+                            segmentedBtn.setPosition(0, false)
+                        } else {
+                            segmentedBtn.setPosition(1, false)
                         }
                     }
                 }
@@ -251,7 +259,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 inputMethodManager.showSoftInput(binding.etTitle, InputMethodManager.SHOW_IMPLICIT)
 
                 val scope = CoroutineScope(Dispatchers.Main)
-                scope.launch {
+                timerJob = scope.launch {
                     delay(1300)
                     binding.etTitle.hint = "عنوان"
                     binding.etTitle.setHintTextColor(
@@ -274,6 +282,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         viewModel.saveTitleAndDescription(
             binding.etTitle.text.toString(), binding.etDescription.text.toString()
         )
+        timerJob?.takeIf { it.isActive }?.cancel()
         super.onPause()
     }
 
