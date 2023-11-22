@@ -162,11 +162,7 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
                 }
 
                 if (e is UnknownHostException) {
-                    Utilities.makeWarningSnack(
-                        requireActivity(),
-                        binding.root,
-                        "به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت."
-                    )
+                    makeSnack("به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت.")
                 }
 
                 showConnectionStatusFragment()
@@ -193,33 +189,29 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         viewModel.setConnectLoadingState(false)
         when (errorCode) {
             CONNECTION_ERROR_CODE -> {
-                Utilities.makeWarningSnack(
-                    requireActivity(),
-                    binding.root,
-                    "مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید."
-                )
+                makeSnack("مشکل در اتصال به اینترنت ، لطفا از اتصال خود مطمئن شوید.")
             }
 
             404 -> {
-                Utilities.makeWarningSnack(
-                    requireActivity(), binding.root, "شماره همراه مورد نظر شما یافت نشد."
-                )
+                makeSnack("شماره همراه مورد نظر شما یافت نشد.")
             }
 
             403 -> {
-                Utilities.makeWarningSnack(
-                    requireActivity(), binding.root, "مشکلی در فرآیند ورودتان به برنامه پیش آمده"
-                )
+                makeSnack("مشکلی در فرآیند ورودتان به برنامه پیش آمده")
             }
 
             400 -> {
-                Utilities.makeWarningSnack(
-                    requireActivity(),
-                    binding.root,
-                    "نمی توانید شماره خودتان را در این قسمت وارد کنید."
-                )
+                makeSnack("نمی توانید شماره خودتان را در این قسمت وارد کنید.")
             }
         }
+    }
+
+    private fun makeSnack(msg: String) {
+        Utilities.makeWarningSnack(
+            requireActivity(),
+            binding.root,
+            msg
+        )
     }
 }
 
