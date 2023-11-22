@@ -248,7 +248,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     private fun setClickListeners() {
         binding.saveBtn.setOnClickListener {
             if (binding.etTitle.text?.isBlank() == true || binding.etTitle.text?.isEmpty() == true) {
-                binding.etTitle.setHintTextColor(Color.parseColor("#D05D8A"))
+                binding.etTitle.setHintTextColor(ContextCompat.getColor(context, R.color.urgent_red))
                 binding.etTitle.hint = "عنوان را تایپ کنید"
 
                 binding.etTitle.requestFocus()
