@@ -31,9 +31,7 @@ class PrivateTasksFragment : TasksFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val res = super.onCreateView(inflater, container, savedInstanceState)
         binding.tasksRv.adapter = createPrivateTasksAdapter()
@@ -98,10 +96,7 @@ class PrivateTasksFragment : TasksFragment() {
     }
 
     private fun createPrivateTasksAdapter(): PrivateTasksAdapter = PrivateTasksAdapter(
-        viewLifecycleOwner.lifecycleScope,
-        viewModel,
-        this,
-        requireActivity()
+        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity()
     )
 
     class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
