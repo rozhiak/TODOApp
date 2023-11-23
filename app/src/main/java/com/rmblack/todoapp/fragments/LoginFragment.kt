@@ -15,14 +15,13 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.ScrollView
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.github.razir.progressbutton.attachTextChangeAnimator
 import com.github.razir.progressbutton.bindProgressButton
@@ -103,13 +102,11 @@ class LoginFragment : Fragment() {
 
     private fun setUpProgressingState() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.loginFragmentLoading.collect { isLoading ->
-                    if (isLoading) {
-                        showProgressing()
-                    } else {
-                        binding.progressBtn.hideProgress("ادامه")
-                    }
+            viewModel.loginFragmentLoading.collect { isLoading ->
+                if (isLoading) {
+                    showProgressing()
+                } else {
+                    binding.progressBtn.hideProgress("ادامه")
                 }
             }
         }
@@ -204,27 +201,26 @@ class LoginFragment : Fragment() {
 
     private fun setEmptyNameHint() {
         binding.nameEt.requestFocus()
-        val inputMethodManager =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(binding.nameEt, InputMethodManager.SHOW_IMPLICIT)
+        showKeyboard(binding.nameEt)
         binding.errorHintTv.text = "◌ لطفا نام خود را وارد کنید."
     }
 
     private fun setIncorrectPhoneHint() {
-        showKeyboard()
+        binding.phoneEt.requestFocus()
+        showKeyboard(binding.phoneEt)
         binding.errorHintTv.text = "◌ فرمت شماره غلط است."
     }
 
     private fun setEmptyPhoneHint() {
-        showKeyboard()
+        binding.phoneEt.requestFocus()
+        showKeyboard(binding.phoneEt)
         binding.errorHintTv.text = "◌ لطفا ، شماره همراه را وارد کنید"
     }
 
-    private fun showKeyboard() {
-        binding.phoneEt.requestFocus()
+    private fun showKeyboard(et: AppCompatEditText) {
         val inputMethodManager =
             requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(binding.phoneEt, InputMethodManager.SHOW_IMPLICIT)
+        inputMethodManager.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun showProgressing() {
