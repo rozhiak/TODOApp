@@ -210,7 +210,6 @@ class SharedTasksFragment : TasksFragment() {
     class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
                 SharedTasksViewModel(sharedPreferencesManager) as T
             } else {
