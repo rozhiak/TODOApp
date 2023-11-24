@@ -53,8 +53,7 @@ class VerificationFragment : Fragment() {
     }
 
     private fun onBackPressed() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            requireActivity(),
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     findNavController().navigateUp()

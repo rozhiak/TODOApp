@@ -128,7 +128,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
                 val deletedTask: Task? = viewModel.tasks.value[position]
                 if (deletedTask != null) {
                     val deleteReq = performDeletion(deletedTask, position)
-                    makeSnack(deletedTask, position, deleteReq)
+                    makeDeleteSnack(deletedTask, position, deleteReq)
                 }
             }
 
@@ -177,7 +177,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
         return deleteReq
     }
 
-    private fun makeSnack(
+    private fun makeDeleteSnack(
         deletedTask: Task, position: Int, deleteReq: DeleteTaskRequest?
     ) {
         val snackBar = Utilities.makeDeleteSnackBar(requireActivity(), binding.tasksRv) {
