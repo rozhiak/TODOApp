@@ -15,12 +15,10 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.models.server.success.TaskResponse
 import com.rmblack.todoapp.models.server.success.Tasks
 import com.rmblack.todoapp.webservice.repository.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import retrofit2.Response
 import java.lang.Exception
 
 const val CONNECTION_ERROR_CODE = 0
@@ -113,14 +111,13 @@ class Utilities {
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
 
-            var failedAddRequests = sharedPreferencesManager.getCashedAddRequests()
-            var failedEditRequests = sharedPreferencesManager.getCashedEditRequests()
-            var failedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
+            var cashedAddRequests = sharedPreferencesManager.getCashedAddRequests()
+            var cashedEditRequests = sharedPreferencesManager.getCashedEditRequests()
+            var cashedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
 
-            for (addReq in failedAddRequests) {
-                val response: Response<TaskResponse>
+            for (addReq in cashedAddRequests) {
                 try {
-                    response = apiRepository.addNewTask(addReq.convertToServerAddModel())
+                    val response = apiRepository.addNewTask(addReq.convertToServerAddModel())
                     if (response.isSuccessful) {
                         sharedPreferencesManager.removeCashedAddRequest(addReq)
                         response.body()?.data?.id?.let {
@@ -132,38 +129,42 @@ class Utilities {
                 }
             }
 
-            for (editReq in failedEditRequests) {
+            for (editReq in cashedEditRequests) {
                 try {
                     val response = apiRepository.editTask(editReq.convertToServerEditModel())
-                    if (response.code() == 200 || response.code() == 404) sharedPreferencesManager.removeCashedEditRequest(
-                        editReq
-                    )
+                    if (response.code() == 200 || response.code() == 404) {
+                        sharedPreferencesManager.removeCashedEditRequest(
+                            editReq
+                        )
+                    }
                 } catch (e: Exception) {
                     return Result.failure(e)
                 }
             }
 
-            for (deleteReq in failedDeleteRequests) {
+            for (deleteReq in cashedDeleteRequests) {
                 try {
                     val response = apiRepository.deleteTask(deleteReq)
-                    if (response.code() == 200 || response.code() == 404) sharedPreferencesManager.removeCashedDeleteRequest(
-                        deleteReq
-                    )
+                    if (response.code() == 200 || response.code() == 404) {
+                        sharedPreferencesManager.removeCashedDeleteRequest(
+                            deleteReq
+                        )
+                    }
                 } catch (e: Exception) {
                     return Result.failure(e)
                 }
             }
 
-            failedAddRequests = sharedPreferencesManager.getCashedAddRequests()
-            failedEditRequests = sharedPreferencesManager.getCashedEditRequests()
-            failedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
+            cashedAddRequests = sharedPreferencesManager.getCashedAddRequests()
+            cashedEditRequests = sharedPreferencesManager.getCashedEditRequests()
+            cashedDeleteRequests = sharedPreferencesManager.getCashedDeleteRequests()
 
             var isThereAnyFailedRequest = false
-            if (failedAddRequests.isNotEmpty()) {
+            if (cashedAddRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
-            } else if (failedEditRequests.isNotEmpty()) {
+            } else if (cashedEditRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
-            } else if (failedDeleteRequests.isNotEmpty()) {
+            } else if (cashedDeleteRequests.isNotEmpty()) {
                 isThereAnyFailedRequest = true
             }
 
@@ -203,12 +204,12 @@ class Utilities {
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            val failedRequestIndex =
-                                sharedPreferencesManager.getCashedDeleteRequests()
-                                    .indexOfFirst { deleteReq ->
-                                        deleteReq.task_id == pServerTask.id
-                                    }
-                            if (failedRequestIndex == -1) {
+                            val deleteReqIndex = sharedPreferencesManager.getCashedDeleteRequests()
+                                .indexOfFirst { deleteReq ->
+                                    deleteReq.task_id == pServerTask.id
+                                }
+                            if (deleteReqIndex == -1) {
+                                //If the task is not in deleted cash, add it
                                 taskRepository.addTask(pServerTask.convertToLocalTask())
                             }
                         }
@@ -229,12 +230,12 @@ class Utilities {
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {
-                            val failedRequestIndex =
-                                sharedPreferencesManager.getCashedDeleteRequests()
-                                    .indexOfFirst { deleteReq ->
-                                        deleteReq.task_id == sServerTask.id
-                                    }
-                            if (failedRequestIndex == -1) {
+                            val deleteReqIndex = sharedPreferencesManager.getCashedDeleteRequests()
+                                .indexOfFirst { deleteReq ->
+                                    deleteReq.task_id == sServerTask.id
+                                }
+                            if (deleteReqIndex == -1) {
+                                //If the task is not in deleted cash, add it
                                 taskRepository.addTask(sServerTask.convertToLocalTask())
                             }
                         }
