@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ordibehesht"
-            android:text="کــاراتو  بــه  مــن  بســپر"
+            android:text="@string/slogan"
             android:textColor="@color/white"
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="@+id/login_back_iv"
@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iranian_ans"
-            android:text="با ورود به حساب کاربریتون دیگه نمیخواد نگران پاک شدن یا از دست رفتن اطلاعاتتون باشید."
+            android:text="@string/login_to_save_data"
             android:textColor="@color/grey"
             android:textAlignment="center"
             android:lineSpacingExtra="7dp"
@@ -115,7 +115,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/iranian_ans"
-                android:hint="شماره همراه"
+                android:hint="@string/phone_number"
                 android:inputType="phone" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -139,7 +139,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/iranian_ans"
-                android:hint="نام کاربری"
+                android:hint="@string/username"
                 android:inputType="textPersonName"
                 android:textDirection="rtl" />
 
@@ -150,7 +150,7 @@
             android:id="@+id/progress_btn"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:text="ادامه"
+            android:text="@string/continuance"
             android:paddingTop="8dp"
             android:textSize="18sp"
             android:layout_marginBottom="20dp"
@@ -165,7 +165,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iranian_ans"
-            android:text="ورود بدون ثبت نام"
+            android:text="@string/enter_without_register"
             android:textColor="@color/grey"
             android:textSize="14sp"
             android:layout_marginVertical="20dp"

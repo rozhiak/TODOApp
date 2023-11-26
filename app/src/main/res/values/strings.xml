@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">تسکرو</string>
+    <string name="deleted">حذف شد</string>
+    <string name="phone_number">شماره همراه</string>
+    <string name="connect">اتصال</string>
+    <string name="connection_hint_text">شـمـاره شـخـصـی که می خواهید لیستتان با هم هماهنگ شود را در فیلد بالا وارد کنید ، سپس متصل شوید.</string>
+    <string name="list_mates">هم لیستی ها:</string>
+    <string name="dont_have_listmates">هم لیستی ندارید :(</string>
+    <string name="disconnect">قطع اتصال</string>
+    <string name="save">ذخیره</string>
+    <string name="title">عنوان</string>
+    <string name="necessary">ضروری</string>
+    <string name="login_for_shared_section_hint">برای استفاده از بخش اشتراکی ، ابتدا باید وارد حساب کاربری شوید.</string>
+    <string name="description">توضیحات</string>
+    <string name="slogan">کــاراتو بــه مــن بســپر</string>
+    <string name="login_to_save_data">با ورود به حساب کاربریتون دیگه نمیخواد نگران پاک شدن یا از دست رفتن اطلاعاتتون باشید.</string>
+    <string name="username">نام کاربری</string>
+    <string name="continuance">ادامه</string>
+    <string name="enter_without_register">ورود بدون ثبت نام</string>
+    <string name="no_task">تسکی برای انجام نداری!</string>
+    <string name="verification">صحت سنجی</string>
+    <string name="sms_hint">یک اس ام اس حاوی کد دریافت میکنید. \n لطفا آن را در فیلد زیر وارد کنید.</string>
+    <string name="confirm">تایید</string>
+    <string name="no_title">بدون عنوان</string>
+    <string name="edit">ویرایش</string>
+    <string name="write_in">ثبت</string>
 </resources>

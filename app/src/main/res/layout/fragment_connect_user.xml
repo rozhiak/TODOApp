@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/iranian_ans"
-            android:hint="شماره همراه"
+            android:hint="@string/phone_number"
             android:inputType="phone" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -56,7 +56,7 @@
             android:layout_height="match_parent"
             android:backgroundTint="@color/green"
             android:fontFamily="@font/iranian_ans"
-            android:text="اتصال"
+            android:text="@string/connect"
             android:textColor="@color/white"
             android:scaleType="fitCenter"
             android:textSize="18sp"
@@ -73,7 +73,7 @@
         android:lineSpacingExtra="5dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/iranian_ans"
-        android:text="شـمـاره شـخـصـی که می خواهید لیستتان با هم هماهنگ شود را در فیلد بالا وارد کنید ، سپس متصل شوید."
+        android:text="@string/connection_hint_text"
         android:textColor="@color/grey"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

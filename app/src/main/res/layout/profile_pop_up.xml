@@ -36,7 +36,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/iranian_ans"
-                android:hint="نام کاربری"
+                android:hint="@string/username"
                 android:inputType="textPersonName"
                 />
 
@@ -65,7 +65,7 @@
                 android:textSize="16sp"
                 android:backgroundTint="@color/white"
                 android:fontFamily="@font/iranian_ans"
-                android:text="ثبت" />
+                android:text="@string/write_in" />
 
         </androidx.cardview.widget.CardView>
 

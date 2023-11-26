@@ -6,8 +6,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/list_mates_tv"
@@ -15,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24sp"
         android:fontFamily="@font/iranian_ans"
-        android:text="هم لیستی ها:"
+        android:text="@string/list_mates"
         app:fontFamily="@font/iranian_ans"
         android:textStyle="bold"
         android:textColor="@color/title_black"
@@ -33,7 +32,7 @@
         android:textSize="16sp"
         app:fontFamily="@font/iranian_ans"
         android:textStyle="bold"
-        android:text="هم لیستی ندارید  :("
+        android:text="@string/dont_have_listmates"
         app:layout_constraintBottom_toTopOf="@+id/disconnect_btn_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +66,7 @@
             android:backgroundTint="@color/green"
             android:fontFamily="@font/iranian_ans"
             android:scaleType="fitCenter"
-            android:text="قطع اتصال"
+            android:text="@string/disconnect"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
