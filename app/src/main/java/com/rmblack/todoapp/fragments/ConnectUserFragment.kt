@@ -146,26 +146,29 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
     override fun onConnectUserSuccess() {
         val job = CoroutineScope(Dispatchers.Default).launch {
-            val response = Utilities.syncTasksWithServer(
-                viewModel.getUserToken(), viewModel.sharedPreferencesManager
-            )
-            response.onSuccess {
-                activity.runOnUiThread {
-                    if (_binding != null) viewModel.setConnectLoadingState(false)
-                }
-                showConnectionStatusFragment()
-            }
-
-            response.onFailure { e ->
-                requireActivity().runOnUiThread {
-                    if (_binding != null) viewModel.setConnectLoadingState(false)
+            val token = viewModel.getUserToken()
+            token?.let {
+                val response = Utilities.syncTasksWithServer(
+                    it, viewModel.sharedPreferencesManager
+                )
+                response.onSuccess {
+                    activity.runOnUiThread {
+                        if (_binding != null) viewModel.setConnectLoadingState(false)
+                    }
+                    showConnectionStatusFragment()
                 }
 
-                if (e is UnknownHostException) {
-                    makeSnack("به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت.")
-                }
+                response.onFailure { e ->
+                    requireActivity().runOnUiThread {
+                        if (_binding != null) viewModel.setConnectLoadingState(false)
+                    }
 
-                showConnectionStatusFragment()
+                    if (e is UnknownHostException) {
+                        makeSnack("به دلیل عدم اتصال به اینترنت ، هم رسانی تسک ها صورت نگرفت.")
+                    }
+
+                    showConnectionStatusFragment()
+                }
             }
         }
 
@@ -208,9 +211,7 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
     private fun makeSnack(msg: String) {
         Utilities.makeWarningSnack(
-            requireActivity(),
-            binding.root,
-            msg
+            requireActivity(), binding.root, msg
         )
     }
 }

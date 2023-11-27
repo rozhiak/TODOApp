@@ -60,14 +60,11 @@ class ConnectUserViewModel(
     }
 
     fun connectUserToSharedList(phoneNumber: String, connectCallback: ConnectUserCallback) {
-        val connectUserRequest = sharedPreferencesManager.getUser()?.token?.let { token ->
-            ConnectUserRequest(
-                token, phoneNumber
-            )
-        }
+        val token = getUserToken()
+        token?.let {
+            val connectUserRequest = ConnectUserRequest(it, phoneNumber)
 
-        viewModelScope.launch {
-            if (connectUserRequest != null) {
+            viewModelScope.launch {
                 try {
                     val response = apiRepository.connectUser(connectUserRequest)
                     if (response.isSuccessful) {
@@ -82,7 +79,7 @@ class ConnectUserViewModel(
                         connectCallback.onConnectUserSuccess()
                     } else if (response.code() == 500) {
                         val disconnectReq = DisconnectUserRequest(
-                            getUserToken()
+                            it
                         )
                         apiRepository.disconnectUser(disconnectReq)
                         connectUserToSharedList(phoneNumber, connectCallback)
@@ -101,14 +98,10 @@ class ConnectUserViewModel(
     }
 
     fun disconnectUserFromSharedList(disconnectCallback: DisconnectUserCallback) {
-        val disconnectUserRequest = sharedPreferencesManager.getUser()?.token?.let { token ->
-            DisconnectUserRequest(
-                token
-            )
-        }
-
-        viewModelScope.launch {
-            if (disconnectUserRequest != null) {
+        val token = getUserToken()
+        token?.let {
+            val disconnectUserRequest = DisconnectUserRequest(it)
+            viewModelScope.launch {
                 try {
                     performSharedCashedRequests()
                     val response = apiRepository.disconnectUser(disconnectUserRequest)
@@ -168,19 +161,24 @@ class ConnectUserViewModel(
 
     private suspend fun getConnectedPhonesFromServer(): List<String>? {
         return try {
-            val response = apiRepository.getConnectedPhones(getUserToken())
-            if (response.isSuccessful) {
-                response.body()?.data
+            val token = getUserToken()
+            if (token == null) {
+                return null
             } else {
-                null
+                val response = apiRepository.getConnectedPhones(token)
+                if (response.isSuccessful) {
+                    response.body()?.data
+                } else {
+                    null
+                }
             }
         } catch (_: Exception) {
             null
         }
     }
 
-    fun getUserToken(): String {
-        return sharedPreferencesManager.getUser()?.token ?: ""
+    fun getUserToken(): String? {
+        return sharedPreferencesManager.getUser()?.token
     }
 
     private fun saveConnectedPhonesInSP(phones: List<String>) {
