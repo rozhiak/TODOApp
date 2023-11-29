@@ -104,7 +104,7 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 task.isShared,
                 task.id
             )
-
+            sharedPreferencesManager.insertCashedAddRequest(addRequest)
             sendAddRequest(addRequest, task)
         }
     }
@@ -117,16 +117,14 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                 val response = apiRepository.addNewTask(addRequest.convertToServerAddModel())
                 if (response.isSuccessful) {
                     response.body()?.data?.id?.let { updateServerID(task.id, it) }
+                    sharedPreferencesManager.removeCashedAddRequest(addRequest)
                 } else {
                     if (response.code() == 403) {
                         //invalid token
-                    } else {
-                        sharedPreferencesManager.insertCashedAddRequest(addRequest)
+                        sharedPreferencesManager.removeCashedAddRequest(addRequest)
                     }
                 }
-            } catch (e: Exception) {
-                sharedPreferencesManager.insertCashedAddRequest(addRequest)
-            }
+            } catch (_: Exception) {}
         }
     }
 

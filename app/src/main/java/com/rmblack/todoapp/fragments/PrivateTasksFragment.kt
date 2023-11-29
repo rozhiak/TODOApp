@@ -27,7 +27,6 @@ class PrivateTasksFragment : TasksFragment() {
         viewModel = ViewModelProvider(
             this, PrivateFragmentViewModelFactory(sharedPreferencesManager)
         )[PrivateTasksViewModel::class.java]
-
     }
 
     override fun onCreateView(
