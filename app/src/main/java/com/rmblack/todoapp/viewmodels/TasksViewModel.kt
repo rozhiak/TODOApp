@@ -124,7 +124,8 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
                         sharedPreferencesManager.removeCashedAddRequest(addRequest)
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -274,9 +275,11 @@ open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager
     suspend fun syncConnectedPhonesWithServer() {
         val receivedPhones = getConnectedPhonesFromServer()
         if (receivedPhones != null) {
-            val connectedPhones = sharedPreferencesManager.getConnectedPhone()
+            val connectedPhones = getConnectedPhones()
             if (connectedPhones != null) {
-                saveConnectedPhonesInSP(receivedPhones)
+                if (connectedPhones != receivedPhones) {
+                    saveConnectedPhonesInSP(receivedPhones)
+                }
             } else if (receivedPhones.isNotEmpty()) {
                 saveConnectedPhonesInSP(receivedPhones)
             }
