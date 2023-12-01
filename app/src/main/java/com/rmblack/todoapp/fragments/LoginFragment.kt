@@ -197,6 +197,11 @@ class LoginFragment : Fragment() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
         }
+
+        binding.policyLableTv.setOnClickListener {
+            val policyBottomSheet = PolicyBottomSheet()
+            policyBottomSheet.show(requireActivity().supportFragmentManager, "policy")
+        }
     }
 
     private fun setEmptyNameHint() {

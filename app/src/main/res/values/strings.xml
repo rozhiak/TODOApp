@@ -24,4 +24,6 @@
     <string name="no_title">بدون عنوان</string>
     <string name="edit">ویرایش</string>
     <string name="write_in">ثبت</string>
+    <string name="policy_lable_text">سیاست حفظ حریم خصوصی</string>
+    <string name="policy_hint">برنامه تسکرو با احترام به حریم خصوصی شما، فقط از نام و شماره همراه شما برای برقراری ارتباط و تعیین شخص پدید آورنده هر یادداشت استفاده می‌کند و این اطلاعات را به هیچ عنوان منتشر نمی‌کند. پیامک‌های ارسالی از سوی برنامه نیز محدود به کد تایید می باشد.</string>
 </resources>
