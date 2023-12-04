@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.rmblack.todoapp.activities.newlyAddedTaskServerID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
@@ -24,7 +25,9 @@ import java.lang.Exception
 import java.net.UnknownHostException
 import java.util.UUID
 
-class LoginViewModel(private val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val sharedPreferencesManager = SharedPreferencesManager(application)
 
     private val customScope = CoroutineScope(Dispatchers.IO)
 

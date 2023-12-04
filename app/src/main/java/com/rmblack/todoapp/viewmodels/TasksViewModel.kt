@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
@@ -20,7 +21,9 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.UUID
 
-open class TasksViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+open class TasksViewModel(application: Application) : ViewModel() {
+
+    val sharedPreferencesManager = SharedPreferencesManager(application)
 
     private val apiRepository = ApiRepository()
 

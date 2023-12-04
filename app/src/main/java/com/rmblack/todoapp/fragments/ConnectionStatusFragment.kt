@@ -15,7 +15,6 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.ConnectedPhonesAdapter
 import com.rmblack.todoapp.databinding.FragmentConnectionStatusBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.utils.Utilities.SharedObject.isSyncing
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
@@ -40,13 +39,11 @@ class ConnectionStatusFragment : Fragment(), DisconnectUserCallback, RefreshCall
 
         _binding = FragmentConnectionStatusBinding.inflate(inflater, container, false)
 
-        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
-
         activity = requireActivity()
 
         viewModel = ViewModelProvider(
             activity as FragmentActivity,
-            ConnectUserFragment.ConnectUserViewModelFactory(sharedPreferencesManager)
+            ConnectUserFragment.ConnectUserViewModelFactory(requireActivity().application)
         )[ConnectUserViewModel::class.java]
 
         return binding.root

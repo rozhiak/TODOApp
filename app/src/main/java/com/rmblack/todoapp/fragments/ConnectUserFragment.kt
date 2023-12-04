@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.fragments
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -18,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.viewmodels.ConnectUserViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -47,14 +47,12 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
 
         _binding = FragmentConnectUserBinding.inflate(inflater, container, false)
 
-        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
-
         activity = requireActivity()
 
         fragmentManager = parentFragmentManager
 
         viewModel = ViewModelProvider(
-            requireActivity(), ConnectUserViewModelFactory(sharedPreferencesManager)
+            requireActivity(), ConnectUserViewModelFactory(requireActivity().application)
         )[ConnectUserViewModel::class.java]
 
         return binding.root
@@ -129,11 +127,11 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
     }
 
     class ConnectUserViewModelFactory(
-        private val sharedPreferencesManager: SharedPreferencesManager
+        private val application: Application
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ConnectUserViewModel::class.java)) {
-                return ConnectUserViewModel(sharedPreferencesManager) as T
+                return ConnectUserViewModel(application) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -20,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -30,9 +30,8 @@ class SharedTasksFragment : TasksFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            this, SharedFragmentViewModelFactory(sharedPreferencesManager)
+            this, SharedFragmentViewModelFactory(requireActivity().application)
         )[SharedTasksViewModel::class.java]
     }
 
@@ -207,11 +206,11 @@ class SharedTasksFragment : TasksFragment() {
         viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity()
     )
 
-    class SharedFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+    class SharedFragmentViewModelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
-                SharedTasksViewModel(sharedPreferencesManager) as T
+                SharedTasksViewModel(application) as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

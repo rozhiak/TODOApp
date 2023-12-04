@@ -1,12 +1,12 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import kotlinx.coroutines.launch
 
-class PrivateTasksViewModel(sharedPreferencesManager: SharedPreferencesManager) :
-    TasksViewModel(sharedPreferencesManager) {
+class PrivateTasksViewModel(application: Application) :
+    TasksViewModel(application) {
     init {
         viewModelScope.launch {
             taskRepository.getPrivateTasksFlow().collect { tasks ->

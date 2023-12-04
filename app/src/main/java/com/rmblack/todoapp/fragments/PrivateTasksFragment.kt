@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.app.Application
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rmblack.todoapp.adapters.PrivateTasksAdapter
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -23,9 +23,8 @@ class PrivateTasksFragment : TasksFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            this, PrivateFragmentViewModelFactory(sharedPreferencesManager)
+            this, PrivateFragmentViewModelFactory(requireActivity().application)
         )[PrivateTasksViewModel::class.java]
     }
 
@@ -98,11 +97,11 @@ class PrivateTasksFragment : TasksFragment() {
         viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity()
     )
 
-    class PrivateFragmentViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+    class PrivateFragmentViewModelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(PrivateTasksViewModel::class.java)) {
-                PrivateTasksViewModel(sharedPreferencesManager) as T
+                PrivateTasksViewModel(application) as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

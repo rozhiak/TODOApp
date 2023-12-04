@@ -17,7 +17,6 @@ import com.github.razir.progressbutton.showProgress
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentVerificationBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -37,9 +36,8 @@ class VerificationFragment : Fragment() {
     ): View {
         _binding = FragmentVerificationBinding.inflate(inflater, container, false)
 
-        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            requireActivity(), LoginFragment.LoginViewModelFactory(sharedPreferencesManager)
+            requireActivity(), LoginFragment.LoginViewModelFactory(requireActivity().application)
         )[LoginViewModel::class.java]
 
         return binding.root

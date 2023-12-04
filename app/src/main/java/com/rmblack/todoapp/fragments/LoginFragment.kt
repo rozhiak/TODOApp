@@ -2,6 +2,7 @@ package com.rmblack.todoapp.fragments
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -31,7 +32,6 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.databinding.FragmentLoginBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -54,9 +54,8 @@ class LoginFragment : Fragment() {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        val sharedPreferencesManager = SharedPreferencesManager(requireContext())
         viewModel = ViewModelProvider(
-            requireActivity(), LoginViewModelFactory(sharedPreferencesManager)
+            requireActivity(), LoginViewModelFactory(requireActivity().application)
         )[LoginViewModel::class.java]
 
         return binding.root
@@ -310,11 +309,11 @@ class LoginFragment : Fragment() {
         oaPhone.start()
     }
 
-    class LoginViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+    class LoginViewModelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-                return LoginViewModel(sharedPreferencesManager) as T
+                return LoginViewModel(application) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

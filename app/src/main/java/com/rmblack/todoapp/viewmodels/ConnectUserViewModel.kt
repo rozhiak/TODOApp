@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.fragments.ConnectUserCallback
@@ -20,8 +21,10 @@ import java.lang.Exception
 import java.net.UnknownHostException
 
 class ConnectUserViewModel(
-    val sharedPreferencesManager: SharedPreferencesManager
-) : ViewModel() {
+    application: Application
+) : AndroidViewModel(application) {
+
+    val sharedPreferencesManager = SharedPreferencesManager(application)
 
     private val taskRepository = TaskRepository.get()
 

@@ -1,7 +1,8 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.app.Application
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.fragments.PrivateTasksFragment
@@ -19,7 +20,9 @@ import kotlin.Result.Companion.failure
 
 const val SAME_USER_NAME_CODE = 1
 
-class MainViewModel(val sharedPreferencesManager: SharedPreferencesManager) : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    val sharedPreferencesManager = SharedPreferencesManager(application)
 
     val privateTasksFragment: Fragment = PrivateTasksFragment()
 

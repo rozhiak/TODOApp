@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.activities
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -28,7 +29,6 @@ import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.PersianNum
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.utils.Utilities.SharedObject.setSyncingState
 import com.rmblack.todoapp.viewmodels.MainViewModel
@@ -47,11 +47,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
 
-    val sharedPreferencesManager = SharedPreferencesManager(this)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(
-            this, MainViewModelFactory(sharedPreferencesManager)
+            this, MainViewModelFactory(application)
         )[MainViewModel::class.java]
         viewModel.removeNoTitleTasks()
 
@@ -153,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getUserFromSharedPreferences()?.let { user ->
             setSyncingState(true)
             val result = Utilities.syncTasksWithServer(
-                user.token, sharedPreferencesManager
+                user.token, viewModel.sharedPreferencesManager
             )
             result.onSuccess {
                 setSyncingState(false)
@@ -356,11 +354,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    class MainViewModelFactory(private val sharedPreferencesManager: SharedPreferencesManager) :
+    class MainViewModelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                return MainViewModel(sharedPreferencesManager) as T
+                return MainViewModel(application) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
