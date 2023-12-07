@@ -74,17 +74,8 @@ class PrivateTasksFragment : TasksFragment() {
                     editedTaskId = null
                     isNewTask = null
 
-                    // TODO: if there was no problem , delete commented code
-//                    val layoutManager = binding.tasksRv.layoutManager as LinearLayoutManager
-//                    val firstVisibleItem = layoutManager.getChildAt(0)
-//                    val offset = firstVisibleItem?.top ?: 0
-//                    val pos = layoutManager.findFirstVisibleItemPosition()
-//                    val marginTop = firstVisibleItem?.marginTop ?: 0
-
                     val adapter = binding.tasksRv.adapter as PrivateTasksAdapter
                     adapter.updateData(tasks)
-
-//                    layoutManager.scrollToPositionWithOffset(pos, offset - marginTop)
 
                     if (tasks.size != 1) setUpNoTaskIconAndText(tasks.isNotEmpty())
                 }
