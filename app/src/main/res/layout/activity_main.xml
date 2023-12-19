@@ -69,6 +69,15 @@
                     app:layout_constraintTop_toTopOf="@+id/day_of_month" />
 
                 <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="22dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/filter"
+                    android:layout_marginStart="20dp"
+                    app:srcCompat="@drawable/ic_filter"
+                    android:tint="@color/white"
+                    app:layout_constraintStart_toEndOf="@id/day_of_month" />
+
+                <androidx.appcompat.widget.AppCompatImageView
                     android:padding="6dp"
                     android:id="@+id/iv_profile"
                     android:layout_marginEnd="8dp"
