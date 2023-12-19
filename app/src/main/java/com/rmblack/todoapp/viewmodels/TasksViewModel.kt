@@ -309,6 +309,24 @@ open class TasksViewModel(application: Application) : ViewModel() {
         sharedPreferencesManager.saveConnectedPhones(phones)
     }
 
+    fun updateTasks(tasks: List<Task>) {
+        val tasksWithDatePositionNull = mutableListOf<Task?>()
+
+        if (tasks.isNotEmpty()) {
+            val sortedTasks = tasks.sortedBy { it.deadLine }
+            tasksWithDatePositionNull.add(null)
+            tasksWithDatePositionNull.add(sortedTasks[0]) //Because of if condition we can not access i - 1 position (-1)
+            for (i in 1 until sortedTasks.size) {
+                if (sortedTasks[i].deadLine.shortDateString != sortedTasks[i - 1].deadLine.shortDateString) {
+                    tasksWithDatePositionNull.add(null)
+                }
+                tasksWithDatePositionNull.add(sortedTasks[i])
+            }
+        }
+
+        _tasks.value = tasksWithDatePositionNull.toList()
+    }
+
     override fun onCleared() {
         addJob?.cancel()
         editJob?.cancel()
