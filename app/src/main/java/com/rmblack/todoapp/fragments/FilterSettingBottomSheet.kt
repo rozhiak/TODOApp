@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rmblack.todoapp.R
-import com.rmblack.todoapp.databinding.FragmentPolicyBinding
+import com.rmblack.todoapp.databinding.FragmentFilterSettingBottomSheetBinding
 
-class PolicyBottomSheet : BottomSheetDialogFragment() {
+class FilterSettingBottomSheet: BottomSheetDialogFragment() {
 
-    private var _binding: FragmentPolicyBinding? = null
+    private var _binding: FragmentFilterSettingBottomSheetBinding? = null
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -22,7 +22,7 @@ class PolicyBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPolicyBinding.inflate(inflater, container, false)
+        _binding = FragmentFilterSettingBottomSheetBinding.inflate(inflater, container, false)
         return binding.root
     }
 

@@ -71,7 +71,7 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="22dp"
                     android:layout_height="match_parent"
-                    android:id="@+id/filter"
+                    android:id="@+id/filter_btn"
                     android:layout_marginStart="20dp"
                     app:srcCompat="@drawable/ic_filter"
                     android:tint="@color/white"

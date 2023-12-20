@@ -27,6 +27,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
+import com.rmblack.todoapp.fragments.FilterSettingBottomSheet
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.Utilities
@@ -65,11 +66,19 @@ class MainActivity : AppCompatActivity() {
         setFragmentContainer(savedInstanceState)
         showToday()
         setUpProfileBtn()
+        setUpFilterBtn()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(FRAGMENT_ID_KEY, binding.bottomNavigationView.selectedItemId)
+    }
+
+    private fun setUpFilterBtn() {
+        binding.filterBtn.setOnClickListener {
+            val filterSettingBottomSheet = FilterSettingBottomSheet()
+            filterSettingBottomSheet.show(this.supportFragmentManager, "filter setting")
+        }
     }
 
     private fun setUpProfileBtn() {
