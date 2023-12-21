@@ -21,9 +21,19 @@ private const val CASHED_DELETE_REQUESTS_KEY = "CASHED_DELETE_REQUESTS_KEY"
 
 private const val CASHED_EDIT_REQUESTS_KEY = "CASHED_EDIT_REQUESTS_KEY"
 
+private const val DO_NOT_SHOW_DONE_TASKS_KEY = "DO_NOT_SHOW_DONE_TASKS_KEY"
+
 class SharedPreferencesManager(private val context: Context) {
 
     private val gson = Gson()
+
+    fun setDoNotShowDoneTasks(state: Boolean) {
+        getEditor(context).putBoolean(DO_NOT_SHOW_DONE_TASKS_KEY, state).apply()
+    }
+
+    fun getDoNotShowDoneTasksState(): Boolean {
+        return getSharedPreferences(context).getBoolean(DO_NOT_SHOW_DONE_TASKS_KEY, false)
+    }
 
     fun getCashedAddRequests(): List<AddTaskRequest> {
         val serializedRequests =

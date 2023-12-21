@@ -1,7 +1,7 @@
 package com.rmblack.todoapp.viewmodels
 
 import android.app.Application
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.UUID
 
-open class TasksViewModel(application: Application) : ViewModel() {
+open class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
     val sharedPreferencesManager = SharedPreferencesManager(application)
 
