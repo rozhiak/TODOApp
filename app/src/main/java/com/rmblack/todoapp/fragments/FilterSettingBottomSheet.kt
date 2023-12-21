@@ -31,8 +31,7 @@ class FilterSettingBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProvider(
-            requireActivity(),
-            FilterSettingViewModelFactory(requireActivity().application)
+            requireActivity(), FilterSettingViewModelFactory(requireActivity().application)
         )[FilterSettingViewModel::class.java]
         _binding = FragmentFilterSettingBottomSheetBinding.inflate(inflater, container, false)
         return binding.root

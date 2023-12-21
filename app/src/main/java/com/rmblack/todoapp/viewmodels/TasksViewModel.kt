@@ -29,7 +29,7 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
 
     val taskRepository = TaskRepository.get()
 
-    protected val _tasks: MutableStateFlow<List<Task?>> = MutableStateFlow(listOf(null))
+    private val _tasks: MutableStateFlow<List<Task?>> = MutableStateFlow(listOf(null))
     val tasks: StateFlow<List<Task?>>
         get() = _tasks.asStateFlow()
 
