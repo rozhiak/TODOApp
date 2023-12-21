@@ -21,7 +21,9 @@ class FilterSettingViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun saveDoneTasksFilterState() {
-        sharedPreferencesManager.setDoNotShowDoneTasks(doNotShowDoneTasksState.value)
+        if (doNotShowDoneTasksState.value != sharedPreferencesManager.getDoNotShowDoneTasksState()) {
+            sharedPreferencesManager.setDoNotShowDoneTasks(doNotShowDoneTasksState.value)
+        }
     }
 
 }
