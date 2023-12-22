@@ -25,6 +25,10 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
 
     val sharedPreferencesManager = SharedPreferencesManager(application)
 
+    private var _doNotShowDoneTasks = sharedPreferencesManager.getDoNotShowDoneTasksState()
+    val doNotShowDoneTasks
+        get() = _doNotShowDoneTasks
+
     private val apiRepository = ApiRepository()
 
     val taskRepository = TaskRepository.get()
@@ -45,6 +49,10 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
 
     private var deleteJob: Job? = null
     //End of server properties
+
+    fun changeDoNotShowDoneTasksState() {
+        _doNotShowDoneTasks = !doNotShowDoneTasks
+    }
 
     fun setPreviouslyExpandedID(id: UUID?) {
         _lastExpandedID = id
@@ -312,8 +320,13 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
     fun updateTasks(tasks: List<Task>) {
         val tasksWithDatePositionNull = mutableListOf<Task?>()
 
-        if (tasks.isNotEmpty()) {
-            val sortedTasks = tasks.sortedBy { it.deadLine }
+        var filteredTasks = tasks
+        if (doNotShowDoneTasks) {
+            filteredTasks = filteredTasks.filter { !it.isDone }
+        }
+        
+        if (filteredTasks.isNotEmpty()) {
+            val sortedTasks = filteredTasks.sortedBy { it.deadLine }
             tasksWithDatePositionNull.add(null)
             tasksWithDatePositionNull.add(sortedTasks[0]) //Because of if condition we can not access i - 1 position (-1)
             for (i in 1 until sortedTasks.size) {
