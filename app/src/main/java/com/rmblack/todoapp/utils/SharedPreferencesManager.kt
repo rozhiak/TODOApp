@@ -162,6 +162,14 @@ class SharedPreferencesManager(private val context: Context) {
         getEditor(context).remove(CONNECTED_PHONES_KEY).apply()
     }
 
+    fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        getSharedPreferences(context).registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun unregisterChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        getSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(listener)
+    }
+
     companion object {
         private var sharedPreferences: SharedPreferences? = null
         private val spLOCK = Any()

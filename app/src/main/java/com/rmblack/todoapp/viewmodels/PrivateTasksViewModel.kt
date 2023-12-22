@@ -1,10 +1,13 @@
 package com.rmblack.todoapp.viewmodels
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class PrivateTasksViewModel(application: Application) : TasksViewModel(application) {
+class PrivateTasksViewModel(application: Application) : TasksViewModel(application),
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val privateTasksFlow = taskRepository.getPrivateTasksFlow()
 
@@ -14,5 +17,22 @@ class PrivateTasksViewModel(application: Application) : TasksViewModel(applicati
                 updateTasks(tasks)
             }
         }
+
+        sharedPreferencesManager.registerChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
+        if (p1 == "DO_NOT_SHOW_DONE_TASKS_KEY") {
+            changeDoNotShowDoneTasksState()
+
+            viewModelScope.launch {
+                updateTasks(privateTasksFlow.first())
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        sharedPreferencesManager.unregisterChangeListener(this)
     }
 }

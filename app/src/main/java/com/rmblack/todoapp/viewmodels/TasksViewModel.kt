@@ -26,7 +26,7 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
     val sharedPreferencesManager = SharedPreferencesManager(application)
 
     private var _doNotShowDoneTasks = sharedPreferencesManager.getDoNotShowDoneTasksState()
-    val doNotShowDoneTasks
+    private val doNotShowDoneTasks
         get() = _doNotShowDoneTasks
 
     private val apiRepository = ApiRepository()
