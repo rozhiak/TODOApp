@@ -95,17 +95,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun syncTasksWithServer() {
-        val user = getUserFromSharedPreferences()
-        if (user != null) {
-            viewModelScope.launch {
-                val res = Utilities.syncTasksWithServer(user.token, sharedPreferencesManager)
-                res.onSuccess {
-                    setSyncingState(false)
-                }
-                res.onFailure {
-                    setSyncingState(false)
-                }
+    private fun syncTasksWithServer(user: User) {
+        viewModelScope.launch {
+            val res = Utilities.syncTasksWithServer(user.token, sharedPreferencesManager)
+            res.onSuccess {
+                setSyncingState(false)
+            }
+            res.onFailure {
+                setSyncingState(false)
             }
         }
     }
@@ -114,7 +111,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val user = getUserFromSharedPreferences()
         if (user?.token != null) {
             setSyncingState(true)
-            syncTasksWithServer()
+            syncTasksWithServer(user)
         }
     }
 
