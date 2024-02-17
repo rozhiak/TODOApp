@@ -23,6 +23,7 @@ import com.google.gson.Gson
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
@@ -235,6 +236,12 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         } else {
                             segmentedBtn.setPosition(1, false)
                         }
+
+                        val hourStr = PersianNum.convert(notNullTask.deadLine.hourOfDay.toString())
+                        val minuteStr = PersianNum.convert(notNullTask.deadLine.minute.toString())
+                        val formattedText =
+                            String.format(getString(R.string.clock_format), hourStr, minuteStr)
+                        clockTv.text = formattedText
                     }
                 }
             }

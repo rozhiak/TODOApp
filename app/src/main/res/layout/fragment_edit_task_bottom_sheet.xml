@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_constraint"
     android:layoutDirection="ltr"
     android:background="@drawable/bottom_sheet_background"
@@ -98,6 +98,29 @@
         app:layout_constraintEnd_toStartOf="@+id/calendar_ic"
         app:layout_constraintTop_toTopOf="@+id/calendar_ic" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/clock_ic"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="12dp"
+        android:tint="@color/green"
+        app:layout_constraintEnd_toEndOf="@+id/calendar_ic"
+        app:layout_constraintTop_toBottomOf="@id/calendar_ic"
+        app:srcCompat="@drawable/ic_clock" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/clock_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/iranian_ans"
+        android:textColor="@color/description_black"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/clock_ic"
+        app:layout_constraintEnd_toEndOf="@+id/deadline_tv"
+        app:layout_constraintTop_toTopOf="@+id/clock_ic" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/urgent_lable"
         android:layout_width="0dp"
@@ -108,8 +131,8 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:padding="3dp"
-        app:layout_constraintEnd_toEndOf="@+id/calendar_ic"
-        app:layout_constraintTop_toBottomOf="@+id/calendar_ic" />
+        app:layout_constraintEnd_toEndOf="@+id/clock_ic"
+        app:layout_constraintTop_toBottomOf="@+id/clock_ic" />
 
     <com.suke.widget.SwitchButton
         android:id="@+id/urgent_switch"
