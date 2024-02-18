@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -160,6 +161,38 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             urgentLable.setOnClickListener {
                 urgentSwitch.toggle()
             }
+
+            clockTv.setOnClickListener { showClockPicker() }
+
+            clockIc.setOnClickListener { showClockPicker() }
+        }
+    }
+
+    private fun showClockPicker() {
+        val cal = viewModel.task.value?.deadLine
+
+        cal?.let {
+            val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                viewModel.updateTask { oldTask ->
+                    val newCal = PersianCalendar()
+                    newCal.year = cal.year
+                    newCal.month = cal.month
+                    newCal.dayOfMonth = cal.dayOfMonth
+                    newCal.hourOfDay = hour
+                    newCal.minute = minute
+                    oldTask.copy(
+                        deadLine = newCal
+                    )
+                }
+            }
+
+            TimePickerDialog(
+                requireContext(),
+                timeSetListener,
+                cal.hourOfDay,
+                cal.minute,
+                true
+            ).show()
         }
     }
 
@@ -186,11 +219,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun makeDatePicker(taskDeadline: PersianDateImpl): PersianDatePickerDialog {
-        val picker = PersianDatePickerDialog(context)
-            .setPositiveButtonString("تایید")
-            .setNegativeButton("لغو")
-            .setTodayButton("برو به امروز")
-            .setTodayButtonVisible(true)
+        val picker = PersianDatePickerDialog(context).setPositiveButtonString("تایید")
+            .setNegativeButton("لغو").setTodayButton("برو به امروز").setTodayButtonVisible(true)
             .setInitDate(taskDeadline, true)
             .setActionTextColor(ResourcesCompat.getColor(resources, R.color.green, null))
             .setTitleType(PersianDatePickerDialog.WEEKDAY_DAY_MONTH_YEAR)
@@ -203,8 +233,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 ResourcesCompat.getColor(
                     resources, R.color.bottom_sheet_back_color, null
                 )
-            ).setAllButtonsTextSize(16)
-            .setListener(object : PersianPickerListener {
+            ).setAllButtonsTextSize(16).setListener(object : PersianPickerListener {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {
                     viewModel.updateTask { oldTask ->
                         val newDeadline = PersianCalendar()
@@ -232,9 +261,9 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         deadlineTv.text = notNullTask.deadLine.longDateString
                         etDescription.setText(notNullTask.description)
                         if (notNullTask.isShared) {
-                            segmentedBtn.setPosition(0, false)
+                            if (segmentedBtn.position != 0) segmentedBtn.setPosition(0, false)
                         } else {
-                            segmentedBtn.setPosition(1, false)
+                            if (segmentedBtn.position != 1) segmentedBtn.setPosition(1, false)
                         }
 
                         val hourStr = PersianNum.convert(notNullTask.deadLine.hourOfDay.toString())
@@ -251,7 +280,11 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     private fun setClickListeners() {
         binding.saveBtn.setOnClickListener {
             if (binding.etTitle.text?.isBlank() == true || binding.etTitle.text?.isEmpty() == true) {
-                binding.etTitle.setHintTextColor(ContextCompat.getColor(context, R.color.urgent_red))
+                binding.etTitle.setHintTextColor(
+                    ContextCompat.getColor(
+                        context, R.color.urgent_red
+                    )
+                )
                 binding.etTitle.hint = "عنوان را تایپ کنید"
 
                 binding.etTitle.requestFocus()
