@@ -125,7 +125,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                             composer = if (pos == 0 && oldTask.composer == "") user.name else oldTask.composer
                         )
                     }
-                    resetCursorsPosition()
                 } else {
                     binding.segmentedBtn.visibility = View.GONE
                 }
@@ -139,7 +138,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         description = binding.etDescription.text.toString(),
                     )
                 }
-                resetCursorsPosition()
             }
 
             deadlineTv.setOnClickListener {
@@ -147,7 +145,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     binding.etTitle.text.toString(), binding.etDescription.text.toString()
                 )
                 showDatePicker()
-                resetCursorsPosition()
             }
 
             calendarIc.setOnClickListener {
@@ -155,7 +152,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     binding.etTitle.text.toString(), binding.etDescription.text.toString()
                 )
                 showDatePicker()
-                resetCursorsPosition()
             }
 
             urgentLable.setOnClickListener {
@@ -169,6 +165,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun showClockPicker() {
+        viewModel.saveTitleAndDescription(
+            binding.etTitle.text.toString(), binding.etDescription.text.toString()
+        )
+
         val cal = viewModel.task.value?.deadLine
 
         cal?.let {
@@ -263,14 +263,14 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     binding.apply {
                         urgentSwitch.isChecked = notNullTask.isUrgent
                         etTitle.setText(notNullTask.title)
-                        deadlineTv.text = notNullTask.deadLine.longDateString
                         etDescription.setText(notNullTask.description)
+                        resetCursorsPosition()
+                        deadlineTv.text = notNullTask.deadLine.longDateString
                         if (notNullTask.isShared) {
                             if (segmentedBtn.position != 0) segmentedBtn.setPosition(0, false)
                         } else {
                             if (segmentedBtn.position != 1) segmentedBtn.setPosition(1, false)
                         }
-
                         setClock(notNullTask)
                     }
                 }
