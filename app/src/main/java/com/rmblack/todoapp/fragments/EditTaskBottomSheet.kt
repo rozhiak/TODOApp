@@ -174,24 +174,22 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
         cal?.let {
             val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
                 viewModel.updateTask { oldTask ->
-                    val newCal = PersianCalendar()
-                    newCal.year = cal.year
-                    newCal.month = cal.month
-                    newCal.dayOfMonth = cal.dayOfMonth
-                    newCal.hourOfDay = hour
-                    newCal.minute = minute
+                    val newDeadLine = PersianCalendar()
+                    newDeadLine.set(
+                        oldTask.deadLine.year,
+                        oldTask.deadLine.month,
+                        oldTask.deadLine.dayOfMonth,
+                        hour,
+                        minute
+                    )
                     oldTask.copy(
-                        deadLine = newCal
+                        deadLine = newDeadLine
                     )
                 }
             }
 
             TimePickerDialog(
-                requireContext(),
-                timeSetListener,
-                cal.hourOfDay,
-                cal.minute,
-                true
+                requireContext(), timeSetListener, cal.hourOfDay, cal.minute, true
             ).show()
         }
     }
@@ -237,12 +235,19 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 override fun onDateSelected(persianPickerDate: PersianPickerDate) {
                     viewModel.updateTask { oldTask ->
                         val newDeadline = PersianCalendar()
-                        newDeadline.year = persianPickerDate.persianYear
-                        newDeadline.month = persianPickerDate.persianMonth - 1
-                        newDeadline.dayOfMonth = persianPickerDate.persianDay
+
+                        newDeadline.set(
+                            persianPickerDate.persianYear,
+                            persianPickerDate.persianMonth - 1,
+                            persianPickerDate.persianDay,
+                            oldTask.deadLine.hourOfDay,
+                            oldTask.deadLine.minute
+                        )
+
                         oldTask.copy(
                             deadLine = newDeadline,
                         )
+
                     }
                 }
 
@@ -266,15 +271,24 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                             if (segmentedBtn.position != 1) segmentedBtn.setPosition(1, false)
                         }
 
-                        val hourStr = PersianNum.convert(notNullTask.deadLine.hourOfDay.toString())
-                        val minuteStr = PersianNum.convert(notNullTask.deadLine.minute.toString())
-                        val formattedText =
-                            String.format(getString(R.string.clock_format), hourStr, minuteStr)
-                        clockTv.text = formattedText
+                        setClock(notNullTask)
                     }
                 }
             }
         }
+    }
+
+    private fun FragmentEditTaskBottomSheetBinding.setClock(notNullTask: Task) {
+        var hourStr = PersianNum.convert(notNullTask.deadLine.hourOfDay.toString())
+        if (hourStr.length == 1) {
+            hourStr = "۰$hourStr"
+        }
+        var minuteStr = PersianNum.convert(notNullTask.deadLine.minute.toString())
+        if (minuteStr.length == 1) {
+            minuteStr = "۰$minuteStr"
+        }
+        val formattedText = String.format(getString(R.string.clock_format), hourStr, minuteStr)
+        clockTv.text = formattedText
     }
 
     private fun setClickListeners() {
