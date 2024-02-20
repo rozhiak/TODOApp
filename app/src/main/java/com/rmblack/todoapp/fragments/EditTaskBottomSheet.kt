@@ -2,6 +2,7 @@ package com.rmblack.todoapp.fragments
 
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -188,18 +189,23 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 }
             }
 
-            TimePickerDialog(
+            val picker = TimePickerDialog(
                 requireContext(), timeSetListener, cal.hourOfDay, cal.minute, true
-            ).show()
+            )
+
+            picker.setButton(DialogInterface.BUTTON_POSITIVE, "تایید", picker)
+            picker.setButton(DialogInterface.BUTTON_NEGATIVE, "لغو", picker)
+
+            picker.show()
         }
     }
 
-    private fun resetCursorsPosition() {
+    private fun resetCursorsPosition(titleCursorPos: Int, descriptionCursorPos: Int) {
         val etTitle: Editable? = binding.etTitle.text
-        Selection.setSelection(etTitle, binding.etTitle.text?.length ?: 0)
+        Selection.setSelection(etTitle, titleCursorPos)
 
         val etDes: Editable? = binding.etDescription.text
-        Selection.setSelection(etDes, binding.etDescription.text?.length ?: 0)
+        Selection.setSelection(etDes, descriptionCursorPos)
     }
 
     private fun showDatePicker() {
@@ -262,9 +268,11 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 task?.let { notNullTask ->
                     binding.apply {
                         urgentSwitch.isChecked = notNullTask.isUrgent
+                        val titleCursorPos = etTitle.selectionStart
+                        val descriptionCursorPos = etDescription.selectionStart
                         etTitle.setText(notNullTask.title)
                         etDescription.setText(notNullTask.description)
-                        resetCursorsPosition()
+                        resetCursorsPosition(titleCursorPos, descriptionCursorPos)
                         deadlineTv.text = notNullTask.deadLine.longDateString
                         if (notNullTask.isShared) {
                             if (segmentedBtn.position != 0) segmentedBtn.setPosition(0, false)
