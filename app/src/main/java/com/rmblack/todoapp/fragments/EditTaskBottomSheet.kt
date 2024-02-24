@@ -43,6 +43,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var context: Context
 
+    private var isAlarmPrimarySet = false
+
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
         EditTaskViewModelFactory(UUID.fromString(taskId))
@@ -142,10 +144,12 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             }
 
             alarmSwitch.setOnCheckedChangeListener { _, b ->
-                if (b) {
-                    viewModel.setAlarm(requireContext())
-                } else {
-                    viewModel.cancelAlarm(requireContext())
+                if (isAlarmPrimarySet) {
+                    if (b) {
+                        viewModel.setAlarm(requireContext())
+                    } else {
+                        viewModel.cancelAlarm(requireContext())
+                    }
                 }
             }
 
@@ -281,6 +285,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     binding.apply {
                         urgentSwitch.isChecked = notNullTask.isUrgent
                         alarmSwitch.isChecked = notNullTask.alarm == true
+                        isAlarmPrimarySet = true
                         val titleCursorPos = etTitle.selectionStart
                         val descriptionCursorPos = etDescription.selectionStart
                         etTitle.setText(notNullTask.title)
