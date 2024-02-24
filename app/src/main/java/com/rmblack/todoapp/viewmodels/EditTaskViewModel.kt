@@ -42,26 +42,24 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
                 context, it.deadLine.timeInMillis, it.id, AlarmUtil.ALARM_DEADLINE
             )
 
-            if (alarmResult != null) {
-                updateTask { oldTask ->
-                    oldTask.copy(
-                        alarm = alarmResult
-                    )
-                }
+            updateTask { oldTask ->
+                oldTask.copy(
+                    alarm = alarmResult
+                )
             }
         }
     }
 
     fun cancelAlarm(context: Context) {
         task.value?.let { task ->
-            task.alarm?.let {
+            if (task.alarm) {
                 AlarmUtil.cancelAlarm(context, task.id, AlarmUtil.ALARM_DEADLINE)
             }
         }
 
         updateTask { oldTask ->
             oldTask.copy(
-                alarm = null
+                alarm = false
             )
         }
     }

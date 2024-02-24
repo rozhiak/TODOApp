@@ -45,6 +45,9 @@ interface TaskDao {
     @Query("UPDATE task SET serverID = :serverID WHERE id = :id")
     suspend fun updateServerID(id: UUID, serverID: String)
 
+    @Query("UPDATE task SET alarm = :alarm WHERE id = :id")
+    suspend fun updateAlarm(id: UUID, alarm: Boolean)
+
     @Query("DELETE FROM task WHERE isShared = 1")
     suspend fun deleteSharedTasks()
 

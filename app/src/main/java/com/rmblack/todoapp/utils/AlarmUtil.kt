@@ -17,7 +17,7 @@ class AlarmUtil {
 
         fun setAlarm(
             context: Context, alarmTime: Long, taskId: UUID, intentAction: String
-        ): Boolean? {
+        ): Boolean {
             val alarmIntent = Intent(context, AlarmReceiver::class.java)
             alarmIntent.action = intentAction
             alarmIntent.putExtra("TASK_ID", taskId)
@@ -36,12 +36,12 @@ class AlarmUtil {
             }
 
             return try {
-                alarmManager.setExact(
+                alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent
                 )
                 true
             } catch (e: SecurityException) {
-                null
+                false
             }
         }
 

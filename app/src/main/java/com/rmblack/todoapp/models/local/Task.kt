@@ -19,5 +19,5 @@ data class Task(
     val groupId: String,
     val serverID: String = "",
     var detailsVisibility: Boolean,
-    val alarm: Boolean? = null
+    val alarm: Boolean = false
 )

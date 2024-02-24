@@ -75,6 +75,12 @@ class TaskRepository private constructor(
         }
     }
 
+    fun updateAlarm(id: UUID, alarm: Boolean) {
+        coroutineScope.launch {
+            database.taskDao().updateAlarm(id, alarm)
+        }
+    }
+
     suspend fun addTask(task: Task) = database.taskDao().insert(task)
 
     companion object {
