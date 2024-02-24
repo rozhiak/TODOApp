@@ -13,7 +13,7 @@ class AlarmUtil {
 
     companion object {
 
-        val ALARM_DEADLINE = "ALARM_DEADLINE"
+        const val ALARM_DEADLINE = "ALARM_DEADLINE"
 
         fun setAlarm(
             context: Context, alarmTime: Long, taskId: UUID, intentAction: String

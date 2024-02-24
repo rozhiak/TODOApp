@@ -52,9 +52,7 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
 
     fun cancelAlarm(context: Context) {
         task.value?.let { task ->
-            if (task.alarm) {
-                AlarmUtil.cancelAlarm(context, task.id, AlarmUtil.ALARM_DEADLINE)
-            }
+            AlarmUtil.cancelAlarm(context, task.id, AlarmUtil.ALARM_DEADLINE)
         }
 
         updateTask { oldTask ->

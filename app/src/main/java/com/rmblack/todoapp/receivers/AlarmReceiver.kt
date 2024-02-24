@@ -17,6 +17,7 @@ class AlarmReceiver: BroadcastReceiver() {
 
         if (taskId != null) {
             taskRepository.updateAlarm(taskId, false)
+            Toast.makeText(p0, "alarm", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(p0, "no id", Toast.LENGTH_LONG).show()
         }
