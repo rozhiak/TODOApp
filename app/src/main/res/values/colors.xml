@@ -25,6 +25,9 @@
     <color name="hint_text_color">#63000000</color>
     <color name="collapsed_task_back_color">#19E2FFF3</color>
     <color name="expanded_task_back_color">#f0fcf7</color>
+    <color name="light_gray">#555555</color>
+    <color name="switch_checkline_color">@color/white</color>
+
 
 
 

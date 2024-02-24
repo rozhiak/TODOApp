@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:name=".applications.TodoApplication"
         android:allowBackup="true"
@@ -34,6 +36,9 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <receiver android:name=".receivers.AlarmReceiver"/>
+
     </application>
 
 </manifest>

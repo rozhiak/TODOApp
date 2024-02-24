@@ -18,5 +18,6 @@ data class Task(
     val composer: String,
     val groupId: String,
     val serverID: String = "",
-    var detailsVisibility: Boolean
+    var detailsVisibility: Boolean,
+    val alarm: Boolean? = null
 )

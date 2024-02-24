@@ -19,7 +19,7 @@ class TaskRepository private constructor(
 
     private val database: TaskDatabase = Room.databaseBuilder(
         context.applicationContext, TaskDatabase::class.java, DATABASE_NAME
-    ).build()
+    ).addMigrations(Migrations.MIGRATION_1_2).build()
 
     suspend fun getTasks(): List<Task> = database.taskDao().getTasks()
 

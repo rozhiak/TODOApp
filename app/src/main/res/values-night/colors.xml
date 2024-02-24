@@ -9,4 +9,7 @@
     <color name="expanded_task_back_color">#4D5A56</color>
     <color name="segmented_btn_back_color">#5E6E69</color>
     <color name="title_black">#D8FFFFFF</color>
+    <color name="light_gray">@color/white</color>
+    <color name="switch_checkline_color">@color/black</color>
+
 </resources>

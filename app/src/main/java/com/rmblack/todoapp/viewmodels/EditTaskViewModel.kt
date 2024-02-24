@@ -1,10 +1,12 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.AlarmUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +33,36 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
             }
             primaryTask = task.copy()
             _task.value = task
+        }
+    }
+
+    fun setAlarm(context: Context) {
+        task.value?.let {
+            val alarmResult = AlarmUtil.setAlarm(
+                context, it.deadLine.timeInMillis, it.id, AlarmUtil.ALARM_DEADLINE
+            )
+
+            if (alarmResult != null) {
+                updateTask { oldTask ->
+                    oldTask.copy(
+                        alarm = alarmResult
+                    )
+                }
+            }
+        }
+    }
+
+    fun cancelAlarm(context: Context) {
+        task.value?.let { task ->
+            task.alarm?.let {
+                AlarmUtil.cancelAlarm(context, task.id, AlarmUtil.ALARM_DEADLINE)
+            }
+        }
+
+        updateTask { oldTask ->
+            oldTask.copy(
+                alarm = null
+            )
         }
     }
 

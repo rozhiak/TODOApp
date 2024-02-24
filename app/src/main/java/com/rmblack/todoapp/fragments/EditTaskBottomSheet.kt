@@ -141,6 +141,14 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 }
             }
 
+            alarmSwitch.setOnCheckedChangeListener { _, b ->
+                if (b) {
+                    viewModel.setAlarm(requireContext())
+                } else {
+                    viewModel.cancelAlarm(requireContext())
+                }
+            }
+
             deadlineTv.setOnClickListener {
                 viewModel.saveTitleAndDescription(
                     binding.etTitle.text.toString(), binding.etDescription.text.toString()
@@ -157,6 +165,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
             urgentLable.setOnClickListener {
                 urgentSwitch.toggle()
+            }
+
+            alarmLable.setOnClickListener {
+                alarmSwitch.toggle()
             }
 
             clockTv.setOnClickListener { showClockPicker() }
@@ -268,6 +280,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 task?.let { notNullTask ->
                     binding.apply {
                         urgentSwitch.isChecked = notNullTask.isUrgent
+                        alarmSwitch.isChecked = notNullTask.alarm == true
                         val titleCursorPos = etTitle.selectionStart
                         val descriptionCursorPos = etDescription.selectionStart
                         etTitle.setText(notNullTask.title)
