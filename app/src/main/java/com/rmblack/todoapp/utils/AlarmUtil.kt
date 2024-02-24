@@ -14,13 +14,14 @@ class AlarmUtil {
     companion object {
 
         const val ALARM_DEADLINE = "ALARM_DEADLINE"
+        const val TASK_ID = "TASK_ID"
 
         fun setAlarm(
             context: Context, alarmTime: Long, taskId: UUID, intentAction: String
         ): Boolean {
             val alarmIntent = Intent(context, AlarmReceiver::class.java)
             alarmIntent.action = intentAction
-            alarmIntent.putExtra("TASK_ID", taskId)
+            alarmIntent.putExtra(TASK_ID, taskId.toString())
             val pendingIntent = PendingIntent.getBroadcast(
                 context, taskId.hashCode(), alarmIntent, PendingIntent.FLAG_IMMUTABLE
             )
