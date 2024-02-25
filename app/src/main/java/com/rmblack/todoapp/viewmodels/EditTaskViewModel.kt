@@ -39,7 +39,7 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
     fun setAlarm(context: Context) {
         task.value?.let {
             val alarmResult = AlarmUtil.setAlarm(
-                context, it.deadLine.timeInMillis, it.id, AlarmUtil.ALARM_DEADLINE
+                context, it.deadLine.timeInMillis, it.id
             )
 
             updateTask { oldTask ->
@@ -52,7 +52,7 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
 
     fun cancelAlarm(context: Context) {
         task.value?.let { task ->
-            AlarmUtil.cancelAlarm(context, task.id, AlarmUtil.ALARM_DEADLINE)
+            AlarmUtil.cancelAlarm(context, task.id)
         }
 
         updateTask { oldTask ->

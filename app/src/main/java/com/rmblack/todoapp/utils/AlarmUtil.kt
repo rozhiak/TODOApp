@@ -13,17 +13,18 @@ class AlarmUtil {
 
     companion object {
 
-        const val ALARM_DEADLINE = "ALARM_DEADLINE"
         const val TASK_ID = "TASK_ID"
 
         fun setAlarm(
-            context: Context, alarmTime: Long, taskId: UUID, intentAction: String
+            context: Context, alarmTime: Long, taskId: UUID
         ): Boolean {
             val alarmIntent = Intent(context, AlarmReceiver::class.java)
-            alarmIntent.action = intentAction
             alarmIntent.putExtra(TASK_ID, taskId.toString())
             val pendingIntent = PendingIntent.getBroadcast(
-                context, taskId.hashCode(), alarmIntent, PendingIntent.FLAG_IMMUTABLE
+                context,
+                taskId.hashCode(),
+                alarmIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -46,12 +47,14 @@ class AlarmUtil {
             }
         }
 
-        fun cancelAlarm(context: Context, uniqueId: UUID, intentAction: String) {
+        fun cancelAlarm(context: Context, uniqueId: UUID) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, AlarmReceiver::class.java)
-            intent.action = intentAction
             val pendingIntent = PendingIntent.getBroadcast(
-                context, uniqueId.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE
+                context,
+                uniqueId.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             alarmManager.cancel(pendingIntent)
         }

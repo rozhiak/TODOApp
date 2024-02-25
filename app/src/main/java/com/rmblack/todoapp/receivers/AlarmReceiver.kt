@@ -19,11 +19,7 @@ class AlarmReceiver: BroadcastReceiver() {
         if (taskIdString != null) {
             val taskId = UUID.fromString(taskIdString)
 
-            if (taskId != null) {
-                Toast.makeText(p0, "alarm", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(p0, "no id", Toast.LENGTH_LONG).show()
-            }
+
         }
 
     }
