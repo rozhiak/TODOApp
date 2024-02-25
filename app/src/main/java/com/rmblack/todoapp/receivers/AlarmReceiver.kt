@@ -3,9 +3,9 @@ package com.rmblack.todoapp.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.MediaPlayer
-import com.rmblack.todoapp.R
+import com.rmblack.todoapp.activities.AlarmActivity
 import com.rmblack.todoapp.data.repository.TaskRepository
+import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.AlarmUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,22 +23,19 @@ class AlarmReceiver: BroadcastReceiver() {
             CoroutineScope(Dispatchers.IO).launch {
                 val task = taskRepository.getTask(taskId)
                 taskRepository.updateAlarm(task.id, false)
+                showAlarmActivity(p0, task)
             }
-
-            // TODO show title and description using an activity
-
-            playSound(p0)
         }
 
     }
 
-
-
-    private fun playSound(p0: Context?) {
-        val mediaPlayer = MediaPlayer.create(p0, R.raw.soft_alarm_2010)
-        mediaPlayer.start()
-        mediaPlayer.setOnCompletionListener {
-            mediaPlayer.release()
+    private fun showAlarmActivity(p0: Context?, task: Task) {
+        p0?.let { context ->
+            val i = Intent(context, AlarmActivity::class.java)
+            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            i.putExtra(AlarmActivity.ALARM_TITLE, task.title)
+            i.putExtra(AlarmActivity.ALARM_DESCRIPTION, task.description)
+            context.startActivity(i)
         }
     }
 
