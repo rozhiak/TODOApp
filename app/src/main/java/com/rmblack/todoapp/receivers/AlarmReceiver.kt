@@ -18,29 +18,25 @@ class AlarmReceiver: BroadcastReceiver() {
         val taskIdString = p1?.getStringExtra(AlarmUtil.TASK_ID)
 
         if (taskIdString != null) {
-            changeTaskInDatabase(taskIdString, p0)
+            val taskId = UUID.fromString(taskIdString)
+            val taskRepository = TaskRepository.get()
+            CoroutineScope(Dispatchers.IO).launch {
+                val task = taskRepository.getTask(taskId)
+                taskRepository.updateAlarm(task.id, false)
+            }
+
+            // TODO show title and description using an activity
+
             playSound(p0)
         }
 
     }
 
-    private fun changeTaskInDatabase(taskIdString: String?, p0: Context?) {
-        val taskId = UUID.fromString(taskIdString)
 
-        p0?.let { _ ->
-            CoroutineScope(Dispatchers.IO).launch {
-                val taskRepository = TaskRepository.get()
-                val task = taskRepository.getTask(taskId)
-                taskRepository.updateAlarm(task.id, false)
-            }
-        }
-    }
 
     private fun playSound(p0: Context?) {
         val mediaPlayer = MediaPlayer.create(p0, R.raw.soft_alarm_2010)
-
         mediaPlayer.start()
-
         mediaPlayer.setOnCompletionListener {
             mediaPlayer.release()
         }
