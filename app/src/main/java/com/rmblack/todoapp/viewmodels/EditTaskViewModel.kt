@@ -1,12 +1,11 @@
 package com.rmblack.todoapp.viewmodels
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.utils.AlarmUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class EditTaskViewModel(taskId: UUID) : ViewModel() {
+class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewModel() {
     var doNotSave = false
 
     private val taskRepository = TaskRepository.get()
@@ -36,29 +35,29 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
         }
     }
 
-    fun setAlarm(context: Context) {
+    fun setAlarm() {
         task.value?.let {
             val now = System.currentTimeMillis()
             val deadline = it.deadLine.timeInMillis
-            var alarmResult = true
+            var alarmRes = true
 
             if (now < deadline) {
-                alarmResult = AlarmUtil.setAlarm(
-                    context, it.deadLine.timeInMillis, it.id
+                alarmRes = alarmUtil.setAlarm(
+                    it.deadLine.timeInMillis, it.id
                 )
             }
 
             updateTask { oldTask ->
                 oldTask.copy(
-                    alarm = alarmResult
+                    alarm = alarmRes
                 )
             }
         }
     }
 
-    fun cancelAlarm(context: Context) {
+    fun cancelAlarm() {
         task.value?.let { task ->
-            AlarmUtil.cancelAlarm(context, task.id)
+            alarmUtil.cancelAlarm(task.id)
         }
 
         updateTask { oldTask ->
@@ -115,9 +114,10 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
 }
 
 class EditTaskViewModelFactory(
-    private val taskId: UUID
+    private val taskId: UUID, private val alarmUtil: AlarmUtil
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return EditTaskViewModel(taskId) as T
+        @Suppress("UNCHECKED_CAST")
+        return EditTaskViewModel(taskId, alarmUtil) as T
     }
 }

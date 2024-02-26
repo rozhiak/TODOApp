@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import AlarmUtilImpl
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -47,7 +48,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
-        EditTaskViewModelFactory(UUID.fromString(taskId))
+        val alarmUtil = AlarmUtilImpl(requireContext())
+        EditTaskViewModelFactory(UUID.fromString(taskId), alarmUtil)
     }
 
     private var _binding: FragmentEditTaskBottomSheetBinding? = null
@@ -146,9 +148,9 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             alarmSwitch.setOnCheckedChangeListener { _, b ->
                 if (isAlarmPrimarySet) {
                     if (b) {
-                        viewModel.setAlarm(requireContext())
+                        viewModel.setAlarm()
                     } else {
-                        viewModel.cancelAlarm(requireContext())
+                        viewModel.cancelAlarm()
                     }
                 }
             }

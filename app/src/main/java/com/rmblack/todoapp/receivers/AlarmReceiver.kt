@@ -1,16 +1,11 @@
 package com.rmblack.todoapp.receivers
 
+import AlarmUtilImpl
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.rmblack.todoapp.activities.AlarmActivity
-import com.rmblack.todoapp.data.repository.TaskRepository
-import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.utils.AlarmUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.UUID
+import com.rmblack.todoapp.alarm.AlarmUtil
 
 class AlarmReceiver: BroadcastReceiver() {
 
