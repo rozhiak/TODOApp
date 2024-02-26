@@ -205,6 +205,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                         deadLine = newDeadLine
                     )
                 }
+
+                if (viewModel.task.value?.alarm == true) {
+                    viewModel.resetAlarmTime()
+                }
             }
 
             val picker = TimePickerDialog(
@@ -272,6 +276,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                             deadLine = newDeadline,
                         )
 
+                    }
+
+                    if (viewModel.task.value?.alarm == true) {
+                        viewModel.resetAlarmTime()
                     }
                 }
 

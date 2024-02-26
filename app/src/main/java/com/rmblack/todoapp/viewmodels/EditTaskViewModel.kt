@@ -67,6 +67,13 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
         }
     }
 
+    fun resetAlarmTime() {
+        task.value?.let { task ->
+            alarmUtil.cancelAlarm(task.id)
+            setAlarm()
+        }
+    }
+
     fun saveTitleAndDescription(newTitle: String, newDes: String) {
         val newTitleTrimmed = newTitle.trimEnd()
         val newDescriptionTrimmed = newDes.trimEnd()
