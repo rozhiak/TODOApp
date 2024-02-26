@@ -38,9 +38,15 @@ class EditTaskViewModel(taskId: UUID) : ViewModel() {
 
     fun setAlarm(context: Context) {
         task.value?.let {
-            val alarmResult = AlarmUtil.setAlarm(
-                context, it.deadLine.timeInMillis, it.id
-            )
+            val now = System.currentTimeMillis()
+            val deadline = it.deadLine.timeInMillis
+            var alarmResult = true
+
+            if (now < deadline) {
+                alarmResult = AlarmUtil.setAlarm(
+                    context, it.deadLine.timeInMillis, it.id
+                )
+            }
 
             updateTask { oldTask ->
                 oldTask.copy(

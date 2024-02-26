@@ -1,40 +1,41 @@
 package com.rmblack.todoapp.activities
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.Context
 import android.media.MediaPlayer
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.rmblack.todoapp.R
+import com.rmblack.todoapp.databinding.ActivityAlarmBinding
+import com.rmblack.todoapp.viewmodels.AlarmViewModel
+import java.util.UUID
 
-class AlarmActivity: Activity() {
+class AlarmActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    private lateinit var viewModel: AlarmViewModel
 
-        // TODO show title and description
+    private lateinit var binding: ActivityAlarmBinding
 
-        // TODO play sound
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAlarmBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        viewModel = ViewModelProvider(this)[AlarmViewModel::class.java]
+        val taskIDString = intent.getStringExtra(ALARM_ID)
+        viewModel.setData(UUID.fromString(taskIDString))
+        setUI()
+        playSound()
+        viewModel.resetAlarmState()
     }
 
-    private fun showAlarmDialog() {
-        val title = intent.getStringExtra(ALARM_TITLE)
-        val description = intent.getStringExtra(ALARM_DESCRIPTION)
+    private fun setUI() {
+        viewModel.task.observe(this) {
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(title)
-            .setMessage(description)
-            .setCancelable(false)
-            .setPositiveButton("باشه") { dialog, _ ->
-                dialog.cancel()
-            }
-        val alert = builder.create()
-        alert.show()
+        }
     }
 
-    private fun playSound(context: Context) {
-        val mediaPlayer = MediaPlayer.create(context, com.rmblack.todoapp.R.raw.soft_alarm_2010)
+    private fun playSound() {
+        val mediaPlayer = MediaPlayer.create(this, R.raw.soft_alarm_2010)
         mediaPlayer.start()
         mediaPlayer.setOnCompletionListener {
             mediaPlayer.release()
@@ -42,8 +43,6 @@ class AlarmActivity: Activity() {
     }
 
     companion object {
-        const val ALARM_TITLE = "alarm_title"
-        const val ALARM_DESCRIPTION = "alarm_description"
+        const val ALARM_ID = "alarm_title"
     }
-
 }

@@ -18,23 +18,16 @@ class AlarmReceiver: BroadcastReceiver() {
         val taskIdString = p1?.getStringExtra(AlarmUtil.TASK_ID)
 
         if (taskIdString != null) {
-            val taskId = UUID.fromString(taskIdString)
-            val taskRepository = TaskRepository.get()
-            CoroutineScope(Dispatchers.IO).launch {
-                val task = taskRepository.getTask(taskId)
-                taskRepository.updateAlarm(task.id, false)
-                showAlarmActivity(p0, task)
-            }
+            showAlarmActivity(p0, taskIdString)
         }
 
     }
 
-    private fun showAlarmActivity(p0: Context?, task: Task) {
+    private fun showAlarmActivity(p0: Context?, taskIDString: String) {
         p0?.let { context ->
             val i = Intent(context, AlarmActivity::class.java)
             i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            i.putExtra(AlarmActivity.ALARM_TITLE, task.title)
-            i.putExtra(AlarmActivity.ALARM_DESCRIPTION, task.description)
+            i.putExtra(AlarmActivity.ALARM_ID, taskIDString)
             context.startActivity(i)
         }
     }
