@@ -25,6 +25,8 @@ class TaskRepository private constructor(
 
     fun getTask(id: UUID) = database.taskDao().getTask(id)
 
+    fun getTaskFlow(id: UUID) = database.taskDao().getTaskFlow(id)
+
     fun getPrivateTasksFlow(): Flow<List<Task>> = database.taskDao().getPrivateTasksFlow()
 
     fun getSharedTasksFlow(): Flow<List<Task>> = database.taskDao().getSharedTasksFlow()

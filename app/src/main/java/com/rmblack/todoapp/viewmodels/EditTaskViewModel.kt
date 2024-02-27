@@ -25,13 +25,26 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
 
     lateinit var primaryTask: Task
 
+    private var dataLoadedForFirstTime = false
+
     init {
         viewModelScope.launch {
-            val task = withContext(Dispatchers.IO) {
-                taskRepository.getTask(taskId)
+            withContext(Dispatchers.IO) {
+                val task = taskRepository.getTaskFlow(taskId)
+                task.collect {
+                    if (!dataLoadedForFirstTime) {
+                        dataLoadedForFirstTime = true
+                        _task.value = it.copy()
+                        primaryTask = it.copy()
+                    } else {
+                        /* If alarm triggered when user is on editing
+                           alarm switch will be synced. */
+                        _task.value = _task.value?.copy(
+                            alarm = it.alarm
+                        )
+                    }
+                }
             }
-            primaryTask = task.copy()
-            _task.value = task
         }
     }
 
