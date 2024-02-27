@@ -28,7 +28,7 @@ interface TaskDao {
     suspend fun getSharedTasks(): List<Task>
 
     @Query("SELECT * FROM Task WHERE id=(:id)")
-    fun getTask(id: UUID): Task
+    fun getTask(id: UUID): Task?
 
     @Query("SELECT * FROM Task WHERE id=(:id)")
     fun getTaskFlow(id: UUID): Flow<Task>

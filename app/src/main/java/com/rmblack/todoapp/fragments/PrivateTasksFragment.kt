@@ -84,7 +84,7 @@ class PrivateTasksFragment : TasksFragment() {
     }
 
     private fun createPrivateTasksAdapter(): PrivateTasksAdapter = PrivateTasksAdapter(
-        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity()
+        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity(), alarmUtil
     )
 
     class PrivateFragmentViewModelFactory(private val application: Application) :

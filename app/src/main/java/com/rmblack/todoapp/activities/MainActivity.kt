@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.activities
 
+import AlarmUtilImpl
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.PopupWindow
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -25,6 +27,7 @@ import com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgre
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.fragments.FilterSettingBottomSheet
@@ -46,16 +49,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(this.application, alarmUtil)
+    }
+
+    private val alarmUtil: AlarmUtil by lazy {
+        AlarmUtilImpl(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        viewModel = ViewModelProvider(
-            this, MainViewModelFactory(application)
-        )[MainViewModel::class.java]
         viewModel.removeNoTitleTasks()
-
         checkLoginState()
-
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -160,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getUserFromSharedPreferences()?.let { user ->
             setSyncingState(true)
             val result = Utilities.syncTasksWithServer(
-                user.token, viewModel.sharedPreferencesManager
+                user.token, viewModel.sharedPreferencesManager, alarmUtil
             )
             result.onSuccess {
                 setSyncingState(false)
@@ -363,13 +367,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    class MainViewModelFactory(private val application: Application) :
-        ViewModelProvider.Factory {
+    class MainViewModelFactory(
+        private val application: Application,
+        private val alarmUtil: AlarmUtil
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                return MainViewModel(application) as T
+                @Suppress("UNCHECKED_CAST")
+                return MainViewModel(application, alarmUtil) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
+
 }

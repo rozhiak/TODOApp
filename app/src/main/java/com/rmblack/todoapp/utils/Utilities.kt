@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.newlyAddedTaskServerID
+import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.success.Tasks
@@ -106,7 +107,9 @@ class Utilities {
 
         // before using this function , check user login state
         suspend fun syncTasksWithServer(
-            token: String, sharedPreferencesManager: SharedPreferencesManager
+            token: String,
+            sharedPreferencesManager: SharedPreferencesManager,
+            alarmUtil: AlarmUtil
         ): Result<Unit> {
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
@@ -196,11 +199,13 @@ class Utilities {
                         if (index >= 0) {
                             val localTask = privateLocalTasksPair[index].first
                             if (!pServerTask.checkEquality(localTask)) {
-                                taskRepository.updateTask(
-                                    pServerTask.convertToLocalTaskWithLocalID(
-                                        localTask.id, localTask.detailsVisibility
-                                    )
+                                val newTask = pServerTask.convertToLocalTaskWithLocalID(
+                                    localTask.id, localTask.detailsVisibility, localTask.alarm
                                 )
+                                taskRepository.updateTask(newTask)
+                                if (localTask.alarm &&
+                                    pServerTask.deadline.toLong() != localTask.deadLine.timeInMillis)
+                                    resetAlarm(alarmUtil, newTask)
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
@@ -222,11 +227,13 @@ class Utilities {
                         if (index >= 0) {
                             val localTask = sharedLocalTasksPair[index].first
                             if (!sServerTask.checkEquality(localTask)) {
-                                taskRepository.updateTask(
-                                    sServerTask.convertToLocalTaskWithLocalID(
-                                        localTask.id, localTask.detailsVisibility
-                                    )
+                                val newTask = sServerTask.convertToLocalTaskWithLocalID(
+                                    localTask.id, localTask.detailsVisibility, localTask.alarm
                                 )
+                                taskRepository.updateTask(newTask)
+                                if (localTask.alarm &&
+                                    sServerTask.deadline.toLong() != localTask.deadLine.timeInMillis)
+                                    resetAlarm(alarmUtil, newTask)
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {
@@ -251,6 +258,7 @@ class Utilities {
                 for (toDelete in privateTasksToDelete) {
                     if (toDelete.serverID == newlyAddedTaskServerID) continue
                     taskRepository.deleteTask(toDelete)
+                    if (toDelete.alarm) alarmUtil.cancelAlarm(toDelete.id)
                 }
 
                 val sharedTasksToDelete: List<Task> = sharedLocalTasksPair.filter { pair ->
@@ -262,12 +270,20 @@ class Utilities {
                 for (toDelete in sharedTasksToDelete) {
                     if (toDelete.serverID == newlyAddedTaskServerID) continue
                     taskRepository.deleteTask(toDelete)
+                    if (toDelete.alarm) alarmUtil.cancelAlarm(toDelete.id)
                 }
             } else {
                 return Result.failure(Exception())
             }
 
             return Result.success(Unit)
+        }
+
+        private fun resetAlarm(alarmUtil: AlarmUtil, task: Task) {
+            alarmUtil.cancelAlarm(task.id)
+            val now = System.currentTimeMillis()
+            if (task.deadLine.timeInMillis > now)
+                alarmUtil.setAlarm(task.deadLine.timeInMillis, task.id)
         }
     }
 

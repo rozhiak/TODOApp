@@ -42,7 +42,7 @@ data class ServerTask(
         )
     }
 
-    fun convertToLocalTaskWithLocalID(localID: UUID, isVisible: Boolean): Task {
+    fun convertToLocalTaskWithLocalID(localID: UUID, isVisible: Boolean, alarm: Boolean = false): Task {
         val addedTime = PersianCalendar()
         addedTime.timeInMillis = added_time.toLong()
         val deadLine = PersianCalendar()
@@ -60,7 +60,8 @@ data class ServerTask(
             composer = user,
             groupId = group_id,
             serverID = id,
-            isVisible
+            detailsVisibility = isVisible,
+            alarm = alarm
         )
     }
 

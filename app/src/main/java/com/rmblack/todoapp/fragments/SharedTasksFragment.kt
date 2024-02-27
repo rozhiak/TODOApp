@@ -193,7 +193,7 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun createSharedTasksAdapter() = SharedTasksAdapter(
-        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity()
+        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity(), alarmUtil
     )
 
     class SharedFragmentViewModelFactory(private val application: Application) :

@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import AlarmUtilImpl
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.REMAINING_DAYS_LABLE
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
+import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.databinding.FragmentTasksBinding
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.DeleteTaskRequest
@@ -37,6 +39,10 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     val connectionStatusFragment: Fragment = ConnectionStatusFragment()
 
     val connectUserFragment: Fragment = ConnectUserFragment()
+
+    val alarmUtil: AlarmUtil by lazy {
+        AlarmUtilImpl(requireContext())
+    }
 
     protected val binding
         get() = checkNotNull(_binding) {
@@ -85,7 +91,8 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
     }
 
     private suspend fun syncTasks(userToken: String) {
-        val response = Utilities.syncTasksWithServer(userToken, viewModel.sharedPreferencesManager)
+        val response =
+            Utilities.syncTasksWithServer(userToken, viewModel.sharedPreferencesManager, alarmUtil)
         response.onSuccess {
             setSyncingState(false)
         }
@@ -195,6 +202,7 @@ open class TasksFragment : Fragment(), TaskHolder.EditClickListener {
                 super.onDismissed(transientBottomBar, event)
                 if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
                     viewModel.deleteTaskFromServer(deleteReq, deletedTask)
+                    if (deletedTask.alarm) alarmUtil.cancelAlarm(deletedTask.id)
                 }
             }
         })

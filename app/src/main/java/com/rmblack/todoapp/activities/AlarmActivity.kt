@@ -31,6 +31,7 @@ class AlarmActivity : AppCompatActivity() {
 
     private fun setUI() {
         viewModel.task.observe(this) {
+            if (it == null) finish()
             it?.let {
                 binding.title.text = it.title
 

@@ -15,8 +15,8 @@ class AlarmViewModel: ViewModel() {
 
     private val taskRepository = TaskRepository.get()
 
-    private var _task = MutableLiveData<Task>()
-    val task: LiveData<Task>
+    private var _task = MutableLiveData<Task?>()
+    val task: LiveData<Task?>
         get() = _task
 
     fun setData(id: UUID) {

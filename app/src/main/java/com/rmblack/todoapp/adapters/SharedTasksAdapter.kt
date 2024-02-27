@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
+import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.databinding.SharedTasksRvItemBinding
 import com.rmblack.todoapp.models.local.Task
@@ -19,7 +20,8 @@ class SharedTaskHolder(
     private val viewModel: TasksViewModel,
     private val activity: Activity,
     editClickListener: EditClickListener,
-    recyclerView: RecyclerView
+    recyclerView: RecyclerView,
+    private val alarmUtil: AlarmUtil
 ) : TaskHolder(
     scope, editClickListener, recyclerView, binding
 ) {
@@ -54,7 +56,7 @@ class SharedTaskHolder(
                 )
                 setEditClick(notNullTask, editCard)
                 setBackground(viewModel, pos, rootConstraint, activity.resources)
-                setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity)
+                setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity, alarmUtil)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
                 setLongPress(notNullTask, rootCard)
                 composerNameTv.text = notNullTask.composer
@@ -67,7 +69,8 @@ class SharedTasksAdapter(
     private val scope: CoroutineScope,
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
-    private val activity: Activity
+    private val activity: Activity,
+    private val alarmUtil: AlarmUtil
 ) : TaskAdapter(
     viewModel,
     editClickListener,
@@ -81,7 +84,7 @@ class SharedTasksAdapter(
         } else {
             val binding = SharedTasksRvItemBinding.inflate(inflater, parent, false)
             SharedTaskHolder(
-                scope, binding, viewModel, activity, editClickListener, recyclerView
+                scope, binding, viewModel, activity, editClickListener, recyclerView, alarmUtil
             )
         }
     }

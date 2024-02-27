@@ -1,5 +1,6 @@
 package com.rmblack.todoapp.fragments
 
+import AlarmUtilImpl
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -146,8 +147,9 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         val job = CoroutineScope(Dispatchers.Default).launch {
             val token = viewModel.getUserToken()
             token?.let {
+                val alarmUtil = AlarmUtilImpl(requireContext())
                 val response = Utilities.syncTasksWithServer(
-                    it, viewModel.sharedPreferencesManager
+                    it, viewModel.sharedPreferencesManager, alarmUtil
                 )
                 response.onSuccess {
                     activity.runOnUiThread {
