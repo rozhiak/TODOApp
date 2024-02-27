@@ -148,9 +148,15 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             alarmSwitch.setOnCheckedChangeListener { _, b ->
                 if (isAlarmPrimarySet) {
                     if (b) {
-                        viewModel.setAlarm()
+                        viewModel.setAlarm(
+                            binding.etTitle.text.toString(),
+                            binding.etDescription.text.toString()
+                        )
                     } else {
-                        viewModel.cancelAlarm()
+                        viewModel.cancelAlarm(
+                            binding.etTitle.text.toString(),
+                            binding.etDescription.text.toString()
+                        )
                     }
                 }
             }
@@ -207,7 +213,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 }
 
                 if (viewModel.task.value?.alarm == true) {
-                    viewModel.resetAlarmTime()
+                    viewModel.resetAlarmTime(
+                        binding.etTitle.text.toString(),
+                        binding.etDescription.text.toString()
+                    )
                 }
             }
 
@@ -279,7 +288,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     }
 
                     if (viewModel.task.value?.alarm == true) {
-                        viewModel.resetAlarmTime()
+                        viewModel.resetAlarmTime(
+                            binding.etTitle.text.toString(),
+                            binding.etDescription.text.toString()
+                        )
                     }
                 }
 

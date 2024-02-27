@@ -48,7 +48,7 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
         }
     }
 
-    fun setAlarm() {
+    fun setAlarm(title: String, description: String) {
         task.value?.let {
             val now = System.currentTimeMillis()
             val deadline = it.deadLine.timeInMillis
@@ -62,28 +62,32 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
 
             updateTask { oldTask ->
                 oldTask.copy(
+                    title = title,
+                    description = description,
                     alarm = alarmRes
                 )
             }
         }
     }
 
-    fun cancelAlarm() {
+    fun cancelAlarm(title: String, description: String) {
         task.value?.let { task ->
             alarmUtil.cancelAlarm(task.id)
         }
 
         updateTask { oldTask ->
             oldTask.copy(
-                alarm = false
+                alarm = false,
+                title = title,
+                description = description
             )
         }
     }
 
-    fun resetAlarmTime() {
+    fun resetAlarmTime(title: String, description: String) {
         task.value?.let { task ->
             alarmUtil.cancelAlarm(task.id)
-            setAlarm()
+            setAlarm(title, description)
         }
     }
 
