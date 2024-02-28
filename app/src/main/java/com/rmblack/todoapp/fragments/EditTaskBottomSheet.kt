@@ -148,15 +148,24 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             alarmSwitch.setOnCheckedChangeListener { _, b ->
                 if (isAlarmPrimarySet) {
                     if (b) {
-                        viewModel.setAlarm(
-                            binding.etTitle.text.toString(),
-                            binding.etDescription.text.toString()
-                        )
+                        val alarmRes = viewModel.setAlarm()
+                        viewModel.updateTask { oldTask ->
+                            oldTask.copy(
+                                alarm = alarmRes,
+                                title = binding.etTitle.text.toString(),
+                                description = binding.etDescription.text.toString()
+                            )
+                        }
+
                     } else {
-                        viewModel.cancelAlarm(
-                            binding.etTitle.text.toString(),
-                            binding.etDescription.text.toString()
-                        )
+                        viewModel.cancelAlarm()
+                        viewModel.updateTask { oldTask ->
+                            oldTask.copy(
+                                alarm = false,
+                                title = binding.etTitle.text.toString(),
+                                description = binding.etDescription.text.toString()
+                            )
+                        }
                     }
                 }
             }
@@ -213,10 +222,15 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 }
 
                 if (viewModel.task.value?.alarm == true) {
-                    viewModel.resetAlarmTime(
-                        binding.etTitle.text.toString(),
-                        binding.etDescription.text.toString()
-                    )
+                    val alarmRes = viewModel.resetAlarmTime()
+
+                    viewModel.updateTask { oldTask ->
+                        oldTask.copy(
+                            alarm = alarmRes,
+                            title = binding.etTitle.text.toString(),
+                            description = binding.etDescription.text.toString()
+                        )
+                    }
                 }
             }
 
@@ -288,10 +302,15 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     }
 
                     if (viewModel.task.value?.alarm == true) {
-                        viewModel.resetAlarmTime(
-                            binding.etTitle.text.toString(),
-                            binding.etDescription.text.toString()
-                        )
+                        val alarmRes = viewModel.resetAlarmTime()
+
+                        viewModel.updateTask { oldTask ->
+                            oldTask.copy(
+                                alarm = alarmRes,
+                                title = binding.etTitle.text.toString(),
+                                description = binding.etDescription.text.toString()
+                            )
+                        }
                     }
                 }
 

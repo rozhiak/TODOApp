@@ -48,47 +48,33 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
         }
     }
 
-    fun setAlarm(title: String, description: String) {
+    fun setAlarm(): Boolean {
+        var alarmRes = true
         task.value?.let {
             val now = System.currentTimeMillis()
             val deadline = it.deadLine.timeInMillis
-            var alarmRes = true
-
             if (now < deadline) {
                 alarmRes = alarmUtil.setAlarm(
                     it.deadLine.timeInMillis, it.id
                 )
             }
-
-            updateTask { oldTask ->
-                oldTask.copy(
-                    title = title,
-                    description = description,
-                    alarm = alarmRes
-                )
-            }
         }
+        return alarmRes
     }
 
-    fun cancelAlarm(title: String, description: String) {
+    fun cancelAlarm() {
         task.value?.let { task ->
             alarmUtil.cancelAlarm(task.id)
         }
-
-        updateTask { oldTask ->
-            oldTask.copy(
-                alarm = false,
-                title = title,
-                description = description
-            )
-        }
     }
 
-    fun resetAlarmTime(title: String, description: String) {
+    fun resetAlarmTime(): Boolean {
+        var alarmRes = true
         task.value?.let { task ->
             alarmUtil.cancelAlarm(task.id)
-            setAlarm(title, description)
+            alarmRes = setAlarm()
         }
+        return alarmRes
     }
 
     fun saveTitleAndDescription(newTitle: String, newDes: String) {
