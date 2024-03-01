@@ -101,7 +101,8 @@ dependencies {
     //Progress Button
     implementation "com.github.razir.progressbutton:progressbutton:2.1.0"
     implementation "com.github.leandroborgesferreira:loading-button-android:2.3.0"
+    // Worker
+    implementation "androidx.work:work-runtime-ktx:2.9.0"
+
 
 }
-
-
