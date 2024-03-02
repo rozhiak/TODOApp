@@ -247,10 +247,18 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private fun resetCursorsPosition(titleCursorPos: Int, descriptionCursorPos: Int) {
         val etTitle: Editable? = binding.etTitle.text
-        Selection.setSelection(etTitle, titleCursorPos)
+        if (etTitle?.indices?.contains(titleCursorPos) == true) {
+            Selection.setSelection(etTitle, titleCursorPos)
+        } else {
+            Selection.setSelection(etTitle, etTitle?.length ?: 0)
+        }
 
         val etDes: Editable? = binding.etDescription.text
-        Selection.setSelection(etDes, descriptionCursorPos)
+        if (etDes?.indices?.contains(descriptionCursorPos) == true) {
+            Selection.setSelection(etDes, descriptionCursorPos)
+        } else {
+            Selection.setSelection(etDes, etDes?.length ?: 0)
+        }
     }
 
     private fun showDatePicker() {
