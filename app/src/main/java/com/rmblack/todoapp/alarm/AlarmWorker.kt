@@ -11,62 +11,101 @@ import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.AlarmActivity
 import com.rmblack.todoapp.alarm.AlarmUtil.Companion.TASK_ID
+import com.rmblack.todoapp.data.repository.TaskRepository
+import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.UUID
 
 
-class AlarmWorker(private val context: Context, params: WorkerParameters): Worker(context, params) {
-    override fun doWork(): Result {
+class AlarmWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+
+    val taskRepository = TaskRepository.get()
+
+    override suspend fun doWork(): Result {
         val taskIdString = inputData.getString(TASK_ID) ?: return Result.failure()
-        showNotification(context, taskIdString)
-        // TODO change alarm state of task to false
+        val uuid = UUID.fromString(taskIdString)
+        val task = getTaskFromRoom(uuid)
+        task?.let {
+            prepareNotification(it)
+            changeTaskAlarmState(uuid)
+        }
         return Result.success()
     }
 
-    private fun showNotification(context: Context, idString: String) {
-        val CHANNEL_ID = "1234"
+    private suspend fun getTaskFromRoom(id: UUID): Task? {
+        return withContext(Dispatchers.IO) {
+            taskRepository.getTask(id)
+        }
+    }
 
+    private suspend fun changeTaskAlarmState(id: UUID) {
+        withContext(Dispatchers.IO) {
+            taskRepository.updateAlarm(id, false)
+        }
+    }
+
+    private fun prepareNotification(task: Task) {
         val soundUri =
-            Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + applicationContext.packageName + "/" + R.raw.soft_alarm_2010)
-        val mNotificationManager =
+            Uri.parse(
+                ContentResolver.SCHEME_ANDROID_RESOURCE +
+                        "://" + applicationContext.packageName + "/" + R.raw.soft_alarm_2010
+            )
+        val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        //For API 26+ you need to put some additional code like below:
-        val mChannel: NotificationChannel
+        createChannel(soundUri, notificationManager)
+        showNotification(soundUri, notificationManager, task)
+    }
+
+    private fun showNotification(
+        soundUri: Uri?,
+        notificationManager: NotificationManager,
+        task: Task
+    ) {
+        val notification =
+            NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL_ID)
+        notification
+            .setAutoCancel(true)
+            .setWhen(System.currentTimeMillis())
+            .setSmallIcon(R.drawable.icon_for_login)
+            .setContentTitle(task.title)
+            .setVibrate(longArrayOf(0, 500, 1000))
+            .setDefaults(Notification.DEFAULT_LIGHTS)
+            .setSound(soundUri)
+        if (task.description.isNotBlank()) notification.setContentText(task.description)
+        notificationManager.notify(task.id.hashCode(), notification.build())
+    }
+
+    private fun createChannel(
+        soundUri: Uri?,
+        notificationManager: NotificationManager
+    ) {
+        val channel: NotificationChannel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Utils.CHANNEL_NAME",
+            channel = NotificationChannel(
+                Constants.NOTIFICATION_CHANNEL_ID,
+                "Alarm notification",
                 NotificationManager.IMPORTANCE_HIGH
             )
-            mChannel.lightColor = Color.GRAY
-            mChannel.enableLights(true)
-            mChannel.description = "Description"
+            channel.lightColor = Color.GRAY
+            channel.enableLights(true)
+            channel.description = "Shows alarms as notifications"
+            channel.enableVibration(true)
+            channel.vibrationPattern = longArrayOf(0, 500, 1000)
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                 .build()
-            mChannel.setSound(soundUri, audioAttributes)
-            mNotificationManager.createNotificationChannel(mChannel)
+            channel.setSound(soundUri, audioAttributes)
+            notificationManager.createNotificationChannel(channel)
         }
-
-
-        //General code:
-        val status = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-        status.setAutoCancel(true)
-            .setWhen(System.currentTimeMillis())
-            .setSmallIcon(R.drawable.icon_for_login) //.setOnlyAlertOnce(true)
-            .setContentTitle("title")
-            .setContentText("messageBody")
-            .setVibrate(longArrayOf(0, 500, 1000))
-            .setDefaults(Notification.DEFAULT_LIGHTS)
-            .setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + R.raw.soft_alarm_2010))
-
-
-        mNotificationManager.notify(idString.hashCode(), status.build())
     }
 
     private fun showAlarmActivity(context: Context, taskIDString: String) {
