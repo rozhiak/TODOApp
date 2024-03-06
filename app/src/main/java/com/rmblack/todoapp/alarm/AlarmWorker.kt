@@ -105,7 +105,7 @@ class AlarmWorker(private val context: Context, params: WorkerParameters) : Coro
             .setWhen(System.currentTimeMillis())
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(task.title)
-            .setVibrate(longArrayOf(0, 500, 1000))
+            .setVibrate(longArrayOf(100, 200))
             .setDefaults(Notification.DEFAULT_LIGHTS)
             .setSound(soundUri)
             .setContent(remoteViews)

@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import android.widget.PopupWindow
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -45,6 +47,8 @@ const val newlyAddedTaskServerID = "newly added"
 
 private const val FRAGMENT_ID_KEY = "FRAGMENT_ID_KEY"
 
+private const val NR_CODE = 99
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -71,11 +75,19 @@ class MainActivity : AppCompatActivity() {
         showToday()
         setUpProfileBtn()
         setUpFilterBtn()
+        requestNotificationPermission()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(FRAGMENT_ID_KEY, binding.bottomNavigationView.selectedItemId)
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), NR_CODE)
+        }
     }
 
     private fun setUpFilterBtn() {
