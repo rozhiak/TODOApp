@@ -3,6 +3,7 @@ package com.rmblack.todoapp.alarm
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -10,11 +11,14 @@ import android.graphics.Color
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
+import android.view.View
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.AlarmActivity
+import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.alarm.AlarmUtil.Companion.TASK_ID
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
@@ -24,7 +28,7 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 
 
-class AlarmWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+class AlarmWorker(private val context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     val taskRepository = TaskRepository.get()
 
@@ -71,15 +75,42 @@ class AlarmWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     ) {
         val notification =
             NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL_ID)
+        val remoteViews = RemoteViews(applicationContext.packageName, R.layout.notification_layout)
+        if (task.title.length > 40) {
+            val trimmedTitle = task.title.substring(0, 40) + " ..."
+            remoteViews.setTextViewText(R.id.tv_title, trimmedTitle)
+        } else {
+            remoteViews.setTextViewText(R.id.tv_title, task.title)
+
+        }
+        if (task.description.isNotBlank() || task.description.isNotEmpty()) {
+            remoteViews.setViewVisibility(R.id.tv_description, View.VISIBLE)
+            if (task.description.length > 100) {
+                val trimmedDescription = task.description.substring(0, 100) + " ..."
+                remoteViews.setTextViewText(R.id.tv_description, trimmedDescription)
+            } else {
+                remoteViews.setTextViewText(R.id.tv_description, task.description)
+            }
+        }
+        val requestID = System.currentTimeMillis().toInt()
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            requestID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         notification
-            .setAutoCancel(true)
+            .setAutoCancel(false)
             .setWhen(System.currentTimeMillis())
-            .setSmallIcon(R.drawable.icon_for_login)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(task.title)
             .setVibrate(longArrayOf(0, 500, 1000))
             .setDefaults(Notification.DEFAULT_LIGHTS)
             .setSound(soundUri)
-        if (task.description.isNotBlank()) notification.setContentText(task.description)
+            .setContent(remoteViews)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         notificationManager.notify(task.id.hashCode(), notification.build())
     }
 

@@ -30,4 +30,5 @@
     <string name="clock_format">%1$s : %2$s</string>
     <string name="time_picker_ok_text">تایید</string>
     <string name="time_picker_cancel_text">لغو</string>
+    <string name="icon_of_application_content_description">icon of application</string>
 </resources>
