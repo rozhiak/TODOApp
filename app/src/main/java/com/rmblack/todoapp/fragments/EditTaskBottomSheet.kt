@@ -26,6 +26,7 @@ import com.google.gson.Gson
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.AutoStartHelper
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
@@ -49,7 +50,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
         val alarmUtil = AlarmUtilImpl(requireContext())
-        EditTaskViewModelFactory(UUID.fromString(taskId), alarmUtil)
+        EditTaskViewModelFactory(UUID.fromString(taskId), alarmUtil, requireActivity().application)
     }
 
     private var _binding: FragmentEditTaskBottomSheetBinding? = null
@@ -118,8 +119,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
     private fun syncUserInput() {
         binding.apply {
             segmentedBtn.setOnPositionChangedListener { pos ->
-                val sharedPropertiesManager = SharedPreferencesManager(context)
-                val user = sharedPropertiesManager.getUser()
+                val user = viewModel.getUserFromSP()
 
                 if (user?.token != null) {
                     viewModel.updateTask { oldTask ->
@@ -148,6 +148,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             alarmSwitch.setOnCheckedChangeListener { _, b ->
                 if (isAlarmPrimarySet) {
                     if (b) {
+                        val autoStartCheckState = viewModel.getAutoStartPermissionState()
+                        if (!autoStartCheckState) {
+                            AutoStartHelper.instance.getAutoStartPermission(requireContext())
+                        }
                         val alarmRes = viewModel.setAlarm()
                         viewModel.updateTask { oldTask ->
                             oldTask.copy(
@@ -156,7 +160,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                                 description = binding.etDescription.text.toString()
                             )
                         }
-
                     } else {
                         viewModel.cancelAlarm()
                         viewModel.updateTask { oldTask ->
@@ -166,6 +169,8 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                                 description = binding.etDescription.text.toString()
                             )
                         }
+                        // TODO delete line below
+                        viewModel.setAutoStartPermissionState(false)
                     }
                 }
             }

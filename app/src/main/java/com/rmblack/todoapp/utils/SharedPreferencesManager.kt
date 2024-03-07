@@ -23,6 +23,8 @@ private const val CASHED_EDIT_REQUESTS_KEY = "CASHED_EDIT_REQUESTS_KEY"
 
 private const val DO_NOT_SHOW_DONE_TASKS_KEY = "DO_NOT_SHOW_DONE_TASKS_KEY"
 
+private const val AUTO_START_PERMISSION_CHECK_KEY = "AUTO_START_PERMISSION_CHECK_KEY"
+
 class SharedPreferencesManager(private val context: Context) {
 
     private val gson = Gson()
@@ -160,6 +162,14 @@ class SharedPreferencesManager(private val context: Context) {
 
     fun removeConnectedPhones() {
         getEditor(context).remove(CONNECTED_PHONES_KEY).apply()
+    }
+
+    fun getAutoStartPermissionCheckState(): Boolean {
+        return getSharedPreferences(context).getBoolean(AUTO_START_PERMISSION_CHECK_KEY, false)
+    }
+
+    fun setAutoStartPermissionCheckState(state: Boolean) {
+        getEditor(context).putBoolean(AUTO_START_PERMISSION_CHECK_KEY, state).apply()
     }
 
     fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {

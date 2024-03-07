@@ -1,11 +1,15 @@
 package com.rmblack.todoapp.viewmodels
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.models.server.success.User
+import com.rmblack.todoapp.utils.SharedPreferencesManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,10 +19,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewModel() {
+class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, application: Application) :
+    AndroidViewModel(application) {
     var doNotSave = false
 
     private val taskRepository = TaskRepository.get()
+
+    private val sharedPreferencesManager = SharedPreferencesManager(application)
 
     private val _task: MutableStateFlow<Task?> = MutableStateFlow(null)
     val task: StateFlow<Task?> = _task.asStateFlow()
@@ -107,6 +114,18 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
         taskRepository.updateTask(task)
     }
 
+    fun getUserFromSP(): User? {
+        return sharedPreferencesManager.getUser()
+    }
+
+    fun getAutoStartPermissionState(): Boolean {
+        return sharedPreferencesManager.getAutoStartPermissionCheckState()
+    }
+
+    fun setAutoStartPermissionState(state: Boolean) {
+        sharedPreferencesManager.setAutoStartPermissionCheckState(state)
+    }
+
     override fun onCleared() {
         super.onCleared()
         if (!doNotSave) {
@@ -124,10 +143,10 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil) : ViewMo
 }
 
 class EditTaskViewModelFactory(
-    private val taskId: UUID, private val alarmUtil: AlarmUtil
+    private val taskId: UUID, private val alarmUtil: AlarmUtil, private val application: Application
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return EditTaskViewModel(taskId, alarmUtil) as T
+        return EditTaskViewModel(taskId, alarmUtil, application) as T
     }
 }
