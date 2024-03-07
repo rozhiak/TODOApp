@@ -31,4 +31,7 @@
     <string name="time_picker_ok_text">تایید</string>
     <string name="time_picker_cancel_text">لغو</string>
     <string name="icon_of_application_content_description">icon of application</string>
+    <string name="autostart_tip">برنامه تسکرو برای اینکه بتواند در پس زمنه نیز الارم های شما را اجرا کند ، نیاز به دسترسی شروع خودکار (Auto Start) دارد.\n\nلطفا همانند تصویر بالا ، این قابلیت را در تنظیمات فعال کنید.</string>
+    <string name="go_to_setting">انتقال به تنظیمات</string>
+    <string name="auto_start_permission">اجازه شروع خودکار</string>
 </resources>

@@ -17,7 +17,6 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.rmblack.todoapp.R
-import com.rmblack.todoapp.activities.AlarmActivity
 import com.rmblack.todoapp.activities.MainActivity
 import com.rmblack.todoapp.alarm.AlarmUtil.Companion.TASK_ID
 import com.rmblack.todoapp.data.repository.TaskRepository
@@ -137,13 +136,5 @@ class AlarmWorker(private val context: Context, params: WorkerParameters) : Coro
             channel.setSound(soundUri, audioAttributes)
             notificationManager.createNotificationChannel(channel)
         }
-    }
-
-    private fun showAlarmActivity(context: Context, taskIDString: String) {
-        val intent = Intent(context, AlarmActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            putExtra(AlarmActivity.ALARM_ID, taskIDString)
-        }
-        context.startActivity(intent)
     }
 }

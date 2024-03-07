@@ -6,7 +6,12 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD
 import android.os.Build
+import android.view.LayoutInflater
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.cardview.widget.CardView
+import com.rmblack.todoapp.R
 import java.util.Locale
 
 
@@ -103,9 +108,23 @@ class AutoStartHelper private constructor() {
     }
 
     private fun showAlert(context: Context, onClickListener: DialogInterface.OnClickListener) {
-        AlertDialog.Builder(context).setTitle("اجازه اجرای خودکار")
-            .setMessage("تسکرو برای اینکه بتواند حتی در پس زمینه الارم های شما را اجرا کند ، نیاز به مجوز شروع خودکار (Auto start) را دارد.")
-            .setPositiveButton("رفتن به تنظیمات مربوطه", onClickListener).show().setCancelable(false)
+        val builder = AlertDialog.Builder(context, R.style.CustomAlertDialog).create()
+        val inflater =
+            context.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = inflater.inflate(R.layout.autostart_hint_dialog_layout, null)
+        val button = view.findViewById<CardView>(R.id.go_to_setting_card)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val tipTv = view.findViewById<AppCompatTextView>(R.id.autostart_tip_tv)
+            tipTv.justificationMode = JUSTIFICATION_MODE_INTER_WORD
+        }
+        builder.setCancelable(false)
+        builder.setCanceledOnTouchOutside(false)
+        button.setOnClickListener {
+            builder.dismiss()
+            onClickListener.onClick(builder, 0)
+        }
+        builder.setView(view)
+        builder.show()
     }
 
     private fun autoStartXiaomi(context: Context) {

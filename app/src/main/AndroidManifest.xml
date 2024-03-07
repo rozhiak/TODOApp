@@ -19,10 +19,6 @@
         android:theme="@style/Theme.Fab_Bottom_app_bar"
         tools:targetApi="31">
         <activity
-            android:name=".activities.AlarmActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity
             android:name=".activities.StarterActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
@@ -41,8 +37,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
-        <receiver android:name=".receivers.AlarmReceiver" />
 
     </application>
 
