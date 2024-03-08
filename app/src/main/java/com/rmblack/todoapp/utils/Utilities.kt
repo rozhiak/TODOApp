@@ -282,8 +282,12 @@ class Utilities {
         private fun resetAlarm(alarmUtil: AlarmUtil, task: Task) {
             alarmUtil.cancelAlarm(task.id)
             val now = System.currentTimeMillis()
-            if (task.deadLine.timeInMillis > now)
-                alarmUtil.setAlarm(task.deadLine.timeInMillis, task.id)
+            if (task.deadLine.timeInMillis > now) {
+                val deadlineCopy = PersianCalendar()
+                deadlineCopy.timeInMillis = task.deadLine.timeInMillis
+                deadlineCopy.second = 0
+                alarmUtil.setAlarm(deadlineCopy.timeInMillis, task.id)
+            }
         }
     }
 

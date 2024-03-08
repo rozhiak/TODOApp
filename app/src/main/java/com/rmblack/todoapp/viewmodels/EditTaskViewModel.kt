@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.aminography.primecalendar.persian.PersianCalendar
 import com.rmblack.todoapp.alarm.AlarmUtil
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
@@ -61,8 +62,11 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, applicat
             val now = System.currentTimeMillis()
             val deadline = it.deadLine.timeInMillis
             if (now < deadline) {
+                val deadlineCopy = PersianCalendar()
+                deadlineCopy.timeInMillis = deadline
+                deadlineCopy.second = 0
                 alarmRes = alarmUtil.setAlarm(
-                    it.deadLine.timeInMillis, it.id
+                    deadlineCopy.timeInMillis, it.id
                 )
             }
         }
@@ -120,10 +124,6 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, applicat
 
     fun getAutoStartPermissionState(): Boolean {
         return sharedPreferencesManager.getAutoStartPermissionCheckState()
-    }
-
-    fun setAutoStartPermissionState(state: Boolean) {
-        sharedPreferencesManager.setAutoStartPermissionCheckState(state)
     }
 
     override fun onCleared() {
