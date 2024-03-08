@@ -61,10 +61,10 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, applicat
         task.value?.let {
             val now = System.currentTimeMillis()
             val deadline = it.deadLine.timeInMillis
-            if (now < deadline) {
-                val deadlineCopy = PersianCalendar()
-                deadlineCopy.timeInMillis = deadline
-                deadlineCopy.second = 0
+            val deadlineCopy = PersianCalendar()
+            deadlineCopy.timeInMillis = deadline
+            deadlineCopy.second = 0
+            if (now < deadlineCopy.timeInMillis) {
                 alarmRes = alarmUtil.setAlarm(
                     deadlineCopy.timeInMillis, it.id
                 )
