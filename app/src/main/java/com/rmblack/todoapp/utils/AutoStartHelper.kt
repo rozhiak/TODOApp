@@ -89,6 +89,10 @@ class AutoStartHelper private constructor() {
             BRAND_OPPO -> autoStartOppo(context)
             BRAND_VIVO -> autoStartVivo(context)
             BRAND_NOKIA -> autoStartNokia(context)
+            else -> {
+                val sharedPreferencesManager = SharedPreferencesManager(context)
+                sharedPreferencesManager.setAutoStartPermissionCheckState(true)
+            }
         }
     }
 

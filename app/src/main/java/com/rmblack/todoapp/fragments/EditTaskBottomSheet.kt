@@ -169,8 +169,6 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                                 description = binding.etDescription.text.toString()
                             )
                         }
-                        // TODO delete line below before release
-                        viewModel.setAutoStartPermissionState(false)
                     }
                 }
             }
