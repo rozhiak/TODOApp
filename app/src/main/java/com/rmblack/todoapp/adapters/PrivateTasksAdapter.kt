@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.rmblack.todoapp.adapters.viewholders.TaskHolder
 import com.rmblack.todoapp.adapters.viewholders.RemainingDaysLableHolder
-import com.rmblack.todoapp.alarm.AlarmUtil
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.databinding.PrivateTasksRvItemBinding
 import com.rmblack.todoapp.databinding.RemainingDaysLableBinding
 import com.rmblack.todoapp.models.local.Task
@@ -21,7 +21,7 @@ class PrivateTaskHolder(
     private val activity: Activity,
     editClickListener: EditClickListener,
     recyclerView: RecyclerView,
-    private val alarmUtil: AlarmUtil
+    private val alarmScheduler: AlarmScheduler
 ) : TaskHolder(
     scope, editClickListener, recyclerView, binding
 ) {
@@ -56,7 +56,7 @@ class PrivateTaskHolder(
                 )
                 setEditClick(notNullTask, editCard)
                 setBackground(viewModel, pos, rootConstraint, activity.resources)
-                setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity, alarmUtil)
+                setUpDelete(pos, notNullTask, deleteBtn, viewModel, activity, alarmScheduler)
                 setClickOnUrgentLable(urgentLable, urgentSwitch)
                 setLongPress(notNullTask, rootCard)
             }
@@ -69,7 +69,7 @@ class PrivateTasksAdapter(
     private val viewModel: TasksViewModel,
     private val editClickListener: TaskHolder.EditClickListener,
     private val activity: Activity,
-    private val alarmUtil: AlarmUtil
+    private val alarmScheduler: AlarmScheduler
 ) : TaskAdapter(
     viewModel,
     editClickListener,
@@ -88,7 +88,7 @@ class PrivateTasksAdapter(
                 activity,
                 editClickListener,
                 recyclerView,
-                alarmUtil
+                alarmScheduler
             )
         }
     }

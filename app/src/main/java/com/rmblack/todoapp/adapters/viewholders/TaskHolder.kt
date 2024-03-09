@@ -16,7 +16,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.TaskAdapter
-import com.rmblack.todoapp.alarm.AlarmUtil
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Utilities
 import com.rmblack.todoapp.utils.Utilities.SharedObject.isSyncing
@@ -187,7 +187,7 @@ open class TaskHolder(
         deleteBtn: AppCompatImageView,
         viewModel: TasksViewModel,
         activity: Activity,
-        alarmUtil: AlarmUtil
+        alarmScheduler: AlarmScheduler
     ) {
         deleteBtn.setOnClickListener {
             viewModel.deleteTask(task)
@@ -210,7 +210,7 @@ open class TaskHolder(
                     super.onDismissed(transientBottomBar, event)
                     if (event != Snackbar.Callback.DISMISS_EVENT_MANUAL && deleteReq != null) {
                         viewModel.deleteTaskFromServer(deleteReq, task)
-                        if (task.alarm) alarmUtil.cancelAlarm(task.id)
+                        if (task.alarm) alarmScheduler.cancel(task.id)
                     }
                 }
             })

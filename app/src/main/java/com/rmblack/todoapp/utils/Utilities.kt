@@ -13,7 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.newlyAddedTaskServerID
-import com.rmblack.todoapp.alarm.AlarmUtil
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.success.Tasks
@@ -109,7 +109,7 @@ class Utilities {
         suspend fun syncTasksWithServer(
             token: String,
             sharedPreferencesManager: SharedPreferencesManager,
-            alarmUtil: AlarmUtil
+            alarmScheduler: AlarmScheduler
         ): Result<Unit> {
             val apiRepository = ApiRepository()
             val taskRepository = TaskRepository.get()
@@ -205,7 +205,7 @@ class Utilities {
                                 taskRepository.updateTask(newTask)
                                 if (localTask.alarm &&
                                     pServerTask.deadline.toLong() != localTask.deadLine.timeInMillis)
-                                    resetAlarm(alarmUtil, newTask)
+                                    resetAlarm(alarmScheduler, newTask)
                             }
                             privateLocalTasksPair[index] = Pair(localTask, true)
                         } else {
@@ -233,7 +233,7 @@ class Utilities {
                                 taskRepository.updateTask(newTask)
                                 if (localTask.alarm &&
                                     sServerTask.deadline.toLong() != localTask.deadLine.timeInMillis)
-                                    resetAlarm(alarmUtil, newTask)
+                                    resetAlarm(alarmScheduler, newTask)
                             }
                             sharedLocalTasksPair[index] = Pair(localTask, true)
                         } else {
@@ -258,7 +258,7 @@ class Utilities {
                 for (toDelete in privateTasksToDelete) {
                     if (toDelete.serverID == newlyAddedTaskServerID) continue
                     taskRepository.deleteTask(toDelete)
-                    if (toDelete.alarm) alarmUtil.cancelAlarm(toDelete.id)
+                    if (toDelete.alarm) alarmScheduler.cancel(toDelete.id)
                 }
 
                 val sharedTasksToDelete: List<Task> = sharedLocalTasksPair.filter { pair ->
@@ -270,7 +270,7 @@ class Utilities {
                 for (toDelete in sharedTasksToDelete) {
                     if (toDelete.serverID == newlyAddedTaskServerID) continue
                     taskRepository.deleteTask(toDelete)
-                    if (toDelete.alarm) alarmUtil.cancelAlarm(toDelete.id)
+                    if (toDelete.alarm) alarmScheduler.cancel(toDelete.id)
                 }
             } else {
                 return Result.failure(Exception())
@@ -279,15 +279,12 @@ class Utilities {
             return Result.success(Unit)
         }
 
-        private fun resetAlarm(alarmUtil: AlarmUtil, task: Task) {
-            alarmUtil.cancelAlarm(task.id)
-            val now = System.currentTimeMillis()
+        private fun resetAlarm(alarmScheduler: AlarmScheduler, task: Task) {
+            alarmScheduler.cancel(task.id)
             val deadlineCopy = PersianCalendar()
             deadlineCopy.timeInMillis = task.deadLine.timeInMillis
             deadlineCopy.second = 0
-            if (deadlineCopy.timeInMillis > now) {
-                alarmUtil.setAlarm(deadlineCopy.timeInMillis, task.id)
-            }
+            alarmScheduler.schedule(deadlineCopy.timeInMillis, task.id)
         }
     }
 

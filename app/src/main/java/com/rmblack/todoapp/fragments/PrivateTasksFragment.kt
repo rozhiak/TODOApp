@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.rmblack.todoapp.adapters.PrivateTasksAdapter
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.viewmodels.PrivateTasksViewModel
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -22,7 +23,7 @@ class PrivateTasksFragment : TasksFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(
-            this, PrivateFragmentViewModelFactory(requireActivity().application)
+            this, PrivateFragmentViewModelFactory(requireActivity().application, alarmScheduler)
         )[PrivateTasksViewModel::class.java]
     }
 
@@ -84,14 +85,17 @@ class PrivateTasksFragment : TasksFragment() {
     }
 
     private fun createPrivateTasksAdapter(): PrivateTasksAdapter = PrivateTasksAdapter(
-        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity(), alarmUtil
+        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity(), alarmScheduler
     )
 
-    class PrivateFragmentViewModelFactory(private val application: Application) :
+    class PrivateFragmentViewModelFactory(
+        private val application: Application,
+        private val alarmScheduler: AlarmScheduler
+    ) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(PrivateTasksViewModel::class.java)) {
-                PrivateTasksViewModel(application) as T
+                PrivateTasksViewModel(application, alarmScheduler) as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

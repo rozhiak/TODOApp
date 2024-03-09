@@ -1,6 +1,5 @@
 package com.rmblack.todoapp.activities
 
-import AlarmUtilImpl
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -29,7 +28,8 @@ import com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgre
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.rmblack.todoapp.R
-import com.rmblack.todoapp.alarm.AlarmUtil
+import com.rmblack.todoapp.alarm.AlarmScheduler
+import com.rmblack.todoapp.alarm.AlarmSchedulerImpl
 import com.rmblack.todoapp.databinding.ActivityMainBinding
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.fragments.FilterSettingBottomSheet
@@ -54,11 +54,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel: MainViewModel by viewModels {
-        MainViewModelFactory(this.application, alarmUtil)
+        MainViewModelFactory(this.application, alarmScheduler)
     }
 
-    private val alarmUtil: AlarmUtil by lazy {
-        AlarmUtilImpl(this)
+    private val alarmScheduler: AlarmScheduler by lazy {
+        AlarmSchedulerImpl(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getUserFromSharedPreferences()?.let { user ->
             setSyncingState(true)
             val result = Utilities.syncTasksWithServer(
-                user.token, viewModel.sharedPreferencesManager, alarmUtil
+                user.token, viewModel.sharedPreferencesManager, alarmScheduler
             )
             result.onSuccess {
                 setSyncingState(false)
@@ -381,12 +381,12 @@ class MainActivity : AppCompatActivity() {
 
     class MainViewModelFactory(
         private val application: Application,
-        private val alarmUtil: AlarmUtil
+        private val alarmScheduler: AlarmScheduler
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return MainViewModel(application, alarmUtil) as T
+                return MainViewModel(application, alarmScheduler) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

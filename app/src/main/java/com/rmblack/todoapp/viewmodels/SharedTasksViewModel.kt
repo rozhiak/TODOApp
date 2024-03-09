@@ -3,10 +3,12 @@ package com.rmblack.todoapp.viewmodels
 import android.app.Application
 import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SharedTasksViewModel(application: Application) : TasksViewModel(application),
+class SharedTasksViewModel(application: Application, alarmScheduler: AlarmScheduler) :
+    TasksViewModel(application, alarmScheduler),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val sharedTasksFlow = taskRepository.getSharedTasksFlow()

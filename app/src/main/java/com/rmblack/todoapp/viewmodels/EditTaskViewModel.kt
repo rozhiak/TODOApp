@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.aminography.primecalendar.persian.PersianCalendar
-import com.rmblack.todoapp.alarm.AlarmUtil
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.success.User
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, application: Application) :
+class EditTaskViewModel(taskId: UUID, private val alarmScheduler: AlarmScheduler, application: Application) :
     AndroidViewModel(application) {
     var doNotSave = false
 
@@ -56,36 +56,29 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, applicat
         }
     }
 
-    fun setAlarm(): Boolean {
-        var alarmRes = true
+    fun setAlarm() {
         task.value?.let {
-            val now = System.currentTimeMillis()
             val deadline = it.deadLine.timeInMillis
             val deadlineCopy = PersianCalendar()
             deadlineCopy.timeInMillis = deadline
             deadlineCopy.second = 0
-            if (now < deadlineCopy.timeInMillis) {
-                alarmRes = alarmUtil.setAlarm(
-                    deadlineCopy.timeInMillis, it.id
-                )
-            }
+            alarmScheduler.schedule(
+                deadlineCopy.timeInMillis, it.id
+            )
         }
-        return alarmRes
     }
 
     fun cancelAlarm() {
         task.value?.let { task ->
-            alarmUtil.cancelAlarm(task.id)
+            alarmScheduler.cancel(task.id)
         }
     }
 
-    fun resetAlarmTime(): Boolean {
-        var alarmRes = true
+    fun resetAlarmTime() {
         task.value?.let { task ->
-            alarmUtil.cancelAlarm(task.id)
-            alarmRes = setAlarm()
+            alarmScheduler.cancel(task.id)
+            setAlarm()
         }
-        return alarmRes
     }
 
     fun saveTitleAndDescription(newTitle: String, newDes: String) {
@@ -122,10 +115,6 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, applicat
         return sharedPreferencesManager.getUser()
     }
 
-    fun getAutoStartPermissionState(): Boolean {
-        return sharedPreferencesManager.getAutoStartPermissionCheckState()
-    }
-
     override fun onCleared() {
         super.onCleared()
         if (!doNotSave) {
@@ -143,10 +132,10 @@ class EditTaskViewModel(taskId: UUID, private val alarmUtil: AlarmUtil, applicat
 }
 
 class EditTaskViewModelFactory(
-    private val taskId: UUID, private val alarmUtil: AlarmUtil, private val application: Application
+    private val taskId: UUID, private val alarmScheduler: AlarmScheduler, private val application: Application
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return EditTaskViewModel(taskId, alarmUtil, application) as T
+        return EditTaskViewModel(taskId, alarmScheduler, application) as T
     }
 }

@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.StarterActivity
 import com.rmblack.todoapp.adapters.SharedTasksAdapter
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.viewmodels.SharedTasksViewModel
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class SharedTasksFragment : TasksFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(
-            this, SharedFragmentViewModelFactory(requireActivity().application)
+            this, SharedFragmentViewModelFactory(requireActivity().application, alarmScheduler)
         )[SharedTasksViewModel::class.java]
     }
 
@@ -193,14 +194,17 @@ class SharedTasksFragment : TasksFragment() {
     }
 
     private fun createSharedTasksAdapter() = SharedTasksAdapter(
-        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity(), alarmUtil
+        viewLifecycleOwner.lifecycleScope, viewModel, this, requireActivity(), alarmScheduler
     )
 
-    class SharedFragmentViewModelFactory(private val application: Application) :
+    class SharedFragmentViewModelFactory(
+        private val application: Application,
+        private val alarmScheduler: AlarmScheduler
+    ) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(SharedTasksViewModel::class.java)) {
-                SharedTasksViewModel(application) as T
+                SharedTasksViewModel(application, alarmScheduler) as T
             } else {
                 throw IllegalArgumentException("ViewModel Not Found")
             }

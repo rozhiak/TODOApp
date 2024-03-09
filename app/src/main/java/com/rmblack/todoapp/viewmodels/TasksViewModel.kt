@@ -3,6 +3,7 @@ package com.rmblack.todoapp.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.models.server.requests.AddTaskRequest
@@ -21,7 +22,8 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.UUID
 
-open class TasksViewModel(application: Application) : AndroidViewModel(application) {
+open class TasksViewModel(application: Application, private val alarmScheduler: AlarmScheduler) :
+    AndroidViewModel(application) {
 
     val sharedPreferencesManager = SharedPreferencesManager(application)
 
@@ -324,7 +326,7 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
         if (doNotShowDoneTasks) {
             filteredTasks = filteredTasks.filter { !it.isDone }
         }
-        
+
         if (filteredTasks.isNotEmpty()) {
             val sortedTasks = filteredTasks.sortedBy { it.deadLine }
             tasksWithDatePositionNull.add(null)
@@ -338,6 +340,10 @@ open class TasksViewModel(application: Application) : AndroidViewModel(applicati
         }
 
         _tasks.value = tasksWithDatePositionNull.toList()
+    }
+
+    fun cancelAlarm(taskID: UUID) {
+        alarmScheduler.cancel(taskID)
     }
 
     override fun onCleared() {

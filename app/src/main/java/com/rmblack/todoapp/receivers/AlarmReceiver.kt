@@ -1,9 +1,10 @@
-package com.rmblack.todoapp.alarm
+package com.rmblack.todoapp.receivers
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -14,67 +15,56 @@ import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
-import com.rmblack.todoapp.alarm.AlarmUtil.Companion.TASK_ID
+import com.rmblack.todoapp.alarm.AlarmSchedulerImpl.Companion.TASK_ID_KEY
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Constants
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-
-class AlarmWorker(private val context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+class AlarmReceiver: BroadcastReceiver() {
 
     val taskRepository = TaskRepository.get()
 
-    override suspend fun doWork(): Result {
-        val taskIdString = inputData.getString(TASK_ID) ?: return Result.failure()
+    override fun onReceive(p0: Context?, p1: Intent?) {
+        val taskIdString = p1?.getStringExtra(TASK_ID_KEY) ?: return
         val uuid = UUID.fromString(taskIdString)
-        val task = getTaskFromRoom(uuid)
-        task?.let {
-            prepareNotification(it)
-            changeTaskAlarmState(uuid)
-        }
-        return Result.success()
-    }
-
-    private suspend fun getTaskFromRoom(id: UUID): Task? {
-        return withContext(Dispatchers.IO) {
-            taskRepository.getTask(id)
+        CoroutineScope(Dispatchers.IO).launch {
+            val task = taskRepository.getTask(uuid) ?: return@launch
+            withContext(Dispatchers.Default) {
+                prepareNotification(task, p0!!)
+            }
+            taskRepository.updateAlarm(uuid, false)
         }
     }
 
-    private suspend fun changeTaskAlarmState(id: UUID) {
-        withContext(Dispatchers.IO) {
-            taskRepository.updateAlarm(id, false)
-        }
-    }
-
-    private fun prepareNotification(task: Task) {
+    private fun prepareNotification(task: Task, context: Context) {
         val soundUri =
             Uri.parse(
                 ContentResolver.SCHEME_ANDROID_RESOURCE +
-                        "://" + applicationContext.packageName + "/" + R.raw.soft_alarm_2010
+                        "://" + context.packageName + "/" + R.raw.soft_alarm_2010
             )
         val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         createChannel(soundUri, notificationManager)
-        showNotification(soundUri, notificationManager, task)
+        showNotification(soundUri, notificationManager, task, context)
     }
 
     private fun showNotification(
         soundUri: Uri?,
         notificationManager: NotificationManager,
-        task: Task
+        task: Task,
+        context: Context
     ) {
         val notification =
-            NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL_ID)
-        val remoteViews = RemoteViews(applicationContext.packageName, R.layout.notification_layout)
+            NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
+        val remoteViews = RemoteViews(context.packageName, R.layout.notification_layout)
         if (task.title.length > 40) {
             val trimmedTitle = task.title.substring(0, 40) + " ..."
             remoteViews.setTextViewText(R.id.tv_title, trimmedTitle)
@@ -92,7 +82,7 @@ class AlarmWorker(private val context: Context, params: WorkerParameters) : Coro
             }
         }
         val requestID = System.currentTimeMillis().toInt()
-        val intent = Intent(applicationContext, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context,
             requestID,

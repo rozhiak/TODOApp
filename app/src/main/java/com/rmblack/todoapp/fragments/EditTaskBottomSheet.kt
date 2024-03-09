@@ -1,11 +1,13 @@
 package com.rmblack.todoapp.fragments
 
-import AlarmUtilImpl
+import android.app.AlarmManager
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.Selection
 import android.view.LayoutInflater
@@ -24,11 +26,10 @@ import com.aminography.primecalendar.persian.PersianCalendar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.alarm.AlarmSchedulerImpl
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.models.local.Task
-import com.rmblack.todoapp.utils.AutoStartHelper
 import com.rmblack.todoapp.utils.PersianNum
-import com.rmblack.todoapp.utils.SharedPreferencesManager
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
 import ir.hamsaa.persiandatepicker.PersianDatePickerDialog
@@ -49,8 +50,12 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
 
     private val viewModel: EditTaskViewModel by viewModels {
         val taskId = arguments?.getString("taskId")
-        val alarmUtil = AlarmUtilImpl(requireContext())
-        EditTaskViewModelFactory(UUID.fromString(taskId), alarmUtil, requireActivity().application)
+        val alarmScheduler = AlarmSchedulerImpl(requireContext())
+        EditTaskViewModelFactory(
+            UUID.fromString(taskId),
+            alarmScheduler,
+            requireActivity().application
+        )
     }
 
     private var _binding: FragmentEditTaskBottomSheetBinding? = null
@@ -148,14 +153,17 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             alarmSwitch.setOnCheckedChangeListener { _, b ->
                 if (isAlarmPrimarySet) {
                     if (b) {
-                        val autoStartCheckState = viewModel.getAutoStartPermissionState()
-                        if (!autoStartCheckState) {
-                            AutoStartHelper.instance.getAutoStartPermission(requireContext())
+                        val alarmManager = context.getSystemService(AlarmManager::class.java)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                            !alarmManager.canScheduleExactAlarms()
+                        ) {
+                            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                            startActivity(intent)
                         }
-                        val alarmRes = viewModel.setAlarm()
+                        viewModel.setAlarm()
                         viewModel.updateTask { oldTask ->
                             oldTask.copy(
-                                alarm = alarmRes,
+                                alarm = true,
                                 title = binding.etTitle.text.toString(),
                                 description = binding.etDescription.text.toString()
                             )
@@ -225,15 +233,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                 }
 
                 if (viewModel.task.value?.alarm == true) {
-                    val alarmRes = viewModel.resetAlarmTime()
-
-                    viewModel.updateTask { oldTask ->
-                        oldTask.copy(
-                            alarm = alarmRes,
-                            title = binding.etTitle.text.toString(),
-                            description = binding.etDescription.text.toString()
-                        )
-                    }
+                    viewModel.resetAlarmTime()
                 }
             }
 
@@ -313,15 +313,7 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
                     }
 
                     if (viewModel.task.value?.alarm == true) {
-                        val alarmRes = viewModel.resetAlarmTime()
-
-                        viewModel.updateTask { oldTask ->
-                            oldTask.copy(
-                                alarm = alarmRes,
-                                title = binding.etTitle.text.toString(),
-                                description = binding.etDescription.text.toString()
-                            )
-                        }
+                        viewModel.resetAlarmTime()
                     }
                 }
 

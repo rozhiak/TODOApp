@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.rmblack.todoapp.alarm.AlarmUtil
+import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.fragments.PrivateTasksFragment
 import com.rmblack.todoapp.fragments.SharedTasksFragment
@@ -21,7 +21,7 @@ import kotlin.Result.Companion.failure
 
 const val SAME_USER_NAME_CODE = 1
 
-class MainViewModel(application: Application, private val alarmUtil: AlarmUtil) :
+class MainViewModel(application: Application, private val alarmScheduler: AlarmScheduler) :
     AndroidViewModel(application) {
 
     val sharedPreferencesManager = SharedPreferencesManager(application)
@@ -99,7 +99,7 @@ class MainViewModel(application: Application, private val alarmUtil: AlarmUtil) 
 
     private fun syncTasksWithServer(user: User) {
         viewModelScope.launch {
-            val res = Utilities.syncTasksWithServer(user.token, sharedPreferencesManager, alarmUtil)
+            val res = Utilities.syncTasksWithServer(user.token, sharedPreferencesManager, alarmScheduler)
             res.onSuccess {
                 setSyncingState(false)
             }

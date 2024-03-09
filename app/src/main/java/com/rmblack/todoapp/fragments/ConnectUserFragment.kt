@@ -1,6 +1,5 @@
 package com.rmblack.todoapp.fragments
 
-import AlarmUtilImpl
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -18,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.rmblack.todoapp.R
+import com.rmblack.todoapp.alarm.AlarmSchedulerImpl
 import com.rmblack.todoapp.databinding.FragmentConnectUserBinding
 import com.rmblack.todoapp.utils.CONNECTION_ERROR_CODE
 import com.rmblack.todoapp.utils.Utilities
@@ -147,9 +147,9 @@ class ConnectUserFragment : Fragment(), ConnectUserCallback, RefreshCallback {
         val job = CoroutineScope(Dispatchers.Default).launch {
             val token = viewModel.getUserToken()
             token?.let {
-                val alarmUtil = AlarmUtilImpl(requireContext())
+                val alarmScheduler = AlarmSchedulerImpl(requireContext())
                 val response = Utilities.syncTasksWithServer(
-                    it, viewModel.sharedPreferencesManager, alarmUtil
+                    it, viewModel.sharedPreferencesManager, alarmScheduler
                 )
                 response.onSuccess {
                     activity.runOnUiThread {
