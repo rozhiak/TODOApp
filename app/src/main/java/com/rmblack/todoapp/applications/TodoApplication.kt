@@ -2,9 +2,9 @@ package com.rmblack.todoapp.applications
 
 import android.app.Application
 import com.rmblack.todoapp.data.repository.TaskRepository
-import com.rmblack.todoapp.utils.Constants
+import dagger.hilt.android.HiltAndroidApp
 
-
+@HiltAndroidApp
 class TodoApplication : Application() {
     override fun onCreate() {
         super.onCreate()

@@ -13,6 +13,9 @@ plugins {
     id 'kotlinx-serialization'
     //Navigation
     id 'androidx.navigation.safeargs'
+    //Hilt
+    id "com.google.dagger.hilt.android"
+    id "kotlin-kapt"
 }
 
 android {
@@ -101,8 +104,11 @@ dependencies {
     //Progress Button
     implementation "com.github.razir.progressbutton:progressbutton:2.1.0"
     implementation "com.github.leandroborgesferreira:loading-button-android:2.3.0"
-    // Worker
-    implementation "androidx.work:work-runtime-ktx:2.9.0"
+    // Hilt
+    implementation "com.google.dagger:hilt-android:2.50"
+    kapt "com.google.dagger:hilt-android-compiler:2.50"
+}
 
-
+kapt {
+    correctErrorTypes = true
 }

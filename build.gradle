@@ -10,5 +10,6 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.8.10'
     //Navigation
     id 'androidx.navigation.safeargs.kotlin' version '2.6.0' apply false
-
+    //Hilt
+    id("com.google.dagger.hilt.android") version "2.50" apply false
 }
