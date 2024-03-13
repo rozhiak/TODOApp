@@ -29,6 +29,7 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.alarm.AlarmSchedulerImpl
 import com.rmblack.todoapp.databinding.FragmentEditTaskBottomSheetBinding
 import com.rmblack.todoapp.models.local.Task
+import com.rmblack.todoapp.utils.AutoStartHelper
 import com.rmblack.todoapp.utils.PersianNum
 import com.rmblack.todoapp.viewmodels.EditTaskViewModel
 import com.rmblack.todoapp.viewmodels.EditTaskViewModelFactory
@@ -153,6 +154,10 @@ class EditTaskBottomSheet : BottomSheetDialogFragment() {
             alarmSwitch.setOnCheckedChangeListener { _, b ->
                 if (isAlarmPrimarySet) {
                     if (b) {
+                        val autoStartCheckState = viewModel.getAutoStartPermissionState()
+                        if (!autoStartCheckState) {
+                            AutoStartHelper.instance.getAutoStartPermission(requireContext())
+                        }
                         val alarmManager = context.getSystemService(AlarmManager::class.java)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                             !alarmManager.canScheduleExactAlarms()

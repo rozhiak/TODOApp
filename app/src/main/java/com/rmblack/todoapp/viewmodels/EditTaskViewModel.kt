@@ -115,6 +115,10 @@ class EditTaskViewModel(taskId: UUID, private val alarmScheduler: AlarmScheduler
         return sharedPreferencesManager.getUser()
     }
 
+    fun getAutoStartPermissionState(): Boolean {
+        return sharedPreferencesManager.getAutoStartPermissionCheckState()
+    }
+
     override fun onCleared() {
         super.onCleared()
         if (!doNotSave) {
