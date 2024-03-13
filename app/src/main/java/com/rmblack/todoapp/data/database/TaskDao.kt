@@ -31,7 +31,7 @@ interface TaskDao {
     fun getTask(id: UUID): Task?
 
     @Query("SELECT * FROM Task WHERE id=(:id)")
-    fun getTaskFlow(id: UUID): Flow<Task>
+    fun getTaskFlow(id: UUID): Flow<Task?>
 
     @Query("UPDATE task SET detailsVisibility = :isVisible WHERE id = :id")
     suspend fun updateDetailsVisibility(isVisible: Boolean, id: UUID)

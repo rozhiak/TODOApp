@@ -83,7 +83,6 @@ class AlarmReceiver: BroadcastReceiver() {
             .setWhen(System.currentTimeMillis())
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(task.title)
-            .setVibrate(longArrayOf(100, 200))
             .setDefaults(Notification.DEFAULT_LIGHTS)
             .setSound(soundUri)
             .setContent(remoteViews)
@@ -154,8 +153,7 @@ class AlarmReceiver: BroadcastReceiver() {
             channel.lightColor = Color.GRAY
             channel.enableLights(true)
             channel.description = "Shows alarms as notifications"
-            channel.enableVibration(true)
-            channel.vibrationPattern = longArrayOf(0, 500, 1000)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC;
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)

@@ -20,7 +20,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class EditTaskViewModel(taskId: UUID, private val alarmScheduler: AlarmScheduler, application: Application) :
+class EditTaskViewModel(
+    taskId: UUID,
+    private val alarmScheduler: AlarmScheduler,
+    application: Application
+) :
     AndroidViewModel(application) {
     var doNotSave = false
 
@@ -40,16 +44,18 @@ class EditTaskViewModel(taskId: UUID, private val alarmScheduler: AlarmScheduler
             withContext(Dispatchers.IO) {
                 val task = taskRepository.getTaskFlow(taskId)
                 task.collect {
-                    if (!dataLoadedForFirstTime) {
-                        dataLoadedForFirstTime = true
-                        _task.value = it.copy()
-                        primaryTask = it.copy()
-                    } else {
-                        /* If alarm triggered when user is on editing
-                           alarm switch will be synced. */
-                        _task.value = _task.value?.copy(
-                            alarm = it.alarm
-                        )
+                    it?.let { notNullTask ->
+                        if (!dataLoadedForFirstTime) {
+                            dataLoadedForFirstTime = true
+                            _task.value = notNullTask.copy()
+                            primaryTask = notNullTask.copy()
+                        } else {
+                            /* If alarm triggered when user is on editing
+                               alarm switch will be synced. */
+                            _task.value = _task.value?.copy(
+                                alarm = notNullTask.alarm
+                            )
+                        }
                     }
                 }
             }
@@ -136,7 +142,9 @@ class EditTaskViewModel(taskId: UUID, private val alarmScheduler: AlarmScheduler
 }
 
 class EditTaskViewModelFactory(
-    private val taskId: UUID, private val alarmScheduler: AlarmScheduler, private val application: Application
+    private val taskId: UUID,
+    private val alarmScheduler: AlarmScheduler,
+    private val application: Application
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")

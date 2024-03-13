@@ -1,8 +1,10 @@
 package com.rmblack.todoapp.activities
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +17,7 @@ import android.widget.PopupWindow
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -49,6 +52,8 @@ private const val FRAGMENT_ID_KEY = "FRAGMENT_ID_KEY"
 
 private const val NR_CODE = 99
 
+private const val VR_CODE = 98
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -76,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         setUpProfileBtn()
         setUpFilterBtn()
         requestNotificationPermission()
+        requestVibrateRequest()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -83,10 +89,24 @@ class MainActivity : AppCompatActivity() {
         outState.putInt(FRAGMENT_ID_KEY, binding.bottomNavigationView.selectedItemId)
     }
 
+    private fun requestVibrateRequest() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.VIBRATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.VIBRATE),
+                VR_CODE
+            )
+        }
+    }
+
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), NR_CODE)
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), NR_CODE)
         }
     }
 
