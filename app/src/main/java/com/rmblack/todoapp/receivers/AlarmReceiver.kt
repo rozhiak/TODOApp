@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.view.View
@@ -21,6 +22,7 @@ import com.rmblack.todoapp.alarm.AlarmSchedulerImpl.Companion.TASK_ID_KEY
 import com.rmblack.todoapp.data.repository.TaskRepository
 import com.rmblack.todoapp.models.local.Task
 import com.rmblack.todoapp.utils.Constants
+import com.rmblack.todoapp.utils.PersianNum
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,22 +67,9 @@ class AlarmReceiver: BroadcastReceiver() {
         val notification =
             NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
         val remoteViews = RemoteViews(context.packageName, R.layout.notification_layout)
-        if (task.title.length > 40) {
-            val trimmedTitle = task.title.substring(0, 40) + " ..."
-            remoteViews.setTextViewText(R.id.tv_title, trimmedTitle)
-        } else {
-            remoteViews.setTextViewText(R.id.tv_title, task.title)
-
-        }
-        if (task.description.isNotBlank() || task.description.isNotEmpty()) {
-            remoteViews.setViewVisibility(R.id.tv_description, View.VISIBLE)
-            if (task.description.length > 100) {
-                val trimmedDescription = task.description.substring(0, 100) + " ..."
-                remoteViews.setTextViewText(R.id.tv_description, trimmedDescription)
-            } else {
-                remoteViews.setTextViewText(R.id.tv_description, task.description)
-            }
-        }
+        setTitle(task, remoteViews)
+        setDescription(task, remoteViews)
+        setClock(context, task, remoteViews)
         val requestID = System.currentTimeMillis().toInt()
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -101,6 +90,54 @@ class AlarmReceiver: BroadcastReceiver() {
             .setContentIntent(pendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         notificationManager.notify(task.id.hashCode(), notification.build())
+    }
+
+    private fun setClock(
+        context: Context,
+        task: Task,
+        remoteViews: RemoteViews
+    ) {
+        var hourStr = PersianNum.convert(task.deadLine.hourOfDay.toString())
+        if (hourStr.length == 1) {
+            hourStr = "۰$hourStr"
+        }
+        var minuteStr = PersianNum.convert(task.deadLine.minute.toString())
+        if (minuteStr.length == 1) {
+            minuteStr = "۰$minuteStr"
+        }
+        val formattedText = String.format(
+            context.getString(R.string.clock_format),
+            PersianNum.convert(hourStr),
+            PersianNum.convert(minuteStr)
+        )
+        remoteViews.setTextViewText(R.id.tv_clock, formattedText)
+    }
+
+    private fun setDescription(
+        task: Task,
+        remoteViews: RemoteViews
+    ) {
+        if (task.description.isNotBlank() || task.description.isNotEmpty()) {
+            remoteViews.setViewVisibility(R.id.tv_description, View.VISIBLE)
+            if (task.description.length > 100) {
+                val trimmedDescription = task.description.substring(0, 100) + " ..."
+                remoteViews.setTextViewText(R.id.tv_description, trimmedDescription)
+            } else {
+                remoteViews.setTextViewText(R.id.tv_description, task.description)
+            }
+        }
+    }
+
+    private fun setTitle(
+        task: Task,
+        remoteViews: RemoteViews
+    ) {
+        if (task.title.length > 30) {
+            val trimmedTitle = task.title.substring(0, 30) + " ..."
+            remoteViews.setTextViewText(R.id.tv_title, trimmedTitle)
+        } else {
+            remoteViews.setTextViewText(R.id.tv_title, task.title)
+        }
     }
 
     private fun createChannel(
