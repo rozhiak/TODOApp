@@ -13,10 +13,13 @@ import android.graphics.Color
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.View
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
@@ -58,22 +61,36 @@ class AlarmReceiver: BroadcastReceiver() {
 
         createChannel(soundUri, notificationManager)
         showNotification(soundUri, notificationManager, task, context)
-        makeVibration(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            makeVibration(context)
+        }
+        wakeUpScreen(context)
     }
 
-    private fun makeVibration(context: Context) {
-        val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= 26) {
-            vibrator.vibrate(
-                VibrationEffect.createWaveform(
-                    longArrayOf(100, 500, 100, 500, 100, 500),
-                    VibrationEffect.DEFAULT_AMPLITUDE
-                )
+    private fun wakeUpScreen(context: Context) {
+        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val isScreenOn = pm.isInteractive
+
+        if (!isScreenOn) {
+            val wl = pm.newWakeLock(
+                PowerManager.SCREEN_DIM_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                "myApp:notificationLock"
             )
+            wl.acquire(4000)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun makeVibration(context: Context) {
+        val vib = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator;
         } else {
             @Suppress("DEPRECATION")
-            vibrator.vibrate(500)
+            context.getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
+        val vibrationEffect = VibrationEffect.createWaveform(longArrayOf(100, 500, 100, 500, 100, 500), -1)
+        vib.vibrate(vibrationEffect)
     }
 
     private fun showNotification(
