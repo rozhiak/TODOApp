@@ -7,12 +7,14 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -56,6 +58,22 @@ class AlarmReceiver: BroadcastReceiver() {
 
         createChannel(soundUri, notificationManager)
         showNotification(soundUri, notificationManager, task, context)
+        makeVibration(context)
+    }
+
+    private fun makeVibration(context: Context) {
+        val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(
+                VibrationEffect.createWaveform(
+                    longArrayOf(100, 500, 100, 500, 100, 500),
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(500)
+        }
     }
 
     private fun showNotification(
