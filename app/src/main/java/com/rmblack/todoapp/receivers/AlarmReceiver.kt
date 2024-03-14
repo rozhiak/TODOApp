@@ -134,12 +134,14 @@ class AlarmReceiver: BroadcastReceiver() {
     ) {
         if (task.description.isNotBlank() || task.description.isNotEmpty()) {
             remoteViews.setViewVisibility(R.id.tv_description, View.VISIBLE)
-            if (task.description.length > 100) {
-                val trimmedDescription = task.description.substring(0, 100) + " ..."
-                remoteViews.setTextViewText(R.id.tv_description, trimmedDescription)
+            val description = if (task.description.length > 100 && task.description.lines().size <= 2) {
+                task.description.substring(0, 100) + "..."
+            } else if(task.description.lines().size > 2) {
+                task.description.lines()[0] + "\n" + task.description.lines()[1] + "\n" + "و ..."
             } else {
-                remoteViews.setTextViewText(R.id.tv_description, task.description)
+                task.description
             }
+            remoteViews.setTextViewText(R.id.tv_description, description)
         }
     }
 
