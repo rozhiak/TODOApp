@@ -7,19 +7,14 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.view.View
 import android.widget.RemoteViews
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.rmblack.todoapp.R
 import com.rmblack.todoapp.activities.MainActivity
@@ -61,9 +56,6 @@ class AlarmReceiver: BroadcastReceiver() {
 
         createChannel(soundUri, notificationManager)
         showNotification(soundUri, notificationManager, task, context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            makeVibration(context)
-        }
         wakeUpScreen(context)
     }
 
@@ -78,19 +70,6 @@ class AlarmReceiver: BroadcastReceiver() {
             )
             wl.acquire(4000)
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun makeVibration(context: Context) {
-        val vib = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator;
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(VIBRATOR_SERVICE) as Vibrator
-        }
-        val vibrationEffect = VibrationEffect.createWaveform(longArrayOf(100, 500, 100, 500, 100, 500), -1)
-        vib.vibrate(vibrationEffect)
     }
 
     private fun showNotification(
@@ -114,12 +93,14 @@ class AlarmReceiver: BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         notification
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(false)
             .setWhen(System.currentTimeMillis())
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(task.title)
             .setDefaults(Notification.DEFAULT_LIGHTS)
             .setSound(soundUri)
+            .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
             .setContent(remoteViews)
             .setContentIntent(pendingIntent)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -185,10 +166,12 @@ class AlarmReceiver: BroadcastReceiver() {
                 "Alarm notification",
                 NotificationManager.IMPORTANCE_HIGH
             )
-            channel.lightColor = Color.GRAY
+            channel.lightColor = Color.GREEN
             channel.enableLights(true)
             channel.description = "Shows alarms as notifications"
-            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC;
+            channel.enableVibration(true)
+            channel.vibrationPattern = longArrayOf(500, 100, 500, 100, 500)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
