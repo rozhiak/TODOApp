@@ -34,7 +34,6 @@ import com.rmblack.todoapp.R
 import com.rmblack.todoapp.alarm.AlarmScheduler
 import com.rmblack.todoapp.alarm.AlarmSchedulerImpl
 import com.rmblack.todoapp.databinding.ActivityMainBinding
-import com.rmblack.todoapp.fragments.CalendarBottomSheetFragment
 import com.rmblack.todoapp.fragments.EditTaskBottomSheet
 import com.rmblack.todoapp.fragments.FilterSettingBottomSheet
 import com.rmblack.todoapp.models.local.Task
@@ -99,10 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCalendar() {
-        val calendarBS = CalendarBottomSheetFragment()
-        supportFragmentManager.let {
-            calendarBS.show(it, CalendarBottomSheetFragment.TAG)
-        }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
