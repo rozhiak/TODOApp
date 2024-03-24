@@ -98,7 +98,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCalendar() {
-
+        val intent = Intent(this, CalendarActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

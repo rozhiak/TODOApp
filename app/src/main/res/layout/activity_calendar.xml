@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:background="@color/bottom_sheet_back_color"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.CalendarActivity">
+
+    <View
+        android:id="@+id/cal_back_view"
+        android:layout_width="0dp"
+        android:layout_height="370dp"
+        android:background="@drawable/calendar_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ir.mirrajabi.persiancalendar.PersianCalendarView
+        android:id="@+id/calendar_view"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="80dp"
+        android:paddingHorizontal="20dp"
+        app:pcv_colorBackground="#005DD0A3"
+        app:pcv_colorDayName="@color/white"
+        app:pcv_colorHoliday="@color/urgent_red"
+        app:pcv_colorHolidaySelected="@color/white"
+        app:pcv_colorNormalDay="@color/white"
+        app:pcv_colorNormalDaySelected="@color/white"
+        app:pcv_eventUnderlineColor="#005DD0A3"
+        app:pcv_fontSize="26sp"
+        app:pcv_headersFontSize="20sp"
+        app:pcv_selectedDayBackground="@drawable/selected_day_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
