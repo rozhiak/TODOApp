@@ -15,6 +15,9 @@ interface TaskDao {
     @Query("SELECT * FROM task")
     suspend fun getTasks(): List<Task>
 
+    @Query("SELECT * FROM task")
+    fun getTasksFlow(): Flow<List<Task>>
+
     @Query("SELECT * FROM task WHERE isShared = 0")
     fun getPrivateTasksFlow(): Flow<List<Task>>
 

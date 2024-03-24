@@ -18,5 +18,19 @@ class CalendarActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setClickListeners()
     }
+
+    private fun setClickListeners() {
+        binding.apply {
+            calendarView.setOnDayClickedListener {
+
+            }
+
+            calendarView.setOnDayLongClickedListener {
+
+            }
+        }
+    }
+
 }
