@@ -17,20 +17,20 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:padding="10dp"
             android:tint="@color/purple"
             app:layout_constraintBottom_toBottomOf="@+id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_title"
-            app:srcCompat="@drawable/ic_share" />
+            app:srcCompat="@drawable/ic_person" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="18dp"
             android:fontFamily="@font/iranian_ans"
             android:textColor="@color/green"
