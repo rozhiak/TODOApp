@@ -1,6 +1,7 @@
 package com.rmblack.todoapp.activities
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.rmblack.todoapp.R
 import com.rmblack.todoapp.adapters.EventsAdapter
 import com.rmblack.todoapp.databinding.ActivityCalendarBinding
 import com.rmblack.todoapp.viewmodels.CalendarViewModel
@@ -89,8 +91,14 @@ class CalendarActivity : AppCompatActivity() {
                                 layoutManager = LinearLayoutManager(this@CalendarActivity)
                                 adapter = EventsAdapter(it, this@CalendarActivity)
                             }
+                            binding.tvHint.visibility = View.GONE
+                            binding.ivHint.visibility = View.GONE
                         } else {
                             binding.rvEvents.adapter = null
+                            binding.tvHint.visibility = View.VISIBLE
+                            binding.ivHint.visibility = View.VISIBLE
+                            binding.ivHint.setImageResource(R.drawable.ic_no_task)
+                            binding.tvHint.text = getString(R.string.no_task)
                         }
                     }
                 }
