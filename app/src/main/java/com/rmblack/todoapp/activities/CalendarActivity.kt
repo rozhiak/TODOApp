@@ -110,6 +110,7 @@ class CalendarActivity : AppCompatActivity() {
 
             cvToday.setOnClickListener {
                 binding.calendarView.goToToday()
+                viewModel.setEvents(binding.calendarView.calendar.today)
             }
 
             ivBackBtn.setOnClickListener {
