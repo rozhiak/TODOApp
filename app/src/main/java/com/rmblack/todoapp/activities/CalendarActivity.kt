@@ -87,7 +87,7 @@ class CalendarActivity : AppCompatActivity() {
                         if (it.isNotEmpty()) {
                             binding.rvEvents.apply {
                                 layoutManager = LinearLayoutManager(this@CalendarActivity)
-                                adapter = EventsAdapter(it)
+                                adapter = EventsAdapter(it, this@CalendarActivity)
                             }
                         } else {
                             binding.rvEvents.adapter = null
