@@ -18,29 +18,9 @@ class CalendarViewModel @Inject constructor(taskRepository: TaskRepository) : Vi
 
     val tasks = taskRepository.getTasksFlow()
 
-    private var _selectedDate = MutableStateFlow<PersianDate?>(null)
-
-    private val selectedDate = _selectedDate.asStateFlow()
-
     private var _events = MutableStateFlow<List<Task>?>(null)
 
     val events = _events.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            tasks.collect {
-                if (selectedDate.value != null) {
-
-                }
-            }
-
-            selectedDate.collect { targetDate ->
-                targetDate?.let {
-
-                }
-            }
-        }
-    }
 
     private fun PersianCalendar.areEqualInDate(year: Int, month: Int, day: Int): Boolean {
         if (this.year != year) {
@@ -53,12 +33,18 @@ class CalendarViewModel @Inject constructor(taskRepository: TaskRepository) : Vi
         return true
     }
 
-    private fun setEvents(newValue: List<Task>) {
-        _events.value = newValue
-    }
-
-    fun setSelectedDate(date: PersianDate) {
-        _selectedDate.value = date
+    fun setEvents(date: PersianDate) {
+        viewModelScope.launch {
+            tasks.collect {
+                _events.value = it.filter { task ->
+                    task.deadLine.areEqualInDate(
+                        date.year,
+                        date.month - 1,
+                        date.dayOfMonth
+                    )
+                }
+            }
+        }
     }
 
 }

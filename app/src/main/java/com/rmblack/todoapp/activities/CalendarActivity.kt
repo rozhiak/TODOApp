@@ -28,6 +28,55 @@ class CalendarActivity : AppCompatActivity() {
         setContentView(binding.root)
         setClickListeners()
         syncEventsRecyclerViewWithData()
+        syncMonthWithCalendar()
+    }
+
+    private fun syncMonthWithCalendar() {
+        setMonthText(binding.calendarView.calendar.today.month)
+        binding.calendarView.setOnMonthChangedListener {
+            setMonthText(it.month)
+        }
+    }
+
+    private fun setMonthText(monthNum: Int) {
+        when (monthNum) {
+            1 -> {
+                binding.tvMonth.text = "فــروردیــن"
+            }
+            2 -> {
+                binding.tvMonth.text = "اردیـبهـشــت"
+            }
+            3 -> {
+                binding.tvMonth.text = "خــرداد"
+            }
+            4 -> {
+                binding.tvMonth.text = "تــیــر"
+            }
+            5 -> {
+                binding.tvMonth.text = "مــرداد"
+            }
+            6 -> {
+                binding.tvMonth.text = "شــهــریور"
+            }
+            7 -> {
+                binding.tvMonth.text = "مــهــر"
+            }
+            8 -> {
+                binding.tvMonth.text = "آبــان"
+            }
+            9 -> {
+                binding.tvMonth.text = "آذر"
+            }
+            10 -> {
+                binding.tvMonth.text = "دی"
+            }
+            11 -> {
+                binding.tvMonth.text = "بــهــمــن"
+            }
+            12 -> {
+                binding.tvMonth.text = "اســفــنــد"
+            }
+        }
     }
 
     private fun syncEventsRecyclerViewWithData() {
@@ -41,7 +90,7 @@ class CalendarActivity : AppCompatActivity() {
                                 adapter = EventsAdapter(it)
                             }
                         } else {
-
+                            binding.rvEvents.adapter = null
                         }
                     }
                 }
@@ -52,11 +101,19 @@ class CalendarActivity : AppCompatActivity() {
     private fun setClickListeners() {
         binding.apply {
             calendarView.setOnDayClickedListener {
-                viewModel.setSelectedDate(it)
+                viewModel.setEvents(it)
             }
 
             calendarView.setOnDayLongClickedListener {
-                viewModel.setSelectedDate(it)
+                viewModel.setEvents(it)
+            }
+
+            cvToday.setOnClickListener {
+                binding.calendarView.goToToday()
+            }
+
+            ivBackBtn.setOnClickListener {
+                finish()
             }
         }
     }

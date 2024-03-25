@@ -34,4 +34,5 @@
     <string name="autostart_tip">برنامه تسکرو برای اینکه بتواند در پس زمینه نیز الارم های شما را اجرا کند ، نیاز به دسترسی شروع خودکار (Auto Start) دارد.\n\nلطفا همانند تصویر بالا ، این قابلیت را در تنظیمات فعال کنید.</string>
     <string name="go_to_setting">انتقال به تنظیمات</string>
     <string name="auto_start_permission">اجازه شروع خودکار</string>
+    <string name="today">امروز</string>
 </resources>
