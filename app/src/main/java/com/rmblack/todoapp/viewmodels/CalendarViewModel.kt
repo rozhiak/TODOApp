@@ -39,7 +39,7 @@ class CalendarViewModel @Inject constructor(taskRepository: TaskRepository) : Vi
                 _events.value = it.filter { task ->
                     task.deadLine.areEqualInDate(
                         date.year,
-                        date.month - 1,
+                        date.month - 1, // Persian calendar months start from 0
                         date.dayOfMonth
                     )
                 }
