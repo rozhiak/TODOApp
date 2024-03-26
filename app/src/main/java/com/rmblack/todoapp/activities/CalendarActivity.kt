@@ -125,19 +125,22 @@ class CalendarActivity : AppCompatActivity() {
     }
 
     private fun syncEventsRecyclerViewWithData() {
+        val eventAdapter = EventsAdapter(this)
+        binding.rvEvents.apply {
+            layoutManager = LinearLayoutManager(this@CalendarActivity)
+            adapter = eventAdapter
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.events.collect { events ->
                     events?.let {
                         if (it.isNotEmpty()) {
-                            binding.rvEvents.apply {
-                                layoutManager = LinearLayoutManager(this@CalendarActivity)
-                                adapter = EventsAdapter(it, this@CalendarActivity)
-                            }
+                            eventAdapter.setData(it)
                             binding.tvHint.visibility = View.GONE
                             binding.ivHint.visibility = View.GONE
                         } else {
-                            binding.rvEvents.adapter = null
+                            eventAdapter.setData(emptyList())
                             binding.tvHint.visibility = View.VISIBLE
                             binding.ivHint.visibility = View.VISIBLE
                             binding.ivHint.setImageResource(R.drawable.ic_no_task)
