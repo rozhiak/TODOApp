@@ -59,6 +59,7 @@ class CalendarActivity : AppCompatActivity() {
                                 false
                             )
                         )
+                        binding.calendarView.update()
                     }
                 }
             }
