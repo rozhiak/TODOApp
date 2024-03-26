@@ -14,6 +14,8 @@ import com.rmblack.todoapp.adapters.EventsAdapter
 import com.rmblack.todoapp.databinding.ActivityCalendarBinding
 import com.rmblack.todoapp.viewmodels.CalendarViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import ir.mirrajabi.persiancalendar.core.models.CalendarEvent
+import ir.mirrajabi.persiancalendar.core.models.PersianDate
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -31,6 +33,31 @@ class CalendarActivity : AppCompatActivity() {
         setClickListeners()
         syncEventsRecyclerViewWithData()
         syncMonthWithCalendar()
+        setEventsOnCalView()
+    }
+
+    private fun setEventsOnCalView() {
+        val calHandler = binding.calendarView.calendar
+        calHandler.setHighlightOfficialEvents(false)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.tasks.collect { tasks ->
+                    for (t in tasks) {
+                        calHandler.addLocalEvent(
+                            CalendarEvent(
+                                PersianDate(
+                                    t.deadLine.year,
+                                    t.deadLine.month + 1, // Persian calendar months start from 0
+                                    t.deadLine.dayOfMonth
+                                ),
+                                t.title,
+                                false
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun syncMonthWithCalendar() {

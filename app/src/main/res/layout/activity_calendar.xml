@@ -82,7 +82,7 @@
         app:pcv_colorHolidaySelected="@color/white"
         app:pcv_colorNormalDay="@color/white"
         app:pcv_colorNormalDaySelected="@color/white"
-        app:pcv_eventUnderlineColor="#005DD0A3"
+        app:pcv_eventUnderlineColor="@color/black"
         app:pcv_fontSize="26sp"
         app:pcv_headersFontSize="20sp"
         app:pcv_selectedDayBackground="@drawable/selected_day_back"
