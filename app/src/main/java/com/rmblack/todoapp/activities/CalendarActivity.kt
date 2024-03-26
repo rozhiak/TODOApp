@@ -36,6 +36,11 @@ class CalendarActivity : AppCompatActivity() {
         setEventsOnCalView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (viewModel.selectedDay != null) binding.calendarView.goToDate(viewModel.selectedDay)
+    }
+
     private fun setEventsOnCalView() {
         val calHandler = binding.calendarView.calendar
         calHandler.setHighlightOfficialEvents(false)
@@ -148,15 +153,19 @@ class CalendarActivity : AppCompatActivity() {
         binding.apply {
             calendarView.setOnDayClickedListener {
                 viewModel.setEvents(it)
+                viewModel.setSelectedDay(it)
             }
 
             calendarView.setOnDayLongClickedListener {
                 viewModel.setEvents(it)
+                viewModel.setSelectedDay(it)
             }
 
             cvToday.setOnClickListener {
                 binding.calendarView.goToToday()
-                viewModel.setEvents(binding.calendarView.calendar.today)
+                val today = binding.calendarView.calendar.today
+                viewModel.setEvents(today)
+                viewModel.setSelectedDay(today)
             }
 
             ivBackBtn.setOnClickListener {
