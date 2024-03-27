@@ -32,8 +32,13 @@ class CalendarActivity : AppCompatActivity() {
         setContentView(binding.root)
         setClickListeners()
         syncEventsRecyclerViewWithData()
-        syncMonthWithCalendar()
+        onMonthChanged()
         setEventsOnCalView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setMonthText(binding.calendarView.calendar.today.month)
     }
 
     private fun setEventsOnCalView() {
@@ -61,8 +66,7 @@ class CalendarActivity : AppCompatActivity() {
         }
     }
 
-    private fun syncMonthWithCalendar() {
-        setMonthText(binding.calendarView.calendar.today.month)
+    private fun onMonthChanged() {
         binding.calendarView.setOnMonthChangedListener {
             setMonthText(it.month)
         }
