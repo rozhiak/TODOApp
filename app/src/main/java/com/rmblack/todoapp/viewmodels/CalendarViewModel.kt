@@ -22,10 +22,6 @@ class CalendarViewModel @Inject constructor(taskRepository: TaskRepository) : Vi
 
     val events = _events.asStateFlow()
 
-    private var _selectedDay: PersianDate? = null
-
-    val selectedDay = _selectedDay
-
     private fun PersianCalendar.areEqualInDate(year: Int, month: Int, day: Int): Boolean {
         if (this.year != year) {
             return false
@@ -49,10 +45,6 @@ class CalendarViewModel @Inject constructor(taskRepository: TaskRepository) : Vi
                 }
             }
         }
-    }
-
-    fun setSelectedDay(date: PersianDate) {
-        _selectedDay = date
     }
 
 }
