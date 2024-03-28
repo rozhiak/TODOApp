@@ -86,13 +86,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun wireUpCalendar() {
-        binding.dayOfMonth.setOnClickListener {
-            showCalendar()
-        }
-        binding.dayOfWeek.setOnClickListener {
-            showCalendar()
-        }
-        binding.monthOfYear.setOnClickListener {
+        binding.calendarConst.setOnClickListener {
             showCalendar()
         }
     }

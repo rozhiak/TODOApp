@@ -25,10 +25,9 @@
         android:backgroundTint="@color/white"
         android:elevation="20dp"
         app:cardCornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_back_btn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/iv_back_btn"
-        android:focusable="true"
-        android:clickable="true">
+        app:layout_constraintTop_toTopOf="@+id/iv_back_btn">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
@@ -56,10 +55,11 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_back_btn"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
+        android:padding="12dp"
         android:rotation="-90"
         android:scaleType="fitXY"
         android:tint="@color/white"
@@ -68,7 +68,8 @@
         app:layout_constraintTop_toTopOf="@+id/tv_month"
         app:srcCompat="@drawable/ic_bottom"
         android:focusable="true"
-        android:clickable="true" />
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground" />
 
     <ir.mirrajabi.persiancalendar.PersianCalendarView
         android:id="@+id/calendar_view"
