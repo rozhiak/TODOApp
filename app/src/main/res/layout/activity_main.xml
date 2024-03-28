@@ -85,7 +85,7 @@
                     android:id="@+id/filter_btn"
                     android:layout_width="22dp"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="15dp"
                     app:srcCompat="@drawable/ic_filter"
                     android:tint="@color/white"
                     app:layout_constraintStart_toEndOf="@id/calendar_const" />
