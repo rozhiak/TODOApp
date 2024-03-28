@@ -35,5 +35,5 @@
     <string name="go_to_setting">انتقال به تنظیمات</string>
     <string name="auto_start_permission">اجازه شروع خودکار</string>
     <string name="today">امروز</string>
-    <string name="select_day_hint">برای نمایش تسک ها \n یک روز رو انتخاب کن</string>
+    <string name="select_day_hint">برای نمایش تسک ها\nیک روز رو انتخاب کن</string>
 </resources>
