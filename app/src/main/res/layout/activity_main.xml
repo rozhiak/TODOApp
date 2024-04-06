@@ -29,7 +29,6 @@
                     android:id="@+id/calendar_const"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:paddingEnd="12dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?android:attr/selectableItemBackground"
@@ -38,46 +37,44 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/day_of_week"
-                        android:layout_marginStart="12dp"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
-                        android:layout_marginBottom="35dp"
                         android:fontFamily="@font/ordibehesht"
                         android:layoutDirection="ltr"
                         android:textColor="#FFFFFF"
                         android:textSize="20sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@id/day_of_month"
+                        android:layout_marginTop="-10dp"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/day_of_month"
-                        app:layout_constraintStart_toEndOf="@id/month_of_year"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/ordibehesht"
                         android:layoutDirection="ltr"
                         android:textColor="@color/urgent_red"
                         android:textSize="25sp"
-                        android:layout_marginStart="24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/day_of_week"
-                        app:layout_constraintTop_toBottomOf="@+id/day_of_week" />
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintBottom_toBottomOf="@id/month_of_year"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/month_of_year" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/month_of_year"
-                        android:layout_marginBottom="2dp"
-                        android:layout_marginStart="12dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/ordibehesht"
                         android:layoutDirection="ltr"
                         android:textColor="@color/white"
                         android:textSize="20sp"
-                        app:layout_constraintBottom_toBottomOf="@id/day_of_month"
+                        android:layout_marginTop="-8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/day_of_month" />
+                        app:layout_constraintEnd_toStartOf="@id/day_of_month"
+                        app:layout_constraintTop_toBottomOf="@id/day_of_week" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
